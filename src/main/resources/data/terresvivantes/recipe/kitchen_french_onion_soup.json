@@ -1,0 +1,13 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:onion" }, "count": 2 },
+    { "ingredient": { "item": "minecraft:bread" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:cheese_slice" }, "count": 1 }
+  ],
+  "container": "minecraft:bowl",
+  "result": { "id": "terresvivantes:french_onion_soup", "count": 1 },
+  "time": 240,
+  "quality": "inherit_avg"
+}

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "minecraft:bread" },
+    { "item": "terresvivantes:cheese_slice" }
+  ],
+  "result": { "id": "terresvivantes:cheese_sandwich", "count": 1 }
+}

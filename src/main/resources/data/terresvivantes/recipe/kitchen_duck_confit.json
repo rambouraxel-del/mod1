@@ -1,0 +1,12 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:raw_duck" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:olive_oil" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:garlic" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:duck_confit", "count": 1 },
+  "time": 400,
+  "quality": "inherit_avg"
+}

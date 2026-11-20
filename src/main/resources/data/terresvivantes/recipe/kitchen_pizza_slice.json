@@ -1,0 +1,13 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:dough" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:tomato" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:cheese_slice" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:bell_pepper" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:pizza_slice", "count": 4 },
+  "time": 200,
+  "quality": "inherit_avg"
+}
