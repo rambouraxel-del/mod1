@@ -48,8 +48,19 @@ public final class LivestockApi {
         int feed(ServerLevel level, Animal animal);
     }
 
+    /**
+     * Écouteur du cycle de besoins (ex. : module vet, maladies). Appelé à chaque cycle, après la mise à jour de la
+     * satiété et de la santé. {@code state} est l'état courant de l'animal; l'écouteur peut le modifier via
+     * {@link #setState}. Les écouteurs s'exécutent dans l'ordre d'enregistrement.
+     */
+    @FunctionalInterface
+    public interface NeedsListener {
+        void onNeedsTick(ServerLevel level, Animal animal, LivestockState state);
+    }
+
     private static final List<ProductionModifier> PRODUCTION_MODIFIERS = new CopyOnWriteArrayList<>();
     private static final List<FeedSource> FEED_SOURCES = new CopyOnWriteArrayList<>();
+    private static final List<NeedsListener> NEEDS_LISTENERS = new CopyOnWriteArrayList<>();
 
     private LivestockApi() {
     }
@@ -118,6 +129,11 @@ public final class LivestockApi {
         FEED_SOURCES.add(source);
     }
 
+    /** Enregistre un écouteur du cycle de besoins (appelé à l'initialisation). */
+    public static void registerNeedsListener(NeedsListener listener) {
+        NEEDS_LISTENERS.add(listener);
+    }
+
     /**
      * Cycle de besoins d'un animal (appelé toutes les {@link LivestockLogic#TICK_INTERVAL} ticks par
      * {@link LivestockEvents}, décalé selon l'identifiant pour étaler la charge).
@@ -135,6 +151,9 @@ public final class LivestockApi {
             }
         }
         setState(animal, next);
+        for (NeedsListener listener : NEEDS_LISTENERS) {
+            listener.onNeedsTick(level, animal, getState(animal));
+        }
     }
 
     /** Génome initial si l'animal n'en a pas encore (appelé au chargement serveur). */
