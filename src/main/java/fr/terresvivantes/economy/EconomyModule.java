@@ -8,6 +8,7 @@ import fr.terresvivantes.datagen.LangSink;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -77,19 +78,27 @@ public final class EconomyModule implements TVModule {
     }
 
     /**
-     * Conversions dans le sens grosse pièce vers petite pièce : 1 argent = 20 cuivre, 1 or = 20 argent.
-     * Le sens inverse (20 pièces vers une) n'est pas faisable par recette de grille : 9 ingrédients au plus,
-     * et une recette consomme un item par emplacement.
+     * Conversions dans les deux sens, 9 petites pièces = 1 grosse : 1 argent = 9 cuivre, 1 or = 9 argent.
+     * Le sens petite vers grosse prend 9 pièces, soit la grille entière (une recette de grille
+     * consomme un item par emplacement, 9 au plus).
      */
     @Override
     public void registerRecipes(RecipeOutput output, HolderLookup.Provider lookup) {
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, COPPER_COIN.get(), 20)
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, COPPER_COIN.get(), 9)
                 .requires(SILVER_COIN.get())
                 .unlockedBy("has_silver_coin", InventoryChangeTrigger.TriggerInstance.hasItems(SILVER_COIN.get()))
-                .save(output);
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, SILVER_COIN.get(), 20)
+                .save(output, ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "copper_from_silver"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, SILVER_COIN.get(), 9)
                 .requires(GOLD_COIN.get())
                 .unlockedBy("has_gold_coin", InventoryChangeTrigger.TriggerInstance.hasItems(GOLD_COIN.get()))
-                .save(output);
+                .save(output, ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "silver_from_gold"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, SILVER_COIN.get(), 1)
+                .requires(COPPER_COIN.get(), 9)
+                .unlockedBy("has_copper_coin", InventoryChangeTrigger.TriggerInstance.hasItems(COPPER_COIN.get()))
+                .save(output, ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "silver_from_copper"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, GOLD_COIN.get(), 1)
+                .requires(SILVER_COIN.get(), 9)
+                .unlockedBy("has_silver_coin", InventoryChangeTrigger.TriggerInstance.hasItems(SILVER_COIN.get()))
+                .save(output, ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "gold_from_silver"));
     }
 }

@@ -729,10 +729,9 @@ commune (`processing`).
 
 ### 21.1 Monnaie (livré : `economy`)
 
-- Trois pièces : `copper_coin`, `silver_coin`, `gold_coin`. 1 argent = 20 cuivre, 1 or = 20 argent = 400 cuivre.
-- Conversion grosse vers petite : 1 argent donne 20 cuivre, 1 or donne 20 argent (recettes sans forme, `EconomyModule`).
-- Non fait : conversion petite vers grosse (20 cuivre vers 1 argent). Une recette de grille contient 9 ingrédients au plus et
-  consomme un item par emplacement : elle ne peut pas compter 20 pièces. Solution prévue : change par le marchand de la guilde.
+- Trois pièces : `copper_coin`, `silver_coin`, `gold_coin`. 9 cuivre = 1 argent, 9 argent = 1 or = 81 cuivre.
+- Conversion dans les deux sens (recettes sans forme, `EconomyModule`) : 1 argent donne 9 cuivre, 9 cuivre donnent 1 argent
+  (la grille entière, 9 ingrédients), et de même pour l'or et l'argent.
 
 ### 21.2 Modèle de prix (livré : `economy.logic.PriceModel`, `BasePrices`)
 

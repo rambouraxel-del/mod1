@@ -101,7 +101,7 @@ public final class EconomyApi {
         return ReputationLogic.tierOf(reputation(player));
     }
 
-    /** Valeur totale en cuivre d'un lot de pièces (1 argent = 20 cuivre, 1 or = 20 argent). */
+    /** Valeur totale en cuivre d'un lot de pièces (9 cuivre = 1 argent, 9 argent = 1 or). */
     public static long coinsToCopper(long copper, long silver, long gold) {
         return CoinLogic.coinsToCopper(copper, silver, gold);
     }
