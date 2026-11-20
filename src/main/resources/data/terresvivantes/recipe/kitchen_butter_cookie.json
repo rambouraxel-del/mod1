@@ -1,0 +1,12 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:wheat_flour" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:butter" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:sugar" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:butter_cookie", "count": 4 },
+  "time": 200,
+  "quality": "inherit_avg"
+}

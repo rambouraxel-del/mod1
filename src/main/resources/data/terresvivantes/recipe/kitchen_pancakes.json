@@ -1,0 +1,12 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:wheat_flour" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:egg" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:cream" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:pancakes", "count": 3 },
+  "time": 120,
+  "quality": "inherit_avg"
+}
