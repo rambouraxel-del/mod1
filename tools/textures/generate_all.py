@@ -30,6 +30,7 @@ from sprites_v03 import SPRITES_V03  # noqa: E402
 from sprites_v04 import SPRITES_V04, build_duck_entities  # noqa: E402
 from sprites_v05 import SPRITES_V05, build_processing_gui  # noqa: E402
 from sprites_v06 import SPRITES_V06, build_crow_entities  # noqa: E402
+from sprites_v07 import SPRITES_V07, build_guild_merchant  # noqa: E402
 import insects_textures  # noqa: E402
 
 ROOT = HERE.parents[1]
@@ -113,7 +114,7 @@ def render(rows, overrides=None):
 def build_all():
     """Retourne une liste (dossier, nom, image) pour toutes les textures."""
     out = []
-    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03 + SPRITES_V04 + SPRITES_V05 + SPRITES_V06:
+    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03 + SPRITES_V04 + SPRITES_V05 + SPRITES_V06 + SPRITES_V07:
         out.append((folder, name, render(rows)))
     # Sachets de graines: meme gabarit, couleurs propres a chaque culture.
     for crop, (seed_col, band_col) in SEED_COLORS.items():
@@ -152,6 +153,35 @@ def write_duck_entities():
         img.save(path, format="PNG", optimize=False)
         written.append((path, img))
     return written
+
+
+VILLAGER_PROFESSIONS = [
+    # (dossier de l'entite, nom de la profession)
+    ("villager", "guild_merchant"),
+    ("zombie_villager", "guild_merchant"),
+]
+
+
+def write_villager_professions():
+    """Superpositions de profession de villageois (64x64, UV vanilla), dans textures/entity/<mob>/profession."""
+    written = []
+    for name, img in build_guild_merchant(PALETTE):
+        for mob, prof in VILLAGER_PROFESSIONS:
+            path = TEX_ROOT / "entity" / mob / "profession" / f"{prof}.png"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            img.save(path, format="PNG", optimize=False)
+            written.append((path, img))
+    return written
+
+
+def verify_villager(written):
+    errors = []
+    for path, img in written:
+        if img.size != (64, 64) or img.mode != "RGBA":
+            errors.append(f"taille {img.size} mode {img.mode} au lieu de (64, 64) RGBA: {path}")
+        if not path.is_file():
+            errors.append(f"manquant: {path}")
+    return errors
 
 
 def write_gui():
@@ -226,6 +256,8 @@ def main():
     errors = verify(entries)
     entity = write_entity_textures() + write_duck_entities()
     errors += verify_entity(entity)
+    villagers = write_villager_professions()
+    errors += verify_villager(villagers)
     if errors:
         for e in errors:
             print("ERREUR", e)
@@ -235,6 +267,7 @@ def main():
     print(f"gui: {gui}")
     print(f"{len(written)} textures ecrites dans {TEX_ROOT}")
     print(f"{len(entity)} textures d'entites (insectes 32x32, canards et corbeau 64x32) ecrites dans {TEX_ROOT / 'entity'}")
+    print(f"{len(villagers)} superpositions de profession (64x64) ecrites dans {TEX_ROOT / 'entity'}")
     print(f"preview: {PREVIEW_PATH}")
 
 
