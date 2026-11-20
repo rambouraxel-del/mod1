@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "terresvivantes:corn"},
+    {"item": "terresvivantes:corn"},
+    {"item": "minecraft:wheat"}
+  ],
+  "result": {"id": "terresvivantes:corn_bread", "count": 1}
+}

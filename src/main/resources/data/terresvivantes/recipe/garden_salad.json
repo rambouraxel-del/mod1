@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "terresvivantes:lettuce"},
+    {"item": "terresvivantes:tomato"},
+    {"item": "terresvivantes:cucumber"},
+    {"item": "minecraft:bowl"}
+  ],
+  "result": {"id": "terresvivantes:garden_salad", "count": 1}
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "terresvivantes:strawberry"},
+    {"item": "terresvivantes:strawberry"},
+    {"item": "terresvivantes:strawberry"},
+    {"item": "terresvivantes:strawberry"},
+    {"item": "minecraft:sugar"},
+    {"item": "minecraft:bowl"}
+  ],
+  "result": {"id": "terresvivantes:strawberry_jam", "count": 1}
+}
