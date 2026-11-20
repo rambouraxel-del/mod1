@@ -2,6 +2,7 @@ package fr.terresvivantes.climate.gametest;
 
 import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.climate.ClimateApi;
+import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.season.SeasonApi;
 import fr.terresvivantes.season.logic.Season;
 import net.minecraft.core.BlockPos;
@@ -71,6 +72,21 @@ public final class GreenhouseGameTests {
         float sheltered = SeasonApi.seasonGrowthMultiplier(level, crop);
         helper.assertTrue(Math.abs(sheltered - 0.6f) < 1e-4f,
                 "sous verre en hiver, le multiplicateur doit être 0.6, obtenu " + sheltered);
+        helper.succeed();
+    }
+
+    /**
+     * Tomate (affinité impossible en hiver hors serre) sous verre en hiver : l'affinité est évaluée comme au
+     * printemps (POSSIBLE), donc la culture doit pousser (randomTicks forcés).
+     */
+    @GameTest(template = "crop_arena")
+    public static void tomatoUnderGlassGrowsInWinter(GameTestHelper helper) {
+        setSeason(helper, "winter");
+        helper.setBlock(SOIL, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE));
+        helper.setBlock(CROP, CropModule.cropBlock("tomato").defaultBlockState().setValue(CropBlock.AGE, 0));
+        helper.setBlock(ROOF, Blocks.GLASS);
+        int age = forceUntilGrowth(helper);
+        helper.assertTrue(age > 0, "tomate sous verre en hiver doit pousser (âge " + age + ")");
         helper.succeed();
     }
 
