@@ -1,0 +1,19 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fruit_press",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:peach"
+      },
+      "count": 1
+    }
+  ],
+  "container": "minecraft:glass_bottle",
+  "result": {
+    "id": "terresvivantes:peach_juice",
+    "count": 1
+  },
+  "time": 140,
+  "quality": "inherit_min"
+}

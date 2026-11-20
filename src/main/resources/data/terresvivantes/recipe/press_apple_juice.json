@@ -1,0 +1,19 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fruit_press",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:apple"
+      },
+      "count": 1
+    }
+  ],
+  "container": "minecraft:glass_bottle",
+  "result": {
+    "id": "terresvivantes:apple_juice",
+    "count": 1
+  },
+  "time": 120,
+  "quality": "inherit_min"
+}
