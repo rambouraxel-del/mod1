@@ -36,6 +36,7 @@ import fr.terresvivantes.insects.InsectsModule;
 import fr.terresvivantes.pollination.PollinationModule;
 import fr.terresvivantes.datagen.TVDataGen;
 import fr.terresvivantes.food.FoodModule;
+import fr.terresvivantes.implement.ImplementsModule;
 import fr.terresvivantes.health.HealthConfig;
 import fr.terresvivantes.health.HealthModule;
 import fr.terresvivantes.orchard.OrchardConfig;
@@ -88,6 +89,7 @@ public final class TerresVivantes {
             new DairyModule(),
             new PreservingModule(),
             new KitchenModule(),
+            new ImplementsModule(),
             new DebugModule()
     );
 
