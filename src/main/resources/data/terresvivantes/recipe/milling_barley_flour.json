@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "millstone",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:barley"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:barley_flour",
+    "count": 1
+  },
+  "time": 100,
+  "quality": "inherit_min"
+}
