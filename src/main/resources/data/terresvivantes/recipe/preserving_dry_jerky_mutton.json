@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "drying_rack",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:mutton"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:jerky",
+    "count": 1
+  },
+  "time": 24000,
+  "quality": "inherit_min"
+}

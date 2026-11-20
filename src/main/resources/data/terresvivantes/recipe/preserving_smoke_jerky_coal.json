@@ -1,0 +1,19 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "smokehouse",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:beef"
+      },
+      "count": 1
+    }
+  ],
+  "container": "minecraft:coal",
+  "result": {
+    "id": "terresvivantes:jerky",
+    "count": 1
+  },
+  "time": 600,
+  "quality": "inherit_min"
+}
