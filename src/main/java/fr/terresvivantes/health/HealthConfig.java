@@ -31,16 +31,27 @@ public final class HealthConfig {
         SPEC = builder.build();
     }
 
+    /** Bascule de test : coupe maladies et flétrissement sans toucher au TOML. Toujours faux hors GameTest. */
+    private static volatile boolean disabledForTest;
+
     private HealthConfig() {
+    }
+
+    /**
+     * Coupe (ou rétablit) maladies et flétrissement pour un GameTest qui force des randomTicks. Le test doit
+     * rétablir la valeur {@code false} avant de finir.
+     */
+    public static void disableRandomEventsForTest(boolean disabled) {
+        disabledForTest = disabled;
     }
 
     /** Vrai si le flétrissement par stress est actif (défaut vrai tant que la config n'est pas chargée). */
     public static boolean witheringEnabled() {
-        return !SPEC.isLoaded() || WITHERING_ENABLED.get();
+        return !disabledForTest && (!SPEC.isLoaded() || WITHERING_ENABLED.get());
     }
 
     /** Vrai si les maladies sont actives (défaut vrai tant que la config n'est pas chargée). */
     public static boolean diseasesEnabled() {
-        return !SPEC.isLoaded() || DISEASES_ENABLED.get();
+        return !disabledForTest && (!SPEC.isLoaded() || DISEASES_ENABLED.get());
     }
 }

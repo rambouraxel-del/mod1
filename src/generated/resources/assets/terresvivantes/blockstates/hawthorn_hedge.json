@@ -1,0 +1,194 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_post"
+      },
+      "when": {
+        "flowering": "false",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side",
+        "uvlock": true
+      },
+      "when": {
+        "flowering": "false",
+        "north": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side_tall",
+        "uvlock": true
+      },
+      "when": {
+        "flowering": "false",
+        "north": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "low",
+        "flowering": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side_tall",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "tall",
+        "flowering": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "flowering": "false",
+        "south": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side_tall",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "flowering": "false",
+        "south": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "flowering": "false",
+        "west": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_side_tall",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "flowering": "false",
+        "west": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_post"
+      },
+      "when": {
+        "flowering": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side",
+        "uvlock": true
+      },
+      "when": {
+        "flowering": "true",
+        "north": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side_tall",
+        "uvlock": true
+      },
+      "when": {
+        "flowering": "true",
+        "north": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "low",
+        "flowering": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side_tall",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "east": "tall",
+        "flowering": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "flowering": "true",
+        "south": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side_tall",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "flowering": "true",
+        "south": "tall"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "flowering": "true",
+        "west": "low"
+      }
+    },
+    {
+      "apply": {
+        "model": "terresvivantes:block/hawthorn_hedge_flowering_side_tall",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "flowering": "true",
+        "west": "tall"
+      }
+    }
+  ]
+}

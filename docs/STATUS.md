@@ -1,5 +1,54 @@
 # Statut
 
+## v0.3 « Biodiversité » : terminé et vérifié (`mod_version=0.3.0`)
+
+- `./gradlew build` : OK, **180 tests JUnit** (dont `GeneratedResourcesTest`, avec le contrôle render_type des blocs à texture transparente).
+- `./gradlew runData` : OK, `src/generated` régénéré.
+- `./gradlew runGameTestServer` : **40 GameTests** réussis, trois passages de suite.
+- Contrats : `docs/ARCHITECTURE.md` « Contrats v0.3 » et « Contrats apiculture ». Règles : `docs/DESIGN.md` §17.
+
+Contenu de la v0.3 :
+
+- **Pollinisation et biodiversité** (`pollination`) : score et indice avec cache, effets sur cultures, vergers et santé.
+- **Pucerons** (état `APHIDS`) et coccinelles qui les nettoient.
+- **Flore** (`flora`) : clover, lavender, chamomile, borage (pots, teintures, propagation); haie d'aubépine (habitat).
+- **Insectes** (`insects`) : papillons (4 variantes), coccinelle, pucerons, lucioles, filet, bocal à papillon.
+- **Apiculture** (`apiculture`) : apiaire peuplé (0 à 100), extracteur, enfumoir, cadres, cire; miel typé par la fleur
+  dominante (`ApicultureApi.registerNectarSource`, trèfle et lavande déclarés par l'intégrateur).
+- **Intégration** : configs COMMON `terresvivantes-flora.toml`, `terresvivantes-insects.toml`,
+  `terresvivantes-apiculture.toml` enregistrées dans `TerresVivantes`.
+- **Rendu** : feuillages, saplings, cultures, fleurs, haie, flétrissement, apiaire et extracteur déclarent une couche
+  de rendu (`render_type` cutout ou cutout_mipped). Causait un fond noir sur les textures transparentes.
+- **Textures** : `tools/textures/generate_all.py` produit les 171 sprites 16x16 et les 5 textures d'entités 32x32
+  (`insects_textures.py`). Sortie déterministe.
+- **Commande `/tv showcase`** : ajoute les 4 fleurs, une haie, un apiaire peuplé avec son extracteur, deux papillons et
+  une coccinelle (persistants).
+
+Problèmes connus :
+
+- QA visuelle en client non terminée : le rendu logiciel (Xvfb) est lent et laisse des chunks noirs. Procédure qui
+  fonctionne : `xvfb-run` avec `LIBGL_ALWAYS_SOFTWARE=1`, monde superplat créatif, `allowCommands` via nbtlib,
+  `--quickPlaySingleplayer`, puis `/tv showcase`.
+- Sprites encore faibles : `bee_smoker`, `aphid` et `pollen` (particules), sprinklers.
+- Citrouille et pastèque vanilla hors pollinisation (tige, hors contrat `CropGrowthHooks`).
+- Entités sans loot (papillons, coccinelles).
+- Pas d'interface graphique (GUI) pour l'apiaire.
+- Pas de relâcher des insectes depuis les bocaux.
+- Parchment non utilisé : `maven.parchmentmc.org` redirige vers un hôte bloqué par le proxy.
+- Les tests de jeu de la graine de blé et des coccinelles sont rendus déterministes par une bascule (`HealthConfig.disableRandomEventsForTest`) et un délai long (coccinelles : 1600 ticks, probabilité d'échec ~1e-11).
+- Le bâton, drop du flétrissement, n'est pas dans `terresvivantes:compostable`; décision à prendre.
+
+Prochaines étapes :
+
+1. **v0.4 Élevage** : module `livestock` (génome par Data Attachment d'entité : productivité, taille, résistance,
+   fertilité 0 à 10, héritage moyen des parents avec mutation; besoins : nourriture quotidienne, pâturage hors hiver;
+   reproduction au printemps et en été; `LivestockApi`; `livestock_ledger` qui affiche gènes et état).
+   En parallèle : bâtiments et alimentation (`feeding_trough`, `nesting_box`, ensilage et `feed_mix` à partir de
+   orge, maïs et soja); santé animale (`veterinary_kit`); canard et productions (lait, laine, œufs selon gènes
+   et alimentation); textures v0.4.
+2. QA visuelle en client (procédure ci-dessus) et vérification des rendus contre `docs/DESIGN.md` §10.
+3. Ensuite : v0.5 transformation, v0.6 équipements, v0.7 économie (`docs/ROADMAP.md`).
+
 ## v0.2 : terminé et vérifié (2026-11-20, `mod_version=0.2.0`)
 
 - `./gradlew build` : OK, **120 tests JUnit** (dont 3 de `GeneratedResourcesTest` : lang en/fr identiques, modèles et textures présents).
@@ -52,15 +101,3 @@ Tests de jeu (13) : smoke du mod ; intégration saison / culture / sol / engrais
 - `run/config/terresvivantes-*.toml` (gitignoré) garde les valeurs d'une ancienne version : supprimer le fichier pour prendre un nouveau défaut (ex. hiver 0.0 → 0.15).
 - Le bâton, drop du flétrissement, n'est pas dans `terresvivantes:compostable` (le design le demande; décision à prendre).
 - Le tag compostable ne contient pas `withered_crop` (pas de BlockItem).
-
-## En cours
-
-- v0.3 « Biodiversité » : pollinisation, indice de biodiversité, pucerons (état `APHIDS`) et points d'extension faits (`docs/DESIGN.md` §17, `docs/ARCHITECTURE.md` « Contrats v0.3 »). Reste : modules `flora`, `insects`, `apiculture` (coquilles vides).
-
-## Prochaines étapes
-
-1. QA visuelle en client : `./gradlew runClient`, puis `/tv showcase` (une seule commande) pour contrôler d'un coup d'œil textures, modèles, stades et blocs du mod.
-2. Vérifier les rendus contre la palette de `docs/DESIGN.md` §10 à partir de la planche `tools/textures/preview.png`.
-3. Vérifier en jeu : sécheresse vanilla, HUD saison, almanach, lecture d'une sauvegarde v0.1 (`last_crops` absent).
-4. v0.3 biodiversité : insectes et pollinisation (voir `docs/ROADMAP.md`). `OrchardApi.registerFruitSetModifier` est prêt pour la pollinisation.
-5. Décider de l'utilisation de Parchment quand le dépôt sera accessible.

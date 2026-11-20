@@ -22,7 +22,7 @@ src/main/java/fr/terresvivantes/
     gametest/TVSmokeGameTests.java test de fumée du serveur gametest
   datagen/                     providers qui interrogent les hooks de tous les modules
   season/ climate/ soil/ crop/ compost/ food/ tools/ orchard/ water/ health/
-  pollination/ flora/ insects/ apiculture/   (v0.3; flora, insects, apiculture vides)
+  pollination/ flora/ insects/ apiculture/   (v0.3)
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -80,7 +80,7 @@ Les classes `Module` ne contiennent que l'enregistrement et les hooks; la règle
 ## Configuration
 
 - `TVConfig.COMMON` (type `COMMON`) enregistré par `TerresVivantes`; il reste vide.
-- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard.
+- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard. En v0.3 : flora, insects, apiculture.
 - Une valeur de défaut ne s'applique qu'à la création du fichier : un TOML existant garde ses valeurs.
 - Chaque spec ajoute ses sous-sections avec `builder.push("nom") ... builder.pop()`.
 
@@ -175,6 +175,15 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - `health.HealthApi.registerPestSuppressor(PestSuppressor)` / `pestSuppression(ServerLevel, BlockPos)` : produit des multiplicateurs d'apparition des ravageurs (lu par insects).
 - `health.logic.HealthModel.biodiversityFactor(index)` : ×(1 − 0.5 × indice), appliqué à la chance d'infection dans `HealthGrowth`.
 - Almanach (`tools`) : affiche la pollinisation et la biodiversité locales.
+
+### Contrats apiculture (v0.3)
+
+- `apiculture.ApicultureApi.registerNectarSource(Predicate<BlockState>, HoneyType)` : déclare un état qui apporte un
+  type de nectar. Appelé à l'initialisation par `TerresVivantes` pour les fleurs de la flore (trèfle, lavande).
+- `ApicultureApi.nectarOf(BlockState)` : type de miel d'un état, dans l'ordre suivant : sources enregistrées,
+  feuillage fruitier en fleur (`OrchardApi.isFruitFoliage`, stade 1), tag `minecraft:flowers` (miel sauvage). Null sinon.
+- `ApicultureApi.populatedApiaries(ServerLevel, BlockPos, radius)` : nombre d'apiaires peuplés proches.
+- `apiculture.logic.HoneyType` (enum, sans import Minecraft) : WILDFLOWER, CLOVER, LAVENDER, ORCHARD.
 
 ## Dépendances entre packages
 

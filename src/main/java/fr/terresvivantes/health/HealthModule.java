@@ -134,7 +134,8 @@ public final class HealthModule implements TVModule {
     @Override
     public void registerBlockStates(BlockStateProvider provider) {
         provider.simpleBlock(WITHERED_CROP.get(),
-                provider.models().cross("withered_crop", provider.modLoc("block/withered_crop")));
+                provider.models().cross("withered_crop", provider.modLoc("block/withered_crop"))
+                        .renderType("minecraft:cutout"));
     }
 
     @Override

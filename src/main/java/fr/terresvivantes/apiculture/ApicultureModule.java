@@ -216,10 +216,12 @@ public final class ApicultureModule implements TVModule {
     public void registerBlockStates(BlockStateProvider provider) {
         ModelFile plain = provider.models().orientableWithBottom("block/apiary",
                 provider.modLoc("block/apiary_side"), provider.modLoc("block/apiary_front"),
-                provider.modLoc("block/apiary_top"), provider.modLoc("block/apiary_bottom"));
+                provider.modLoc("block/apiary_top"), provider.modLoc("block/apiary_bottom"))
+                .renderType("minecraft:cutout");
         ModelFile honey = provider.models().orientableWithBottom("block/apiary_honey",
                 provider.modLoc("block/apiary_side"), provider.modLoc("block/apiary_front_honey"),
-                provider.modLoc("block/apiary_top"), provider.modLoc("block/apiary_bottom"));
+                provider.modLoc("block/apiary_top"), provider.modLoc("block/apiary_bottom"))
+                .renderType("minecraft:cutout");
         provider.getVariantBuilder(APIARY.get()).forAllStates(state -> ConfiguredModel.builder()
                 .modelFile(state.getValue(ApiaryBlock.HONEY) ? honey : plain)
                 .rotationY(((int) state.getValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING)
@@ -230,7 +232,7 @@ public final class ApicultureModule implements TVModule {
         ModelFile extractor = provider.models().cubeBottomTop("block/honey_extractor",
                 provider.modLoc("block/honey_extractor_side"),
                 provider.modLoc("block/honey_extractor_top"),
-                provider.modLoc("block/honey_extractor_top"));
+                provider.modLoc("block/honey_extractor_top")).renderType("minecraft:cutout");
         provider.simpleBlock(HONEY_EXTRACTOR.get(), extractor);
         provider.simpleBlockItem(HONEY_EXTRACTOR.get(), extractor);
     }

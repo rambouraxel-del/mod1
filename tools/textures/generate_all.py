@@ -12,7 +12,8 @@ Aucun bruit aleatoire, aucun anti-aliasing.
 Sorties:
     src/main/resources/assets/terresvivantes/textures/item/*.png
     src/main/resources/assets/terresvivantes/textures/block/*.png
-    tools/textures/preview.png  (planche contact x8 avec les noms)
+    src/main/resources/assets/terresvivantes/textures/entity/*.png  (insectes, 32x32, insects_textures.py)
+    tools/textures/preview.png  (planche contact x8 avec les noms, sprites 16x16 seulement)
 """
 
 import sys
@@ -26,11 +27,13 @@ sys.path.insert(0, str(HERE))
 from sprites import SPRITES, SEED_TEMPLATE, SEED_COLORS  # noqa: E402
 from sprites_ext import SPRITES_EXT  # noqa: E402
 from sprites_v03 import SPRITES_V03  # noqa: E402
+import insects_textures  # noqa: E402
 
 ROOT = HERE.parents[1]
 TEX_ROOT = ROOT / "src/main/resources/assets/terresvivantes/textures"
 PREVIEW_PATH = HERE / "preview.png"
 SIZE = 16
+ENTITY_SIZE = 32
 SCALE = 8
 
 # Palette partagee. Lumiere venant du haut-gauche: les clairs sont en haut a
@@ -126,6 +129,27 @@ def write_textures(entries):
     return written
 
 
+def write_entity_textures():
+    """Textures d'entités des insectes (32x32), écrites dans textures/entity."""
+    written = []
+    insects_textures.OUT.mkdir(parents=True, exist_ok=True)
+    for name, img in insects_textures.build_all():
+        path = insects_textures.OUT / f"{name}.png"
+        img.save(path, format="PNG", optimize=False)
+        written.append((path, img))
+    return written
+
+
+def verify_entity(written):
+    errors = []
+    for path, img in written:
+        if img.size != (ENTITY_SIZE, ENTITY_SIZE):
+            errors.append(f"taille {img.size} au lieu de 32x32: {path}")
+        if not path.is_file():
+            errors.append(f"manquant: {path}")
+    return errors
+
+
 def verify(entries):
     errors = []
     for folder, name, _ in entries:
@@ -176,12 +200,15 @@ def main():
     entries = build_all()
     written = write_textures(entries)
     errors = verify(entries)
+    entity = write_entity_textures()
+    errors += verify_entity(entity)
     if errors:
         for e in errors:
             print("ERREUR", e)
         sys.exit(1)
     build_preview(entries)
     print(f"{len(written)} textures ecrites dans {TEX_ROOT}")
+    print(f"{len(entity)} textures d'entites (32x32) ecrites dans {insects_textures.OUT}")
     print(f"preview: {PREVIEW_PATH}")
 
 

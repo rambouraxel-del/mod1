@@ -2,10 +2,10 @@ package fr.terresvivantes.apiculture.gametest;
 
 import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.apiculture.ApiaryBlockEntity;
-import fr.terresvivantes.apiculture.ApicultureApi;
 import fr.terresvivantes.apiculture.ApicultureModule;
 import fr.terresvivantes.apiculture.logic.ApiaryLogic;
 import fr.terresvivantes.apiculture.logic.HoneyType;
+import fr.terresvivantes.flora.FloraModule;
 import fr.terresvivantes.pollination.PollinationApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -26,9 +27,8 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 /**
  * Tests de jeu du module apiculture. Gabarit orchard_arena (air 11 x 12 x 11).
  *
- * <p>Le module flore n'a pas encore de bloc trèfle : le test déclare le pissenlit comme source de nectar trèfle,
- * une seule fois, par {@link #registerTestNectar()}. Cette déclaration reste en place pour la durée du serveur de
- * test; aucun autre test ne dépend du type de miel du pissenlit.
+ * <p>Les fleurs de trèfle sont les vrais blocs du module flore ({@code terresvivantes:clover}), déclarés comme
+ * source de nectar trèfle par {@code TerresVivantes} à l'initialisation.
  */
 @GameTestHolder(TerresVivantes.MODID)
 @PrefixGameTestTemplate(false)
@@ -45,17 +45,7 @@ public final class ApicultureGameTests {
     /** Cycles maximum avant de vérifier la production : largement au-delà de la durée nominale. */
     private static final int MAX_CYCLES = 400;
 
-    private static boolean testNectarRegistered;
-
     private ApicultureGameTests() {
-    }
-
-    /** Déclare une fois le pissenlit comme fleur de trèfle pour le test. */
-    private static synchronized void registerTestNectar() {
-        if (!testNectarRegistered) {
-            ApicultureApi.registerNectarSource(state -> state.is(Blocks.DANDELION), HoneyType.CLOVER);
-            testNectarRegistered = true;
-        }
     }
 
     /**
@@ -64,9 +54,8 @@ public final class ApicultureGameTests {
      */
     @GameTest(template = TEMPLATE)
     public static void apiaryWithCloverFlowersMakesCloverFrame(GameTestHelper helper) {
-        registerTestNectar();
         ServerLevel level = helper.getLevel();
-        placeFlowerField(helper, Blocks.DANDELION);
+        placeFlowerField(helper, FloraModule.flower("clover"));
         helper.setBlock(APIARY.below(), Blocks.DIRT);
         helper.setBlock(APIARY, ApicultureModule.APIARY.get());
         ApiaryBlockEntity apiary = apiaryAt(helper, APIARY);
@@ -131,7 +120,7 @@ public final class ApicultureGameTests {
     }
 
     /** Pose de la terre et des fleurs autour de l'apiaire, chaque fleur sur sa propre terre. */
-    private static void placeFlowerField(GameTestHelper helper, net.minecraft.world.level.block.Block flower) {
+    private static void placeFlowerField(GameTestHelper helper, Block flower) {
         for (BlockPos pos : FLOWERS) {
             helper.setBlock(pos.below(), Blocks.DIRT);
             helper.setBlock(pos, flower);

@@ -5,8 +5,15 @@ import fr.terresvivantes.compost.CompostBinBlock;
 import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.core.debug.ShowcaseBuilder;
 import fr.terresvivantes.crop.CropModule;
+import fr.terresvivantes.apiculture.ApiaryBlockEntity;
+import fr.terresvivantes.apiculture.ApicultureModule;
+import fr.terresvivantes.apiculture.logic.ApiaryLogic;
 import fr.terresvivantes.crop.logic.CropDefinitions;
+import fr.terresvivantes.flora.FloraModule;
+import fr.terresvivantes.flora.HawthornHedgeBlock;
 import fr.terresvivantes.health.HealthModule;
+import fr.terresvivantes.insects.entity.Butterfly;
+import fr.terresvivantes.insects.entity.Ladybug;
 import fr.terresvivantes.orchard.FruitLeavesBlock;
 import fr.terresvivantes.orchard.OrchardModule;
 import fr.terresvivantes.orchard.logic.FruitTreeDefinitions;
@@ -20,6 +27,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -86,6 +95,36 @@ public final class ShowcaseGameTests {
                             && leaves.getValue(LeavesBlock.PERSISTENT),
                     "feuillage stade " + stage + " persistant attendu en (" + stage + ",1,10)");
         }
+
+        // Fleurs sauvages (rangée 5, x 12..15), haie d'aubépine (rangée 8, x 6..9; les deux derniers en fleurs).
+        for (int i = 0; i < ShowcaseBuilder.FLOWER_IDS.size(); i++) {
+            String id = ShowcaseBuilder.FLOWER_IDS.get(i);
+            helper.assertTrue(level.getBlockState(at(origin, 12 + i, 1, 5)).is(FloraModule.flower(id)),
+                    "fleur " + id + " attendue en (" + (12 + i) + ",1,5)");
+        }
+        helper.assertTrue(level.getBlockState(at(origin, 6, 1, 8)).is(FloraModule.hedge())
+                        && !level.getBlockState(at(origin, 6, 1, 8)).getValue(HawthornHedgeBlock.FLOWERING)
+                        && level.getBlockState(at(origin, 9, 1, 8)).getValue(HawthornHedgeBlock.FLOWERING),
+                "haie d'aubépine attendue en (6..9,1,8), fleurie aux deux derniers");
+
+        // Apiaire peuplé et extracteur (rangée 10, x 5 et 7).
+        helper.assertTrue(level.getBlockState(at(origin, 5, 1, 10)).is(ApicultureModule.APIARY.get()),
+                "apiaire attendu en (5,1,10)");
+        helper.assertTrue(level.getBlockState(at(origin, 7, 1, 10)).is(ApicultureModule.HONEY_EXTRACTOR.get()),
+                "extracteur attendu en (7,1,10)");
+        helper.assertTrue(level.getBlockEntity(at(origin, 5, 1, 10)) instanceof ApiaryBlockEntity apiary
+                        && apiary.population() == ApiaryLogic.MAX_POPULATION,
+                "l'apiaire de la vitrine doit être peuplé au maximum");
+
+        // Deux papillons et une coccinelle, persistants.
+        AABB area = ShowcaseBuilder.area(origin);
+        helper.assertTrue(level.getEntitiesOfClass(Butterfly.class, area).size() == 2,
+                "deux papillons attendus dans la vitrine");
+        helper.assertTrue(level.getEntitiesOfClass(Ladybug.class, area).size() == 1,
+                "une coccinelle attendue dans la vitrine");
+        helper.assertTrue(level.getEntitiesOfClass(Butterfly.class, area).stream().allMatch(Mob::isPersistenceRequired)
+                        && level.getEntitiesOfClass(Ladybug.class, area).stream().allMatch(Mob::isPersistenceRequired),
+                "les insectes de la vitrine doivent être persistants");
 
         // Air au-dessus de la plateforme.
         helper.assertTrue(level.getBlockState(at(origin, 0, ShowcaseBuilder.HEIGHT, 0)).isAir(),

@@ -3,6 +3,7 @@ package fr.terresvivantes.climate.gametest;
 import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.climate.ClimateApi;
 import fr.terresvivantes.crop.CropModule;
+import fr.terresvivantes.health.HealthConfig;
 import fr.terresvivantes.season.SeasonApi;
 import fr.terresvivantes.season.logic.Season;
 import net.minecraft.core.BlockPos;
@@ -51,7 +52,7 @@ public final class GreenhouseGameTests {
     public static void wheatUnderGlassGrowsInWinter(GameTestHelper helper) {
         setSeason(helper, "winter");
         placeWheat(helper, true);
-        int age = forceUntilGrowth(helper);
+        int age = forceUntilGrowthWithoutRandomEvents(helper);
         helper.assertTrue(age > 0, "sous verre en hiver, le blé doit pousser (âge " + age + ")");
         helper.succeed();
     }
@@ -85,7 +86,7 @@ public final class GreenhouseGameTests {
         helper.setBlock(SOIL, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, FarmBlock.MAX_MOISTURE));
         helper.setBlock(CROP, CropModule.cropBlock("tomato").defaultBlockState().setValue(CropBlock.AGE, 0));
         helper.setBlock(ROOF, Blocks.GLASS);
-        int age = forceUntilGrowth(helper);
+        int age = forceUntilGrowthWithoutRandomEvents(helper);
         helper.assertTrue(age > 0, "tomate sous verre en hiver doit pousser (âge " + age + ")");
         helper.succeed();
     }
@@ -98,18 +99,30 @@ public final class GreenhouseGameTests {
         }
     }
 
-    /** Force des randomTicks jusqu'à la première croissance (ou MAX_FORCED_TICKS), retourne l'âge final. */
-    private static int forceUntilGrowth(GameTestHelper helper) {
-        ServerLevel level = helper.getLevel();
-        BlockPos crop = helper.absolutePos(CROP);
-        for (int i = 0; i < MAX_FORCED_TICKS; i++) {
-            BlockState state = level.getBlockState(crop);
-            state.randomTick(level, crop, level.getRandom());
-            if (level.getBlockState(crop).getValue(CropBlock.AGE) > 0) {
-                break;
+    /**
+     * Force des randomTicks jusqu'à la première croissance, maladies et flétrissement coupés (sinon une culture
+     * peut être infectée ou flétrie avant de pousser). Retourne l'âge final, 0 si la culture a disparu.
+     */
+    private static int forceUntilGrowthWithoutRandomEvents(GameTestHelper helper) {
+        HealthConfig.disableRandomEventsForTest(true);
+        try {
+            ServerLevel level = helper.getLevel();
+            BlockPos crop = helper.absolutePos(CROP);
+            for (int i = 0; i < MAX_FORCED_TICKS; i++) {
+                BlockState state = level.getBlockState(crop);
+                if (!state.hasProperty(CropBlock.AGE)) {
+                    break;
+                }
+                state.randomTick(level, crop, level.getRandom());
+                if (level.getBlockState(crop).getValue(CropBlock.AGE) > 0) {
+                    break;
+                }
             }
+            BlockState end = level.getBlockState(crop);
+            return end.hasProperty(CropBlock.AGE) ? end.getValue(CropBlock.AGE) : 0;
+        } finally {
+            HealthConfig.disableRandomEventsForTest(false);
         }
-        return level.getBlockState(crop).getValue(CropBlock.AGE);
     }
 
     private static void setSeason(GameTestHelper helper, String season) {

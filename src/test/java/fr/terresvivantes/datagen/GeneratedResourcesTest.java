@@ -2,6 +2,9 @@ package fr.terresvivantes.datagen;
 
 import org.junit.jupiter.api.Test;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -32,6 +35,8 @@ class GeneratedResourcesTest {
     private static final Pattern LANG_ENTRY = Pattern.compile("\"((?:[^\"\\\\]|\\\\.)*)\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
     private static final Pattern TEXTURES_BLOCK = Pattern.compile("\"textures\"\\s*:\\s*\\{([^}]*)\\}");
     private static final Pattern MOD_TEXTURE = Pattern.compile("\"terresvivantes:([^\"]+)\"");
+    private static final Pattern TRANSPARENT_RENDER_TYPE =
+            Pattern.compile("\"render_type\"\s*:\s*\"minecraft:(cutout|cutout_mipped|translucent)\"");
 
     private static String read(Path path) throws IOException {
         return Files.readString(path, StandardCharsets.UTF_8);
@@ -112,5 +117,53 @@ class GeneratedResourcesTest {
         }
         assertTrue(checked > 0, "aucune texture référencée trouvée dans les modèles générés");
         assertTrue(missing.isEmpty(), "textures manquantes : " + missing);
+    }
+
+    /**
+     * Une texture de bloc qui contient des pixels transparents (alpha &lt; 255) doit être rendue avec une couche
+     * cutout, cutout_mipped ou translucent : sinon le fond transparent apparaît en noir en jeu.
+     */
+    @Test
+    void blockModelsWithTransparentTexturesDeclareACutoutRenderType() throws IOException {
+        List<String> offenders = new ArrayList<>();
+        int transparentModels = 0;
+        try (Stream<Path> models = Files.walk(GENERATED.resolve("models/block"))) {
+            for (Path model : models.filter(p -> p.toString().endsWith(".json")).toList()) {
+                String json = read(model);
+                Matcher block = TEXTURES_BLOCK.matcher(json);
+                boolean transparent = false;
+                while (block.find()) {
+                    Matcher tex = MOD_TEXTURE.matcher(block.group(1));
+                    while (tex.find()) {
+                        Path png = TEXTURE_ROOTS.resolve(tex.group(1) + ".png");
+                        if (Files.exists(png) && hasTransparentPixel(png)) {
+                            transparent = true;
+                        }
+                    }
+                }
+                if (!transparent) {
+                    continue;
+                }
+                transparentModels++;
+                if (!TRANSPARENT_RENDER_TYPE.matcher(json).find()) {
+                    offenders.add(GENERATED.relativize(model).toString());
+                }
+            }
+        }
+        assertTrue(transparentModels > 0, "aucun modèle de bloc à texture transparente trouvé : test inutile");
+        assertTrue(offenders.isEmpty(),
+                "modèles à texture transparente sans render_type cutout/cutout_mipped/translucent : " + offenders);
+    }
+
+    private static boolean hasTransparentPixel(Path png) throws IOException {
+        BufferedImage image = ImageIO.read(new File(png.toString()));
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                if ((image.getRGB(x, y) >>> 24) < 255) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

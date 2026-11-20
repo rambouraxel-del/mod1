@@ -490,9 +490,9 @@ Configuration : `terresvivantes-water.toml`.
 
 ## 17. Biodiversité (v0.3 : pollinisation, indice, modules à venir)
 
-Implémenté dans cette version : le package `pollination` (score, indice, caches, points d'extension), les effets
-sur les cultures, les vergers et la santé (pucerons, réduction par biodiversité), l'almanach. Les modules `flora`,
-`insects`, `apiculture` existent comme coquilles vides, à remplir dans les étapes suivantes.
+Implémenté en v0.3 : le package `pollination` (score, indice, caches, points d'extension), les effets sur les
+cultures, les vergers et la santé (pucerons, réduction par biodiversité), l'almanach, et les modules `flora`,
+`insects`, `apiculture`. Les écarts par rapport au plan ci-dessous sont listés en 17.4.
 
 ### 17.1 Pollinisation
 
@@ -534,21 +534,23 @@ enregistrés (haies, via `registerHabitatSource`). Total plafonné à 1. Même c
   Le module insects les utilisera (coccinelles à proximité).
 - Le fongicide retire aussi les pucerons (il remet la santé à zéro); c'est un choix temporaire.
 
-### 17.4 Modules à venir (coquilles vides en v0.3)
+### 17.4 Modules livrés et écarts
 
-- **flora** : fleurs sauvages clover, lavender, chamomile, borage (worldgen par biome, propagation lente au
-  printemps sur herbe voisine); haie d'aubépine `hawthorn_hedge` (feuillage, fleurit au printemps, habitat).
-- **insects** : papillon (entité ambiante, 4 couleurs, butine le jour au printemps et en été), coccinelle (sur les
-  cultures, mange les pucerons), puceron (`infest`, suppression par `registerPestSuppressor`), lucioles (particules
-  nocturnes en été près des herbes et de l'eau). Filet à papillons; bocaux `ladybug_jar` (relâche) et `butterfly_jar`.
-- **apiculture** : `apiary` (ruche à 4 cadres, BlockEntity; colonie qui croît avec 6 fleurs proches et la saison;
-  dormance en hiver; produit `honey_frame` dont le miel suit la fleur dominante : wildflower, clover, lavender,
-  orchard); `honey_extractor` (cadre vers bouteille de miel typée et cire); `bee_smoker` (récolte sans énerver).
-  Peuplement : placement près d'une ruche vanilla, ou abeilles vanilla relâchées dans l'apiaire.
+- **flora** : fleurs sauvages clover, lavender, chamomile, borage (pots, teintures, worldgen par
+  biome, propagation lente `FloraSpread`); haie d'aubépine `hawthorn_hedge` (mur, fleurit au printemps, habitat).
+- **insects** : papillons (4 variantes), coccinelle (nettoie les pucerons dans un rayon de 2), pucerons (`infest`,
+  suppression par `registerPestSuppressor`), lucioles (particules nocturnes). Filet à papillons, bocaux
+  `butterfly_jar` et `ladybug_jar`. Écart : pas de relâcher depuis les bocaux en v0.3.
+- **apiculture** : `apiary` (4 cadres, BlockEntity, population 0 à 100), `honey_extractor`, `bee_smoker`, cire.
+  Miel typé par `ApicultureApi.nectarOf` : sources enregistrées (trèfle et lavande, déclarées dans `TerresVivantes`),
+  feuillage fruitier en fleur (orchard), puis tag `minecraft:flowers` (miel sauvage). Écart : pas d'interface GUI de
+  l'apiaire; la population se règle par la BlockEntity.
 
 ### 17.5 Critères de validation (v0.3)
 
 - [x] Score croissant avec des fleurs variées et une abeille (GameTest `PollinationGameTests`).
 - [x] Concombre sans pollinisateur : rendement moyen inférieur à celui avec pollinisateurs (test pur).
 - [x] Maladie : chance réduite par la biodiversité (test pur).
-- [ ] Abeilles sauvages qui butinent; coccinelles; ruches et miel; haies et fleurs : modules à venir.
+- [x] Coccinelle qui nettoie une culture infestée (GameTest `InsectsGameTests`, délai 1600 ticks).
+- [x] Miel de trèfle obtenu avec de vraies fleurs de trèfle (GameTest `ApicultureGameTests`).
+- [ ] Abeilles sauvages qui butinent dans l'apiaire : non vérifié en jeu.

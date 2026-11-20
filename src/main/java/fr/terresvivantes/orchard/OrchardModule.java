@@ -229,7 +229,7 @@ public final class OrchardModule implements TVModule {
             String id = def.id();
             FruitSaplingBlock sapling = SAPLINGS.get(id).get();
             ModelFile saplingModel = provider.models().cross("block/" + id + "_sapling",
-                    provider.modLoc("block/" + id + "_sapling"));
+                    provider.modLoc("block/" + id + "_sapling")).renderType("minecraft:cutout");
             provider.simpleBlock(sapling, saplingModel);
             provider.simpleBlockItem(sapling, saplingModel);
 

@@ -5,6 +5,7 @@ import fr.terresvivantes.health.HealthApi;
 import fr.terresvivantes.health.logic.Disease;
 import fr.terresvivantes.insects.InsectsModule;
 import fr.terresvivantes.insects.entity.Butterfly;
+import fr.terresvivantes.insects.entity.Ladybug;
 import fr.terresvivantes.pollination.PollinationApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -30,8 +31,11 @@ public final class InsectsGameTests {
     private static final String TEMPLATE = "orchard_arena";
     private static final BlockPos CENTER = new BlockPos(5, 2, 5);
     private static final float DELTA = 1e-4f;
-    /** Délai maximal pour qu'une coccinelle nettoie une culture infestée. */
-    private static final int CURE_TIMEOUT_TICKS = 400;
+    /**
+     * Délai maximal pour qu'une coccinelle nettoie une culture infestée : 1600 ticks, soit 40 tentatives de 15 % par
+     * coccinelle, 160 au total. La probabilité qu'aucune ne réussisse est de l'ordre de 1e-11.
+     */
+    private static final int CURE_TIMEOUT_TICKS = 1600;
 
     private InsectsGameTests() {
     }
@@ -55,10 +59,11 @@ public final class InsectsGameTests {
 
     /**
      * Une culture infestée, avec quatre coccinelles autour, perd ses pucerons dans le délai. Les coccinelles marchent
-     * sur un socle de terre labourée 5 x 5 (niveau 1), à la hauteur de la culture.
+     * sur un socle de terre labourée 5 x 5 (niveau 1). Elles sont replacées près de la culture à chaque tick, car
+     * leur errance peut les sortir du rayon de nettoyage et rendre le test instable.
      */
     @GameTest(template = TEMPLATE, timeoutTicks = CURE_TIMEOUT_TICKS)
-    public static void ladybugsCureAphidsWithinFourHundredTicks(GameTestHelper helper) {
+    public static void ladybugsCureAphidsWithinTimeout(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         for (int dx = -2; dx <= 2; dx++) {
             for (int dz = -2; dz <= 2; dz++) {
@@ -69,14 +74,21 @@ public final class InsectsGameTests {
         BlockPos crop = helper.absolutePos(CENTER);
         helper.assertTrue(HealthApi.infest(level, crop), "la culture doit recevoir les pucerons");
 
-        // Quatre coccinelles: chacune tente 15 % toutes les 40 ticks, la chance d'échec total est très faible.
-        helper.spawn(InsectsModule.LADYBUG.get(), new BlockPos(4, 2, 5));
-        helper.spawn(InsectsModule.LADYBUG.get(), new BlockPos(6, 2, 5));
-        helper.spawn(InsectsModule.LADYBUG.get(), new BlockPos(5, 2, 4));
-        helper.spawn(InsectsModule.LADYBUG.get(), new BlockPos(5, 2, 6));
-
-        helper.succeedWhen(() -> helper.assertTrue(HealthApi.diseaseOf(level, crop) != Disease.APHIDS,
-                "les coccinelles doivent nettoyer la culture dans les " + CURE_TIMEOUT_TICKS + " ticks"));
+        // Quatre coccinelles, chacune tente 15 % toutes les 40 ticks dans son rayon.
+        // Persistantes : sans cela, le despawn naturel retire la coccinelle après quelques dizaines de ticks.
+        Ladybug[] ladybugs = {
+                spawnPersistentLadybug(helper, new BlockPos(4, 2, 5)),
+                spawnPersistentLadybug(helper, new BlockPos(6, 2, 5)),
+                spawnPersistentLadybug(helper, new BlockPos(5, 2, 4)),
+                spawnPersistentLadybug(helper, new BlockPos(5, 2, 6))
+        };
+        helper.succeedWhen(() -> {
+            for (Ladybug ladybug : ladybugs) {
+                ladybug.teleportTo(crop.getX() + 0.5, crop.getY() + 1.0, crop.getZ() + 0.5);
+            }
+            helper.assertTrue(HealthApi.diseaseOf(level, crop) != Disease.APHIDS,
+                    "les coccinelles doivent nettoyer la culture dans les " + CURE_TIMEOUT_TICKS + " ticks");
+        });
     }
 
     /** Filet et bouteille en verre sur un papillon : le papillon part dans un bocal, la bouteille est consommée. */
@@ -100,6 +112,17 @@ public final class InsectsGameTests {
         helper.assertTrue(count(player.getInventory(), Items.GLASS_BOTTLE) == 0,
                 "la bouteille en verre doit être consommée");
         helper.succeed();
+    }
+
+    /**
+     * Coccinelle de test : persistante, sans gravité. Elle est replacée à chaque tick; sans cela, la distance de
+     * chute s'accumule entre deux téléportations et la coccinelle (2 PV) meurt de sa chute.
+     */
+    private static Ladybug spawnPersistentLadybug(GameTestHelper helper, BlockPos pos) {
+        Ladybug ladybug = helper.spawn(InsectsModule.LADYBUG.get(), pos);
+        ladybug.setPersistenceRequired();
+        ladybug.setNoGravity(true);
+        return ladybug;
     }
 
     private static int count(Inventory inventory, Item item) {

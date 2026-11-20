@@ -76,7 +76,8 @@ final class CropDataGen {
                 stages[stage] = provider.models()
                         .withExistingParent("block/" + id + "_crop_stage" + stage,
                                 ResourceLocation.withDefaultNamespace("block/crop"))
-                        .texture("crop", provider.modLoc("block/" + id + "_stage" + stage));
+                        .texture("crop", provider.modLoc("block/" + id + "_stage" + stage))
+                        .renderType("minecraft:cutout");
             }
             provider.getVariantBuilder(CropModule.cropBlock(id)).forAllStates(state -> ConfiguredModel.builder()
                     .modelFile(stages[CropLogic.stageForAge(state.getValue(CropBlock.AGE))])
