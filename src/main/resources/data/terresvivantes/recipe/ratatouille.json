@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "terresvivantes:eggplant"},
+    {"item": "terresvivantes:bell_pepper"},
+    {"item": "terresvivantes:tomato"},
+    {"item": "terresvivantes:onion"},
+    {"item": "minecraft:bowl"}
+  ],
+  "result": {"id": "terresvivantes:ratatouille", "count": 1}
+}

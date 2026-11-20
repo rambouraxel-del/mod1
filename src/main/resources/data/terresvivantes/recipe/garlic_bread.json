@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "minecraft:bread"},
+    {"item": "terresvivantes:garlic"}
+  ],
+  "result": {"id": "terresvivantes:garlic_bread", "count": 1}
+}
