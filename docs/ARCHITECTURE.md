@@ -14,12 +14,14 @@ src/main/java/fr/terresvivantes/
   TerresVivantes.java          @Mod, liste fixe des modules (seul point d'enregistrement)
   core/
     TVModule.java              contrat d'un module + hooks datagen
+    command/TVCommands.java    racine unique /tv (sous-arbres season, showcase)
+    debug/                     DebugModule (lang), ShowcaseBuilder + ShowcaseCommands (/tv showcase)
     config/TVConfig.java       ModConfigSpec COMMON
     network/TVNetwork.java     payloads (version "1")
     registry/TVCreativeTab.java onglet créatif unique
     gametest/TVSmokeGameTests.java test de fumée du serveur gametest
   datagen/                     providers qui interrogent les hooks de tous les modules
-  season/ climate/ soil/ crop/ compost/ food/ tools/
+  season/ climate/ soil/ crop/ compost/ food/ tools/ orchard/ water/ health/
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -77,7 +79,8 @@ Les classes `Module` ne contiennent que l'enregistrement et les hooks; la règle
 ## Configuration
 
 - `TVConfig.COMMON` (type `COMMON`) enregistré par `TerresVivantes`; il reste vide.
-- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`.
+- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard.
+- Une valeur de défaut ne s'applique qu'à la création du fichier : un TOML existant garde ses valeurs.
 - Chaque spec ajoute ses sous-sections avec `builder.push("nom") ... builder.pop()`.
 
 ## Datagen
@@ -118,7 +121,7 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 | Contrat | Enregistrement | Effet |
 |---|---|---|
 | `GrowthModifier { float modify(ServerLevel, BlockPos, BlockState, def); }` | `registerModifier` | Facteur total = produit de `GrowthModel.totalFactor` et de tous les modifiers (`GrowthModel.combineModifiers`, négatif ramené à 0). TV et vanilla. |
-| `GrowthListener { onGrowthAttempt(ServerLevel, BlockPos, BlockState, def, GrowthDecision, float factor); }` | `registerListener` | Appelé après chaque décision. TV : une fois par tentative. Vanilla : une fois à `CropGrowEvent.Pre` et une fois à `Post`. |
+| `GrowthListener { onGrowthAttempt(ServerLevel, BlockPos, BlockState, def, GrowthDecision, float factor); }` | `registerListener` | Appelé après chaque décision, une fois par tentative. TV : dans `TVCropBlock.randomTick`. Vanilla : seulement à `CropGrowEvent.Pre` (`CropEvents`), jamais à `Post` (le `Post` ne fait que le stade bonus). `def` vaut `null` pour le vanilla. |
 | `YieldModifier { float modify(ServerLevel, BlockPos, BlockState, def); }` | `registerYieldModifier` | Multiplie le nombre de produits (`YieldModel.scaledCount`, arrondi probabiliste). TV : dans `TVCropBlock.getDrops`, donc récolte et casse. Vanilla : dans `CropApi.harvestAndReplant` seulement, à tous les drops. |
 | `PlantListener { onPlanted(ServerLevel, BlockPos, BlockState); }` | `registerPlantListener` | Plantation et replantation. TV : `setPlacedBy` et replantation. Vanilla : `BlockEvent.EntityPlaceEvent` et replantation. |
 
@@ -127,7 +130,7 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - `ClimateApi.isSheltered` : en remontant jusqu'à 12 blocs, le premier bloc non-air est dans `c:glass_blocks` ou `c:glass_panes`, et la face supérieure de ce verre voit le ciel (le verre lui-même est dans la heightmap et ne voit jamais le ciel).
 - `ClimateApi.temperatureAt` : +8 °C (`ClimateModel.GREENHOUSE_BONUS`) si abrité.
 - `SeasonApi.seasonGrowthMultiplier(Level, BlockPos)` : en hiver sous serre, `SeasonConfig.greenhouseWinterMultiplier` (défaut 0.6). Les cultures TV et vanilla utilisent cette version.
-- Limite : `Affinity` vaut `IMPOSSIBLE` en hiver pour toute culture du mod (aucune n'a l'hiver dans ses saisons), donc la serre n'a aucun effet sur les cultures du mod tant que leurs affinités ne changent pas.
+- Limite : en hiver, l'affinité vaut `IMPOSSIBLE` (facteur 0) pour les cultures du mod dont l'hiver n'est pas listé. Oignon, ail et chou ont l'hiver en `UNFAVORABLE` (0.4) : seules ces cultures peuvent profiter de la serre en hiver.
 
 ### Rotation (module soil)
 
@@ -136,9 +139,28 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - `SoilRotation` (modifier interne) applique `RotationModel.factor` : monoculture (répétition ≥ 2 et culture actuelle = dernière culture) ×0.8 ; précédent légumineux et culture actuelle non légumineuse ×1.15.
 - La sonde de sol affiche la dernière culture, sa répétition et l'effet de rotation.
 
-### Modules vides
+### Verger (module orchard)
 
-`orchard.OrchardModule`, `water.WaterModule`, `health.HealthModule` : enregistrés dans `TerresVivantes.MODULES`, sans contenu.
+- `orchard.OrchardApi.registerFruitSetModifier(FruitSetModifier)` : `float modify(ServerLevel, BlockPos, FruitTreeDefinition)`. Multiplie la chance de nouer les fruits (feuillage stade 1 vers 2). 1.0 neutre, 0.0 empêche. Prévu pour la pollinisation (v0.3).
+- Biome modifiers (`data/terresvivantes/neoforge/biome_modifier/`) : orange en `#minecraft:is_savanna` et `#minecraft:is_jungle`; olive en `#minecraft:is_savanna` seulement; les autres espèces gardent leurs biomes c:.
+- Tag `terresvivantes:compostable` : fruits du verger (`FruitTreeDefinition.fruit()`, pomme vanille comprise), défini par le module compost.
+
+### Eau (module water)
+
+- `water.WaterApi` : `isRainBarrel(state)`, `tryDrawWater(level, pos, amount)`, `isCoveredByActiveSprinkler(level, soilPos)`, `CAN_FILL_LEVELS`.
+- Facteur de croissance `WaterGrowth.MODIFIER` : ×1.1 si la terre est dans la zone d'un arroseur actif (`CropGrowthHooks.registerModifier`).
+- Sécheresse `WaterGrowth.DROUGHT` (`registerListener`) : en été, sans pluie et sans arroseur, la terre perd 1 d'humidité avec la chance de `terresvivantes-water.toml` (défaut 0.15). Vanilla inclus.
+
+### Santé (module health)
+
+- `health.HealthApi` : `get`, `isSick`, `isImmune`, `immuneUntilDay`, `infect`, `treat`, `wither`, `clear`, `treatmentEffects`, `report` (sonde de sol). Données par position en `HealthChunkData`.
+- Branchements : modifier de croissance et modifier de rendement (maladie : croissance ×0.3, rendement ×0.5), listener de croissance (stress, maladie, flétrissement).
+
+### Commandes
+
+- `/tv` : racine unique, `core/command/TVCommands` (permission 2). Sous-arbres : `season` (`SeasonCommands.node()`), `showcase [pos]` (`ShowcaseCommands.node()`).
+- `/tv showcase [pos]` : `ShowcaseBuilder.build(level, origin)` pose la plateforme; `origin` est la surface du coin (x min, z min). Sans position, origine = joueur + (-8, 20, 0). Le joueur est téléporté sur la rampe (`viewPoint`), face à la plateforme. Depuis la console, la position est obligatoire.
+- Disposition : colonnes 0..11 cultures du mod, 12..15 vanilla (z 0..3, âges 0, 2, 5, 7); z 5 blocs du mod; z 8 saplings; z 10..15 feuillages (stades 0..3, persistants). Air au-dessus.
 
 ### Dépendances entre packages
 

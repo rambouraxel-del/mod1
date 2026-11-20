@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terresvivantes:peach"
+    },
+    {
+      "item": "terresvivantes:peach"
+    },
+    {
+      "item": "terresvivantes:peach"
+    },
+    {
+      "item": "terresvivantes:peach"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:peach_jam"
+  }
+}

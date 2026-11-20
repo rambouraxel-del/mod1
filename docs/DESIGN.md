@@ -432,3 +432,58 @@ Chance d'infection par tentative : **0.4 %** × facteurs (multiplicateurs, pas d
 
 La sonde de sol, sur une culture, affiche le stress, la maladie et l'immunité.
 
+## 15. Module `orchard` (v0.2) : vergers
+
+### 15.1 Espèces
+
+Six espèces (`FruitTreeDefinitions`) : pomme (vanille), cerise, orange, olive, noix, pêche. Chacune a une plage de températures, une floraison, des saisons de maturité et un rendement.
+
+| Espèce | Fruit | Mûrit | Biomes sauvages |
+|---|---|---|---|
+| Pommier | `minecraft:apple` | automne | plaines, forêt |
+| Cerisier | `cherry` | printemps, été | plaines, forêt |
+| Oranger | `orange` | hiver | savane, jungle |
+| Olivier | `olive` | automne | savane |
+| Noyer | `walnut` | automne | plaines, forêt |
+| Pêcher | `peach` | été | plaines |
+
+### 15.2 Feuillage à quatre stades
+
+- Sapling : pousse en arbre par randomTick, avec `saplingChance` (défaut 0.1) multipliée par le facteur saisonnier, en lumière suffisante.
+- Feuillage (`<espèce>_leaves`, stades 0 à 3) : passe au stade suivant par randomTick avec `transitionChance` (défaut 0.25), si la saison et la température le permettent.
+- Le passage du stade 1 au stade 2 noue les fruits. `OrchardApi.registerFruitSetModifier` multiplie cette chance (pollinisation prévue en v0.3).
+- Feuillage non persistant à la distance 7 du tronc : il disparaît, comme le feuillage vanille.
+- Fruits : comestibles (nutrition 1 à 3), dans le tag compostable. Une partie tombe au sol (`FALLEN_FRUIT_CHANCE` 0.5).
+
+### 15.3 Arbres sauvages, marchand, plats
+
+- Arbres sauvages : une `WildFruitTreeFeature` par espèce, dans les biomes du tableau 15.1 (`neoforge:add_features`).
+- Marchand ambulant : un sapling de chaque espèce dans les offres générales.
+- Plats (5) : tarte aux cerises (`cherry_pie`), jus d'orange (`orange_juice`), salade de fruits (`fruit_salad`), pain aux noix (`walnut_bread`), confiture de pêche (`peach_jam`).
+
+Configuration : `terresvivantes-orchard.toml` (`transitionChance`, `saplingChance`).
+
+## 16. Irrigation (module `water`, v0.2)
+
+### 16.1 Arroseurs
+
+| Bloc | Rayon | Matière |
+|---|---|---|
+| `copper_sprinkler` | 2 | cuivre |
+| `iron_sprinkler` | 3 | fer |
+
+- Un arroseur est actif s'il repose sur de l'eau ou s'il est alimenté par un tonneau voisin qui a de l'eau. Il met alors à 7 l'humidité des terres labourées de son carré (même niveau et niveau inférieur).
+- Une culture dont la terre est dans la zone d'un arroseur actif pousse ×1.1.
+- Cycle de 100 ticks (`SPRINKLER_TICKS`). Le tonneau ne fournit de l'eau qu'à un cycle sur quatre.
+
+### 16.2 Tonneau de pluie
+
+- `rain_barrel` : niveau 0 à 8, comparateur = niveau. Se remplit par randomTick sous la pluie à ciel ouvert, au seau d'eau (niveau 8), à la fiole d'eau (un niveau).
+- L'arrosoir vide se remplit au tonneau (un niveau). Les arroseurs voisins y puisent.
+
+### 16.3 Sécheresse estivale
+
+- En été, sans pluie et sans arroseur actif, chaque tentative de croissance d'une culture (mod ou vanilla) retire 1 d'humidité à la terre, avec la chance `droughtChance` (défaut 0.15). `droughtEnabled` coupe l'effet.
+- Effet voulu : l'arrosage devient une décision en été, sans punir les cultures sous la pluie ou sous arroseur.
+
+Configuration : `terresvivantes-water.toml`.

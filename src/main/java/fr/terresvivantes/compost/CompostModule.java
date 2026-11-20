@@ -6,6 +6,8 @@ import fr.terresvivantes.core.TVModule;
 import fr.terresvivantes.core.registry.TVCreativeTab;
 import fr.terresvivantes.crop.logic.CropDefinition;
 import fr.terresvivantes.crop.logic.CropDefinitions;
+import fr.terresvivantes.orchard.logic.FruitTreeDefinition;
+import fr.terresvivantes.orchard.logic.FruitTreeDefinitions;
 import fr.terresvivantes.datagen.LangSink;
 import fr.terresvivantes.soil.SoilApi;
 import net.minecraft.core.Direction;
@@ -242,7 +244,7 @@ public final class CompostModule implements TVModule {
 
     /**
      * Tag {@code terresvivantes:compostable} : feuilles, herbes, graines et légumes vanilla organiques,
-     * plus les 12 produits et les 12 graines du module crop.
+     * plus les 12 produits et les 12 graines du module crop, et les fruits du verger (pomme vanille comprise).
      */
     @Override
     public void registerItemTags(Function<TagKey<Item>, TagsProvider.TagAppender<Item>> tags,
@@ -258,6 +260,10 @@ public final class CompostModule implements TVModule {
                     ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, def.id())));
             compostable.add(ResourceKey.create(Registries.ITEM,
                     ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, def.id() + "_seeds")));
+        }
+        for (FruitTreeDefinition def : FruitTreeDefinitions.all()) {
+            // Fruits du verger (la pomme est vanille, identifiant porté par def.fruit()).
+            compostable.add(ResourceKey.create(Registries.ITEM, ResourceLocation.parse(def.fruit())));
         }
     }
 

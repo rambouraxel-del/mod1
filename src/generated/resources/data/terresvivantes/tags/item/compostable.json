@@ -39,6 +39,12 @@
     "terresvivantes:cabbage",
     "terresvivantes:cabbage_seeds",
     "terresvivantes:cucumber",
-    "terresvivantes:cucumber_seeds"
+    "terresvivantes:cucumber_seeds",
+    "minecraft:apple",
+    "terresvivantes:cherry",
+    "terresvivantes:orange",
+    "terresvivantes:olive",
+    "terresvivantes:walnut",
+    "terresvivantes:peach"
   ]
 }

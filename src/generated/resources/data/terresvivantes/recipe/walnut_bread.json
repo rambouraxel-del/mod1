@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terresvivantes:walnut"
+    },
+    {
+      "item": "terresvivantes:walnut"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:wheat"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:walnut_bread"
+  }
+}

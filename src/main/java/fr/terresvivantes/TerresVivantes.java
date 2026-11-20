@@ -3,6 +3,8 @@ package fr.terresvivantes;
 import fr.terresvivantes.climate.ClimateModule;
 import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.core.TVModule;
+import fr.terresvivantes.core.command.TVCommands;
+import fr.terresvivantes.core.debug.DebugModule;
 import fr.terresvivantes.compost.CompostConfig;
 import fr.terresvivantes.core.config.TVConfig;
 import fr.terresvivantes.core.network.TVNetwork;
@@ -11,15 +13,19 @@ import fr.terresvivantes.crop.CropConfig;
 import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.datagen.TVDataGen;
 import fr.terresvivantes.food.FoodModule;
+import fr.terresvivantes.health.HealthConfig;
 import fr.terresvivantes.health.HealthModule;
+import fr.terresvivantes.orchard.OrchardConfig;
 import fr.terresvivantes.orchard.OrchardModule;
 import fr.terresvivantes.season.SeasonConfig;
 import fr.terresvivantes.season.SeasonModule;
 import fr.terresvivantes.soil.SoilConfig;
 import fr.terresvivantes.soil.SoilModule;
 import fr.terresvivantes.tools.ToolsModule;
+import fr.terresvivantes.water.WaterConfig;
 import fr.terresvivantes.water.WaterModule;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -44,7 +50,8 @@ public final class TerresVivantes {
             new ToolsModule(),
             new OrchardModule(),
             new WaterModule(),
-            new HealthModule()
+            new HealthModule(),
+            new DebugModule()
     );
 
     public TerresVivantes(IEventBus modBus, ModContainer container) {
@@ -53,8 +60,12 @@ public final class TerresVivantes {
         container.registerConfig(ModConfig.Type.COMMON, SoilConfig.SPEC, SoilConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, CompostConfig.SPEC, CompostConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, CropConfig.SPEC, CropConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, WaterConfig.SPEC, WaterConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, HealthConfig.SPEC, HealthConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, OrchardConfig.SPEC, OrchardConfig.FILE_NAME);
         TVCreativeTab.register(modBus);
         TVNetwork.register(modBus);
+        NeoForge.EVENT_BUS.addListener(TVCommands::onRegisterCommands);
         TVDataGen.register(modBus);
         for (TVModule module : MODULES) {
             module.register(modBus);

@@ -9,25 +9,22 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-/** Commandes {@code /tv season info|set} (operateur niveau 2). */
+/** Sous-commande {@code /tv season info|set} (la racine {@code /tv} est dans core.command.TVCommands). */
 public final class SeasonCommands {
 
     private SeasonCommands() {
     }
 
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("tv")
-                .requires(source -> source.hasPermission(2))
-                .then(Commands.literal("season")
-                        .then(Commands.literal("info")
-                                .executes(ctx -> info(ctx.getSource())))
-                        .then(Commands.literal("set")
-                                .then(seasonNode("spring", Season.SPRING))
-                                .then(seasonNode("summer", Season.SUMMER))
-                                .then(seasonNode("autumn", Season.AUTUMN))
-                                .then(seasonNode("winter", Season.WINTER)))));
+    public static LiteralArgumentBuilder<CommandSourceStack> node() {
+        return Commands.literal("season")
+                .then(Commands.literal("info")
+                        .executes(ctx -> info(ctx.getSource())))
+                .then(Commands.literal("set")
+                        .then(seasonNode("spring", Season.SPRING))
+                        .then(seasonNode("summer", Season.SUMMER))
+                        .then(seasonNode("autumn", Season.AUTUMN))
+                        .then(seasonNode("winter", Season.WINTER)));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> seasonNode(String name, Season season) {

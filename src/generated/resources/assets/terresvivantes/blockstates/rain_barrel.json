@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "terresvivantes:block/rain_barrel"
+    },
+    "level=1": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    },
+    "level=2": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    },
+    "level=3": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    },
+    "level=4": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    },
+    "level=5": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    },
+    "level=6": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    },
+    "level=7": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    },
+    "level=8": {
+      "model": "terresvivantes:block/rain_barrel_water"
+    }
+  }
+}

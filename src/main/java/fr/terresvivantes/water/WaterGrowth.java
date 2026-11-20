@@ -19,12 +19,12 @@ final class WaterGrowth {
             WaterLogic.growthFactor(WaterApi.isCoveredByActiveSprinkler(level, cropPos.below()));
 
     /**
-     * Sécheresse estivale : à chaque tentative de croissance d'une culture du mod, en été, sans pluie et sans
-     * arroseur actif, la terre perd 1 d'humidité avec la probabilité configurée. Les cultures vanilla ne sont pas
-     * touchées : le listener reçoit deux notifications pour elles (Pre et Post), ce qui doublerait l'effet.
+     * Sécheresse estivale : à chaque tentative de croissance (culture du mod ou vanilla), en été, sans pluie et
+     * sans arroseur actif, la terre perd 1 d'humidité avec la probabilité configurée. Les vanilla ne sont notifiées
+     * qu'une fois (à Pre), donc une tentative = un tirage.
      */
     static final CropGrowthHooks.GrowthListener DROUGHT = (level, cropPos, state, def, decision, factor) -> {
-        if (def == null || !WaterConfig.droughtEnabled()) {
+        if (!WaterConfig.droughtEnabled()) {
             return;
         }
         BlockPos soil = cropPos.below();

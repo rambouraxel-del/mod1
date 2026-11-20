@@ -21,7 +21,6 @@ public final class SeasonModule implements TVModule {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         modBus.addListener(SeasonNetwork::onRegisterPayloads);
-        NeoForge.EVENT_BUS.addListener(SeasonCommands::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(SeasonSync::onLevelTick);
         NeoForge.EVENT_BUS.addListener(SeasonSync::onPlayerLogin);
         NeoForge.EVENT_BUS.addListener(SeasonSync::onServerStopped);

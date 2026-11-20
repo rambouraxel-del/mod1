@@ -1,12 +1,27 @@
 # Statut
 
-## v0.2 : contrats et serres (vérifiée le 2026-11-20)
+## v0.2 : terminé et vérifié (2026-11-20, `mod_version=0.2.0`)
 
-- `./gradlew build` : OK, **77 tests JUnit** (dont combinaison des modifiers, rendement, rotation).
-- `./gradlew runData` : OK (lang de la sonde de sol ajoutée).
-- `./gradlew runGameTestServer` : OK, **18 GameTests** (5 nouveaux : abri sous verre, blé sous verre en hiver qui pousse, blé sans verre qui ne pousse pas, 3 récoltes → répétition 2, graine → PlantListener TV et vanilla).
-- Contrats détaillés : `docs/ARCHITECTURE.md`, section « Contrats v0.2 ».
-- Limites connues : la serre n'agit pas sur les cultures du mod (affinité hiver = impossible); la sonde de sol et la lecture d'une sauvegarde v0.1 (`last_crops` absent) n'ont pas été vérifiées en jeu; le rendement vanilla n'est pas appliqué à la casse.
+- `./gradlew build` : OK, **120 tests JUnit** (dont 3 de `GeneratedResourcesTest` : lang en/fr identiques, modèles et textures présents).
+- `./gradlew runData` : OK, `src/generated` régénéré.
+- `./gradlew runGameTestServer` : OK, **28 GameTests** réussis.
+- Contrats détaillés : `docs/ARCHITECTURE.md`, section « Contrats v0.2 ». Règles de design : `docs/DESIGN.md` §14 (santé), §15 (vergers), §16 (irrigation).
+
+Contenu de la v0.2 :
+
+- **Textures** : 144 sprites 16x16 générés par `tools/textures/generate_all.py` (grilles de `sprites.py` et `sprites_ext.py`, sans doublon de nom). Relancer le script ne modifie aucun PNG.
+- **Serres et hiver** : tampon de serre (`ClimateApi.isSheltered`, +8 °C), multiplicateur d'hiver 0.15 par défaut (0.0 avant), 0.6 sous verre. Affinité hiver corrigée : oignon, ail et chou passent de IMPOSSIBLE à UNFAVORABLE (0.4).
+- **Rotation** : monoculture ×0.8, précédent légumineux ×1.15 (module soil).
+- **Vergers** (`orchard`) : six espèces (pomme, cerise, orange, olive, noix, pêche), saplings, feuillages à quatre stades par randomTick, arbres sauvages par biome, cinq fruits et cinq plats, marchand ambulant. Les oranges poussent en savane et jungle, les oliviers en savane seulement.
+- **Eau** (`water`) : arroseurs cuivre (rayon 2) et fer (rayon 3) qui mouillent la terre (humidité 7) et donnent ×1.1 à la croissance; tonneau de pluie (niveau 0 à 8); sécheresse estivale (15 % par tentative, sans pluie ni arroseur). La sécheresse s'applique aussi aux cultures vanilla, qui ne sont notifiées qu'une fois (à Pre).
+- **Santé** (`health`) : stress, flétrissement (`withered_crop`), maladies (oïdium, rouille, contagion), fongicide, pulvérisateur, particules.
+- **Intégration** : configs COMMON `terresvivantes-water.toml`, `terresvivantes-health.toml`, `terresvivantes-orchard.toml` enregistrées; tag `terresvivantes:compostable` étendu aux fruits du verger (pomme vanille comprise).
+- **Commande `/tv showcase [pos]`** (opérateur niveau 2) : plateforme de démonstration à 20 blocs au-dessus du joueur, avec une colonne de 4 terres humides (âges 0, 2, 5, 7) par culture du mod et par culture vanilla, un exemple de chaque bloc du mod, six saplings et quatre stades de feuillage par espèce. Le joueur est téléporté sur la rampe. Depuis la console, la position est obligatoire. Racine `/tv` unique dans `core/command/TVCommands`.
+
+Limites connues :
+
+- Les cultures du mod dont l'hiver est IMPOSSIBLE restent à 0 en hiver, serre comprise.
+- Vérifications en jeu non faites : rendu des textures et modèles, HUD, almanach, plateforme `/tv showcase` (seul le GameTest de construction tourne).
 
 ## Terminé et vérifié : v0.1
 
@@ -33,8 +48,10 @@ Tests de jeu (13) : smoke du mod ; intégration saison / culture / sol / engrais
 - Parchment non configuré : `maven.parchmentmc.org` redirige vers `ldtteam.jfrog.io`, bloqué par le proxy de l'environnement. Les noms de paramètres restent les noms Mojang.
 - Bruit attendu en environnement sans accès Internet : `api.minecraftservices.com` (clés Yggdrasil) et `server.properties` absent au premier lancement.
 - Les tests de ressources (`GeneratedResourcesTest`) lisent `src/generated` : relancer `./gradlew runData` après tout changement de datagen.
-- Le test d'hiver et le test d'été forcent les randomTicks sur un sol fertile et humide : ils valident la saison, pas le climat réel du biome de test.
-- Aucun contrôle visuel en client (textures, modèles, HUD, almanach) n'a été fait : vérification uniquement serveur et datagen.
+- Les GameTests `template = ""` exigent un fichier `data/terresvivantes/structure/<nomdelamethode en minuscules>.nbt`.
+- `run/config/terresvivantes-*.toml` (gitignoré) garde les valeurs d'une ancienne version : supprimer le fichier pour prendre un nouveau défaut (ex. hiver 0.0 → 0.15).
+- Le bâton, drop du flétrissement, n'est pas dans `terresvivantes:compostable` (le design le demande; décision à prendre).
+- Le tag compostable ne contient pas `withered_crop` (pas de BlockItem).
 
 ## En cours
 
@@ -42,7 +59,8 @@ Tests de jeu (13) : smoke du mod ; intégration saison / culture / sol / engrais
 
 ## Prochaines étapes
 
-1. QA client visuelle : `./gradlew runClient`, contrôle des modèles de bloc (bac à compost, niveaux), des stades de culture et du HUD saison.
-2. Vérifier les rendus de textures contre la palette de `docs/DESIGN.md`.
-3. Décider de l'utilisation de Parchment quand le dépôt sera accessible.
-4. Planifier la v0.2 (voir `docs/ROADMAP.md`).
+1. QA visuelle en client : `./gradlew runClient`, puis `/tv showcase` (une seule commande) pour contrôler d'un coup d'œil textures, modèles, stades et blocs du mod.
+2. Vérifier les rendus contre la palette de `docs/DESIGN.md` §10 à partir de la planche `tools/textures/preview.png`.
+3. Vérifier en jeu : sécheresse vanilla, HUD saison, almanach, lecture d'une sauvegarde v0.1 (`last_crops` absent).
+4. v0.3 biodiversité : insectes et pollinisation (voir `docs/ROADMAP.md`). `OrchardApi.registerFruitSetModifier` est prêt pour la pollinisation.
+5. Décider de l'utilisation de Parchment quand le dépôt sera accessible.
