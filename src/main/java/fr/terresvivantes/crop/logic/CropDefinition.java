@@ -56,7 +56,7 @@ public record CropDefinition(
         }
     }
 
-    /** Affinité de la culture avec une saison. Hors des trois ensembles (hiver), impossible. */
+    /** Affinité de la culture avec une saison. Hors des trois ensembles, impossible (hiver, sauf ail, chou, oignon). */
     public Affinity affinityFor(Season season) {
         if (optimal.contains(season)) {
             return Affinity.OPTIMAL;

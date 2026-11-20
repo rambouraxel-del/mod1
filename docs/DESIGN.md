@@ -73,9 +73,9 @@ Modules : `core` (config, réseau, registres, onglet créatif), `season`, `clima
 | Printemps | 1.0 |
 | Été | 1.2 |
 | Automne | 0.8 |
-| Hiver | 0.0 |
+| Hiver | 0.15 (v0.2 ; 0.0 en v0.1) |
 
-S'applique aux cultures vanilla et aux cultures du mod. **En v0.1, l'hiver bloque toute croissance en extérieur** (les serres arrivent en v0.2).
+S'applique aux cultures vanilla et aux cultures du mod. **En v0.2, l'hiver ralentit fortement la croissance en extérieur (0.15)**. Sous serre en hiver : multiplicateur 0.6 et affinité évaluée comme au printemps (voir 6.2).
 
 ---
 
@@ -203,7 +203,8 @@ f = multSaison × affinite × facteurClimat × facteurSol
 ```
 
 - `affinite` selon la saison de la culture : optimale ×1.25, possible ×1.0, défavorable ×0.4, impossible ×0.
-- `multSaison` : section 2.5. Hiver = 0 pour toutes les cultures en v0.1. La plantation reste autorisée en hiver ; la culture ne pousse pas.
+- `multSaison` : section 2.5. Hiver extérieur = 0.15 (v0.2). La plantation reste autorisée en hiver.
+- Sous serre en hiver (v0.2) : `multSaison` = 0.6 et l'affinité est évaluée comme au **printemps** (`CropLogic.affinitySeason`).
 - `facteurClimat` : section 3.2.
 - `facteurSol` = facteur de Liebig (4.2) × bonus organique (×1.1 si organique > 60) × ×0.5 si terre sèche (`MOISTURE = 0`, 4.4).
 - Bornes théoriques de `f` : 0 à environ 1.65 (1.2 × 1.25 × 1.0 × 1.1).
@@ -218,11 +219,11 @@ f = multSaison × affinite × facteurClimat × facteurSol
 
 - Cultures du mod : `GrowthModel` est appelé à chaque randomTick de `TVCropBlock`.
 - Cultures vanilla : `GrowthModel` est appelé dans `CropGrowEvent.Pre` (DENY si annulé). Le stade supplémentaire est appliqué par le mod (incrément d'âge).
-- **Flétrissement (`withered_crop`) : hors v0.1**, reporté en v0.2. En v0.1, une culture à `f = 0` ne fait que stagner.
+- **Flétrissement (`withered_crop`) : v0.2**, voir section 14. En v0.1, une culture à `f = 0` ne faisait que stagner.
 
 ### 6.3 Les 12 cultures (proposé)
 
-Valeurs complétées. Saison : O = optimal, P = possible, D = défavorable ; hiver = impossible pour toutes (v0.1). Consommation par stade, en N/P/K. Vitesse en jours MC (à f = 1). Rendement : quantité min–max du produit, plus 1–2 graines à la récolte.
+Valeurs complétées. Saison : O = optimal, P = possible, D = défavorable. Hiver : **défavorable pour l'ail, le chou et l'oignon (v0.2)**, impossible pour les autres. Consommation par stade, en N/P/K. Vitesse en jours MC (à f = 1). Rendement : quantité min–max du produit, plus 1–2 graines à la récolte.
 
 | Culture (id) | O | P | D | Temp (°C) | Conso N/P/K (stade) | Récolte N/P/K | Vitesse (j) | Produit (qté) |
 |---|---|---|---|---|---|---|---|---|
@@ -338,7 +339,8 @@ Tous les produits crus sont comestibles, valeurs faibles (proposé : nutrition 1
 | `seasonMultipliers.spring` | 1.0 | Multiplicateur de croissance, printemps |
 | `seasonMultipliers.summer` | 1.2 | Idem, été |
 | `seasonMultipliers.autumn` | 0.8 | Idem, automne |
-| `seasonMultipliers.winter` | 0.0 | Idem, hiver |
+| `seasonMultipliers.winter` | 0.15 (v0.2 ; 0.0 en v0.1) | Idem, hiver extérieur |
+| `greenhouseWinterMultiplier` | 0.6 | Multiplicateur d'hiver sous serre (season) |
 | `hud.enabled` | true | Affiche le HUD saison (côté client) |
 | `manureChance` | proposé : 1/24000 par tick et par animal (~1 par jour MC) | Chance de lâcher du fumier |
 | `soilConsumptionMultiplier` | 1.0 | Multiplicateur global de consommation N/P/K/organique |
@@ -369,7 +371,64 @@ Décisions de l'orchestrateur, intégrées dans le document.
 | 1 | Sols de biome | Désert : N/P/K = 30, organique = 10. Jungle : organique = 80. Autres biomes : défauts 60/50/50/30. (4.1) |
 | 2 | Engrais | Effet sur le bloc ciblé seul, pas de 3×3 en v0.1. (4.5) |
 | 3 | Humidité | Non stockée dans `SoilData` ; propriété vanilla `MOISTURE` du `farmland`, affichée par la sonde. Terre sèche (`MOISTURE = 0`) : croissance ×0.5. L'arrosoir règle `MOISTURE = 7`. (4.4, 6.2, 9) |
-| 4 | Flétrissement (`withered_crop`) | Reporté en v0.2. (6.2) |
+| 4 | Flétrissement (`withered_crop`) | Livré en v0.2 (section 14). (6.2) |
 | 5 | Compost | Maturation par `randomTick`. (7.1) |
 | 6 | Altitude et nuit | Altitude : `−0.06 × max(0, y − 64)`. Nuit : `dayTime` ∈ [13000, 23000[. (3.1) |
+| 8 | Correction v0.2 : hiver | Multiplicateur d'hiver extérieur 0.15 (au lieu de 0). Sous serre : 0.6 et affinité du printemps. Ail, chou, oignon défavorables en hiver. (2.5, 6.2, 6.3) |
 | 7 | Application des multiplicateurs | `f = saison × affinité × climat × sol`. Si `f < 1` : tentative annulée avec probabilité `1 − f`. Si `f > 1` : chance `min(f − 1, 1)` d'un stade supplémentaire. Cultures du mod (randomTick) et vanilla (`CropGrowEvent.Pre`) partagent la classe pure `crop/logic/GrowthModel`. (6.2, 5) |
+
+---
+
+## 14. Module `health` (v0.2)
+
+### 14.1 Santé d'une culture
+
+Donnée par position de culture, en Data Attachment de chunk (`HealthChunkData`), retirée quand le bloc n'est plus une culture.
+
+| Champ | Rôle |
+|---|---|
+| `stress` | +1 à chaque tentative de croissance à facteur 0 (conditions impossibles : affinité impossible, gel); −1 à chaque croissance réussie, sans passer sous 0. |
+| `disease` | `NONE`, `MILDEW` (oïdium) ou `RUST` (rouille). |
+| `diseaseTicks` | Tentatives de croissance subies pendant la maladie. |
+| `immuneUntilDay` | Dernier jour (index absolu) d'immunité : fin de la saison du traitement. |
+
+### 14.2 Flétrissement
+
+- Stress ≥ 4 : la culture devient `withered_crop` (bloc en croix sur terre labourée, ne pousse pas).
+- Drops : 1 bâton, et 25 % de chance de graine de blé. Le bâton est à signaler à l'intégrateur pour le tag compostable.
+- Activable : `terresvivantes-health.toml`, clé `witheringEnabled` (défaut vrai).
+
+### 14.3 Maladies
+
+Sensibilités :
+
+| Maladie | Cultures |
+|---|---|
+| Oïdium (`MILDEW`) | tomate, concombre, fraise, laitue, poivron, aubergine, pomme de terre (vanilla) |
+| Rouille (`RUST`) | orge, maïs, soja, blé (vanilla) |
+
+Chance d'infection par tentative : **0.4 %** × facteurs (multiplicateurs, pas d'addition) :
+
+| Facteur | Condition | Multiplicateur |
+|---|---|---|
+| Oïdium, humidité | sol saturé (`MOISTURE` 7) et (pluie ou température > 22 °C) | ×4 |
+| Rouille, climat | pluie et 12 à 24 °C | ×4 |
+| Monoculture | même culture récoltée au moins 2 fois de suite (`SoilApi.getRepeatCount` ≥ 2) | ×2 |
+| Densité | au moins 6 cultures identiques dans la zone 5×5 | ×1.5 |
+| Immunité | culture immunisée | 0 |
+
+- Contagion : une culture malade infecte chaque voisin identique du rayon 1 avec 10 % par tentative (immunité respectée).
+- Effets : croissance ×0.3 et rendement ×0.5 (modifiers `CropGrowthHooks`).
+- Après 6 tentatives malade : flétrissement.
+- Visuel : particules `spore_mildew` (blanc-gris) et `spore_rust` (orangé), à chaque tentative d'une culture malade.
+- Config : `diseasesEnabled` (défaut vrai).
+
+### 14.4 Traitements
+
+| Outil | Recette | Effet |
+|---|---|---|
+| Fongicide (`fungicide`) | cuivre + fiole d'eau + poudre d'os → 2 | Clic droit sur une culture : guérit cette culture, immunité jusqu'à la fin de la saison. |
+| Pulvérisateur (`sprayer`) | fer, cuivre, bâton | Clic droit : traite la culture et sa zone 3×3. 16 charges (durabilité). Vide : tenir du fongicide en main secondaire et cliquer sur une culture pour recharger (un fongicide). |
+
+La sonde de sol, sur une culture, affiche le stress, la maladie et l'immunité.
+

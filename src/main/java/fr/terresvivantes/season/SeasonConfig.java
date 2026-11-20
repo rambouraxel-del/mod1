@@ -35,7 +35,7 @@ public final class SeasonConfig {
         SPRING_MULTIPLIER = builder.defineInRange("spring", 1.0, 0.0, 10.0);
         SUMMER_MULTIPLIER = builder.defineInRange("summer", 1.2, 0.0, 10.0);
         AUTUMN_MULTIPLIER = builder.defineInRange("autumn", 0.8, 0.0, 10.0);
-        WINTER_MULTIPLIER = builder.defineInRange("winter", 0.0, 0.0, 10.0);
+        WINTER_MULTIPLIER = builder.defineInRange("winter", 0.15, 0.0, 10.0);
         builder.pop();
 
         GREENHOUSE_WINTER_MULTIPLIER = builder
@@ -58,14 +58,14 @@ public final class SeasonConfig {
         return SPEC.isLoaded() ? DAYS_PER_SEASON.get() : 7;
     }
 
-    /** Multiplicateur de croissance d'une saison (defauts 1.0 / 1.2 / 0.8 / 0.0). */
+    /** Multiplicateur de croissance d'une saison (defauts 1.0 / 1.2 / 0.8 / 0.15). */
     public static float multiplier(Season season) {
         if (!SPEC.isLoaded()) {
             return switch (season) {
                 case SPRING -> 1.0f;
                 case SUMMER -> 1.2f;
                 case AUTUMN -> 0.8f;
-                case WINTER -> 0.0f;
+                case WINTER -> 0.15f;
             };
         }
         double value = switch (season) {

@@ -40,13 +40,17 @@ public final class TVIntegrationGameTests {
     private TVIntegrationGameTests() {
     }
 
-    /** (a) En hiver, une tomate ne pousse pas : 200 randomTicks forcés laissent l'âge à 0. */
+    /**
+     * (a) En hiver, une tomate (impossible en hiver) ne pousse pas : 200 randomTicks forcés laissent l'âge à 0.
+     * Si elle flétrit (v0.2), le bloc n'a plus d'âge : il compte comme non poussé.
+     */
     @GameTest(template = "crop_arena")
     public static void tomatoDoesNotGrowInWinter(GameTestHelper helper) {
         setSeason(helper, "winter");
         placeFertileTomato(helper);
         forceRandomTicks(helper, FORCED_TICKS);
-        int age = helper.getBlockState(CROP).getValue(CropBlock.AGE);
+        int age = helper.getBlockState(CROP).hasProperty(CropBlock.AGE)
+                ? helper.getBlockState(CROP).getValue(CropBlock.AGE) : 0;
         helper.assertTrue(age == 0, "en hiver la tomate doit rester à l'âge 0, obtenu " + age);
         helper.succeed();
     }

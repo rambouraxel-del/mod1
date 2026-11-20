@@ -39,7 +39,7 @@ public final class SeasonApi {
         return SeasonConfig.daysPerSeason();
     }
 
-    /** Multiplicateur de croissance saisonnier (defauts 1.0 / 1.2 / 0.8 / 0.0, configurables). */
+    /** Multiplicateur de croissance saisonnier (defauts 1.0 / 1.2 / 0.8 / 0.15, configurables). */
     public static float seasonGrowthMultiplier(Level level) {
         return SeasonConfig.multiplier(getSeason(level));
     }
@@ -59,7 +59,7 @@ public final class SeasonApi {
     /**
      * Index absolu du jour de l'overworld. Appele uniquement cote serveur.
      */
-    private static long dayIndex(Level level) {
+    public static long dayIndex(Level level) {
         ServerLevel overworld = ((ServerLevel) level).getServer().overworld();
         return SeasonLogic.dayIndex(overworld.getDayTime(), SeasonSavedData.get(overworld).getOffset());
     }

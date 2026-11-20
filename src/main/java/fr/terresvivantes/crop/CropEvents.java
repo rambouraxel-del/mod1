@@ -90,12 +90,20 @@ final class CropEvents {
         float factor = CropGrowth.vanillaFactor(level, pos, event.getState());
         GrowthDecision decision = GrowthModel.decide(factor, level.getRandom().nextDouble(), 0.0);
         CropGrowthHooks.notifyGrowthAttempt(level, pos, event.getState(), null, decision, factor);
+        if (!level.getBlockState(pos).is(event.getState().getBlock())) {
+            event.setResult(CropGrowEvent.Pre.Result.DO_NOT_GROW); // un listener a remplacé la culture
+            return;
+        }
         if (decision == GrowthDecision.DENY) {
             event.setResult(CropGrowEvent.Pre.Result.DO_NOT_GROW);
         }
     }
 
-    /** Culture vanilla qui vient de croître : stade supplémentaire avec chance min(f - 1, 1) (EXTRA_STAGE). */
+    /**
+     * Culture vanilla qui vient de croître : stade supplémentaire avec chance min(f - 1, 1) (EXTRA_STAGE).
+     * v0.2 : les {@link CropGrowthHooks.GrowthListener} ne sont notifiés qu'à Pre (une tentative = une notification),
+     * pour que les stress et maladies ne soient pas comptés deux fois.
+     */
     private static void onCropGrowPost(CropGrowEvent.Post event) {
         if (!CropConfig.vanillaIntegrationEnabled()) {
             return;
@@ -109,7 +117,6 @@ final class CropEvents {
         }
         float factor = CropGrowth.vanillaFactor(level, event.getPos(), grown);
         GrowthDecision decision = GrowthModel.decide(factor, 0.0, level.getRandom().nextDouble());
-        CropGrowthHooks.notifyGrowthAttempt(level, event.getPos(), grown, null, decision, factor);
         if (decision == GrowthDecision.EXTRA_STAGE) {
             level.setBlock(event.getPos(),
                     grown.setValue(BlockStateProperties.AGE_7, grown.getValue(BlockStateProperties.AGE_7) + 1),
