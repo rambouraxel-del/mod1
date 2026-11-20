@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#terresvivantes:clover_habitat",
+  "features": "terresvivantes:clover_patch",
+  "step": "vegetal_decoration"
+}
