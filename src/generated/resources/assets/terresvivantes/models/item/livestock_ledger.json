@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "terresvivantes:item/almanac"
+    "layer0": "terresvivantes:item/livestock_ledger"
   }
 }

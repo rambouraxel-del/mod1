@@ -88,8 +88,7 @@ public final class LivestockModule implements TVModule {
 
     @Override
     public void registerItemModels(ItemModelProvider provider) {
-        // Texture provisoire (almanach) : l'intégrateur basculera sur item/livestock_ledger quand elle sera livrée.
         provider.withExistingParent("livestock_ledger", ResourceLocation.withDefaultNamespace("item/generated"))
-                .texture("layer0", ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "item/almanac"));
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "item/livestock_ledger"));
     }
 }

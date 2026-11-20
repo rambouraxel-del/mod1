@@ -5,6 +5,7 @@ import fr.terresvivantes.livestock.LivestockApi;
 import fr.terresvivantes.livestock.LivestockModule;
 import fr.terresvivantes.livestock.logic.Ailment;
 import fr.terresvivantes.livestock.logic.Genome;
+import fr.terresvivantes.vet.VetApi;
 import fr.terresvivantes.livestock.logic.LivestockState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -71,7 +72,13 @@ public final class LivestockGameTests {
         Sheep sheep = helper.spawn(EntityType.SHEEP, new BlockPos(5, 2, 5));
         LivestockApi.setState(sheep, new LivestockState(0, 100, Ailment.NONE, 0L));
 
-        LivestockApi.runNeedsTick(level, sheep);
+        // Le module vet tire des maladies au hasard à chaque cycle : tirage fixé à « pas de maladie » pour ce test.
+        VetApi.setRandomForTest(() -> 1.0);
+        try {
+            LivestockApi.runNeedsTick(level, sheep);
+        } finally {
+            VetApi.resetRandom();
+        }
 
         LivestockState state = LivestockApi.getState(sheep);
         helper.assertTrue(state.fed() == 0, "satiété attendue 0, obtenue " + state.fed());

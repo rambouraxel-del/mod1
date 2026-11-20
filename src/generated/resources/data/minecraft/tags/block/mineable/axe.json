@@ -2,6 +2,8 @@
   "values": [
     "terresvivantes:compost_bin",
     "terresvivantes:rain_barrel",
-    "terresvivantes:apiary"
+    "terresvivantes:apiary",
+    "terresvivantes:feeding_trough",
+    "terresvivantes:nesting_box"
   ]
 }

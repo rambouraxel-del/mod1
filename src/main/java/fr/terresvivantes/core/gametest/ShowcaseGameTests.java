@@ -9,6 +9,11 @@ import fr.terresvivantes.apiculture.ApiaryBlockEntity;
 import fr.terresvivantes.apiculture.ApicultureModule;
 import fr.terresvivantes.apiculture.logic.ApiaryLogic;
 import fr.terresvivantes.crop.logic.CropDefinitions;
+import fr.terresvivantes.duck.entity.Duck;
+import fr.terresvivantes.husbandry.FeedingTroughBlockEntity;
+import fr.terresvivantes.husbandry.HusbandryModule;
+import fr.terresvivantes.husbandry.logic.FeedType;
+import fr.terresvivantes.vet.VetModule;
 import fr.terresvivantes.flora.FloraModule;
 import fr.terresvivantes.flora.HawthornHedgeBlock;
 import fr.terresvivantes.health.HealthModule;
@@ -28,10 +33,14 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+
+import java.util.List;
 
 /** Tests de la plateforme {@code /tv showcase} : la construction pose les blocs attendus. */
 @GameTestHolder(TerresVivantes.MODID)
@@ -48,9 +57,19 @@ public final class ShowcaseGameTests {
     public static void showcaseBuildsExpectedBlocks(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos origin = helper.absolutePos(BlockPos.ZERO).offset(0, ABOVE, 0);
-        int placed = ShowcaseBuilder.build(level, origin);
-        helper.assertTrue(placed > 0, "la plateforme doit poser des blocs");
+        ShowcaseBuilder.Result result = ShowcaseBuilder.build(level, origin);
+        helper.assertTrue(result.blocks() > 0, "la plateforme doit poser des blocs");
+        verifyShowcase(helper, level, origin, result.fauna());
+        // Les animaux et insectes sont vérifiés d'après le retour de la construction : une entité posée dans un chunk
+        // qui n'est pas encore « entity ticking » n'est pas visible par requête avant la promotion (asynchrone).
+        for (Mob mob : result.fauna()) {
+            mob.discard();
+        }
+        ShowcaseBuilder.clear(level, origin);
+        helper.succeed();
+    }
 
+    private static void verifyShowcase(GameTestHelper helper, ServerLevel level, BlockPos origin, List<Mob> fauna) {
         // Colonne de la première culture du mod : terre humide, âges 0 et 7 aux extrémités.
         String firstCrop = CropDefinitions.all().get(0).id();
         helper.assertTrue(level.getBlockState(at(origin, 0, 0, 0)).is(Blocks.FARMLAND)
@@ -117,21 +136,41 @@ public final class ShowcaseGameTests {
                 "l'apiaire de la vitrine doit être peuplé au maximum");
 
         // Deux papillons et une coccinelle, persistants.
-        AABB area = ShowcaseBuilder.area(origin);
-        helper.assertTrue(level.getEntitiesOfClass(Butterfly.class, area).size() == 2,
-                "deux papillons attendus dans la vitrine");
-        helper.assertTrue(level.getEntitiesOfClass(Ladybug.class, area).size() == 1,
-                "une coccinelle attendue dans la vitrine");
-        helper.assertTrue(level.getEntitiesOfClass(Butterfly.class, area).stream().allMatch(Mob::isPersistenceRequired)
-                        && level.getEntitiesOfClass(Ladybug.class, area).stream().allMatch(Mob::isPersistenceRequired),
-                "les insectes de la vitrine doivent être persistants");
+        helper.assertTrue(count(fauna, Butterfly.class) == 2, "deux papillons attendus dans la vitrine");
+        helper.assertTrue(count(fauna, Ladybug.class) == 1, "une coccinelle attendue dans la vitrine");
+
+        // Enclos d'élevage : auge pleine de foin, nichoir, pierre à sel, clôture sur le pourtour.
+        helper.assertTrue(level.getBlockEntity(at(origin, 9, 1, 10)) instanceof FeedingTroughBlockEntity trough
+                        && trough.type() == FeedType.HAY && trough.stock() > 0,
+                "auge remplie de foin attendue en (9,1,10)");
+        helper.assertTrue(level.getBlockState(at(origin, 14, 1, 10)).is(HusbandryModule.NEST.get()),
+                "nichoir attendu en (14,1,10)");
+        helper.assertTrue(level.getBlockState(at(origin, 9, 1, 14)).is(VetModule.SALT_LICK.get()),
+                "pierre à sel attendue en (9,1,14)");
+        helper.assertTrue(level.getBlockState(at(origin, 8, 1, 9)).is(Blocks.OAK_FENCE)
+                        && level.getBlockState(at(origin, 15, 1, 15)).is(Blocks.OAK_FENCE)
+                        && level.getBlockState(at(origin, 11, 1, 12)).isAir(),
+                "clôture d'enclos attendue sur le pourtour, intérieur libre");
+
+        // Animaux de l'enclos : une vache, un mouton, une poule, deux canards (un mâle, une femelle), persistants.
+        helper.assertTrue(count(fauna, Cow.class) == 1 && count(fauna, Sheep.class) == 1
+                        && count(fauna, Chicken.class) == 1,
+                "une vache, un mouton et une poule attendus dans l'enclos");
+        helper.assertTrue(count(fauna, Duck.class) == 2
+                        && fauna.stream().filter(Duck.class::isInstance).map(Duck.class::cast)
+                        .filter(Duck::isMale).count() == 1,
+                "deux canards attendus dans l'enclos, dont un mâle");
+        helper.assertTrue(fauna.stream().allMatch(Mob::isPersistenceRequired),
+                "les animaux et insectes de la vitrine doivent être persistants");
 
         // Air au-dessus de la plateforme.
         helper.assertTrue(level.getBlockState(at(origin, 0, ShowcaseBuilder.HEIGHT, 0)).isAir(),
                 "air attendu au-dessus de la plateforme");
 
-        ShowcaseBuilder.clear(level, origin);
-        helper.succeed();
+    }
+
+    private static <T extends Mob> long count(List<Mob> fauna, Class<T> type) {
+        return fauna.stream().filter(type::isInstance).count();
     }
 
     private static void assertCrop(GameTestHelper helper, ServerLevel level, BlockPos pos, String id, int age) {

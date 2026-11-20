@@ -60,7 +60,8 @@ public final class InsectsGameTests {
     /**
      * Une culture infestée, avec quatre coccinelles autour, perd ses pucerons dans le délai. Les coccinelles marchent
      * sur un socle de terre labourée 5 x 5 (niveau 1). Elles sont replacées près de la culture à chaque tick, car
-     * leur errance peut les sortir du rayon de nettoyage et rendre le test instable.
+     * leur errance peut les sortir du rayon de nettoyage et rendre le test instable; elles sont aussi ticquées
+     * explicitement, car une zone de test n'est pas forcément « entity ticking ».
      */
     @GameTest(template = TEMPLATE, timeoutTicks = CURE_TIMEOUT_TICKS)
     public static void ladybugsCureAphidsWithinTimeout(GameTestHelper helper) {
@@ -85,6 +86,8 @@ public final class InsectsGameTests {
         helper.succeedWhen(() -> {
             for (Ladybug ladybug : ladybugs) {
                 ladybug.teleportTo(crop.getX() + 0.5, crop.getY() + 1.0, crop.getZ() + 0.5);
+                // Le test pilote les coccinelles lui-même : la zone de test n'est pas toujours « entity ticking ».
+                ladybug.tick();
             }
             helper.assertTrue(HealthApi.diseaseOf(level, crop) != Disease.APHIDS,
                     "les coccinelles doivent nettoyer la culture dans les " + CURE_TIMEOUT_TICKS + " ticks");

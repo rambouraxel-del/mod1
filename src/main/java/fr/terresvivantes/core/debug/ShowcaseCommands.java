@@ -40,7 +40,7 @@ public final class ShowcaseCommands {
             source.sendFailure(Component.translatable("terresvivantes.command.showcase.need_pos"));
             return 0;
         }
-        int placed = ShowcaseBuilder.build(level, origin);
+        int placed = ShowcaseBuilder.build(level, origin).blocks();
         if (player != null) {
             BlockPos view = ShowcaseBuilder.viewPoint(origin);
             // yaw 0 = regarde vers +Z, donc la plateforme (au sud du point de vue).

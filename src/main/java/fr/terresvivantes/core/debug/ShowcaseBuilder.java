@@ -9,9 +9,15 @@ import fr.terresvivantes.compost.logic.CompostLogic;
 import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.crop.logic.CropDefinition;
 import fr.terresvivantes.crop.logic.CropDefinitions;
+import fr.terresvivantes.duck.DuckModule;
+import fr.terresvivantes.duck.entity.Duck;
 import fr.terresvivantes.flora.FloraModule;
 import fr.terresvivantes.flora.HawthornHedgeBlock;
 import fr.terresvivantes.health.HealthModule;
+import fr.terresvivantes.husbandry.FeedingTroughBlockEntity;
+import fr.terresvivantes.husbandry.HusbandryModule;
+import fr.terresvivantes.husbandry.logic.FeedType;
+import fr.terresvivantes.husbandry.logic.TroughLogic;
 import fr.terresvivantes.insects.InsectsModule;
 import fr.terresvivantes.insects.entity.Butterfly;
 import fr.terresvivantes.insects.entity.Ladybug;
@@ -20,12 +26,17 @@ import fr.terresvivantes.orchard.OrchardModule;
 import fr.terresvivantes.orchard.logic.FruitTreeDefinition;
 import fr.terresvivantes.orchard.logic.FruitTreeDefinitions;
 import fr.terresvivantes.orchard.logic.OrchardLogic;
+import fr.terresvivantes.vet.VetModule;
 import fr.terresvivantes.water.RainBarrelBlock;
 import fr.terresvivantes.water.WaterModule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.phys.AABB;
@@ -33,15 +44,19 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Plateforme de démonstration (/tv showcase) : une colonne par culture (4 terres humides, âges 0, 2, 5, 7),
  * un exemple de chaque bloc du mod, des saplings et des feuillages fruitiers aux quatre stades, les fleurs
- * sauvages, une haie, un apiaire peuplé avec son extracteur, deux papillons et une coccinelle (persistants).
+ * sauvages, une haie, un apiaire peuplé avec son extracteur, deux papillons et une coccinelle (persistants), et un
+ * enclos d'élevage (clôture de chêne) avec auge pleine de foin, nichoir, pierre à sel, une vache, un mouton, une poule
+ * et deux canards (mâle et femelle), persistants.
  *
  * <p>Repère relatif à l'origine (surface de la plateforme, herbe) : x de 0 à {@link #width()}-1, z de -{@link #LEDGE}
  * à {@link #DEPTH}-1, y = -1 (pierre), 0 (surface), 1 à {@link #HEIGHT} (air dégagé).
@@ -53,6 +68,7 @@ import java.util.List;
  *   z 8      saplings des 6 espèces (x0..5), haie d'aubépine (x6..9, les deux derniers en fleurs)
  *   z 10..15 feuillages: une ligne par espèce, stades 0..3 (x0..3), persistants;
  *            apiaire peuplé (x5, z 10) et extracteur (x7, z 10)
+ *   x 8..15, z 9..15  enclos (clôture); intérieur x 9..14, z 10..14: auge (9,10), nichoir (14,10), sel (9,14)
  *   air      deux papillons et une coccinelle, persistants (ils ne disparaissent pas)
  * </pre>
  */
@@ -64,8 +80,8 @@ public final class ShowcaseBuilder {
     static final List<Block> VANILLA_CROPS =
             List.of(Blocks.WHEAT, Blocks.CARROTS, Blocks.POTATOES, Blocks.BEETROOTS);
     /** Rangée de visite devant la plateforme. */
-    static final int LEDGE = 4;
-    static final int DEPTH = 16;
+    public static final int LEDGE = 4;
+    public static final int DEPTH = 16;
     public static final int HEIGHT = 6;
     static final int ROW_CROPS = 0;
     static final int ROW_BLOCKS = 5;
@@ -78,6 +94,11 @@ public final class ShowcaseBuilder {
     static final int X_HEDGE = 6;
     static final int X_APIARY = 5;
     static final int X_EXTRACTOR = 7;
+    /** Enclos d'élevage : clôture sur le pourtour x 8..15, z 9..15 (intérieur x 9..14, z 10..14). */
+    static final int PEN_MIN_X = 8;
+    static final int PEN_MAX_X = 15;
+    static final int PEN_MIN_Z = 9;
+    static final int PEN_MAX_Z = 15;
 
     private ShowcaseBuilder() {
     }
@@ -92,9 +113,14 @@ public final class ShowcaseBuilder {
         return origin.offset(width() / 2, 1, -LEDGE / 2);
     }
 
-    /** Pose la plateforme à partir de {@code origin} (surface). Retourne le nombre de blocs posés. */
-    public static int build(ServerLevel level, BlockPos origin) {
+    /** Résultat d'une construction : blocs posés et animaux ou insectes créés (persistants). */
+    public record Result(int blocks, List<Mob> fauna) {
+    }
+
+    /** Pose la plateforme à partir de {@code origin} (surface). */
+    public static Result build(ServerLevel level, BlockPos origin) {
         Placer placer = new Placer(level, origin);
+        List<Mob> fauna = new ArrayList<>();
         int width = width();
         // Dégagement : air au-dessus du sol, puis sol de pierre (y = -1) et herbe (y = 0).
         for (int x = 0; x < width; x++) {
@@ -111,9 +137,11 @@ public final class ShowcaseBuilder {
         placeSaplingsAndLeaves(placer);
         placeFlora(placer);
         placeApiary(placer, level, origin);
-        removeInsects(level, origin);
-        spawnInsects(level, origin);
-        return placer.count;
+        placeLivestock(placer, level, origin);
+        removeFauna(level, origin);
+        spawnInsects(level, origin, fauna);
+        spawnLivestock(level, origin, fauna);
+        return new Result(placer.count, List.copyOf(fauna));
     }
 
     /** Vide la zone de la plateforme (air), pour les tests et pour un nouveau /tv showcase. */
@@ -126,7 +154,7 @@ public final class ShowcaseBuilder {
                 }
             }
         }
-        removeInsects(level, origin);
+        removeFauna(level, origin);
     }
 
     private static void placeFlora(Placer placer) {
@@ -148,31 +176,84 @@ public final class ShowcaseBuilder {
         }
     }
 
+    /**
+     * Enclos d'élevage : auge pleine de foin, nichoir, pierre à sel, clôture sur le pourtour. Les connexions de la
+     * clôture sont posées explicitement (pas de mise à jour de voisinage pendant la construction).
+     */
+    private static void placeLivestock(Placer placer, ServerLevel level, BlockPos origin) {
+        for (int x = PEN_MIN_X; x <= PEN_MAX_X; x++) {
+            for (int z = PEN_MIN_Z; z <= PEN_MAX_Z; z++) {
+                if (!isPenFence(x, z)) {
+                    continue;
+                }
+                placer.set(x, 1, z, Blocks.OAK_FENCE.defaultBlockState()
+                        .setValue(FenceBlock.NORTH, isPenFence(x, z - 1))
+                        .setValue(FenceBlock.SOUTH, isPenFence(x, z + 1))
+                        .setValue(FenceBlock.WEST, isPenFence(x - 1, z))
+                        .setValue(FenceBlock.EAST, isPenFence(x + 1, z)));
+            }
+        }
+        placer.set(9, 1, 10, HusbandryModule.TROUGH.get().defaultBlockState());
+        placer.set(14, 1, 10, HusbandryModule.NEST.get().defaultBlockState());
+        placer.set(9, 1, 14, VetModule.SALT_LICK.get().defaultBlockState());
+        if (level.getBlockEntity(origin.offset(9, 1, 10)) instanceof FeedingTroughBlockEntity trough) {
+            // Remplie à ras : la capacité de l'auge plafonne le nombre de bottes acceptées.
+            trough.insert(FeedType.HAY, TroughLogic.CAPACITY);
+        }
+    }
+
+    /** Vrai si la case (x, z) fait partie de la clôture de l'enclos. */
+    static boolean isPenFence(int x, int z) {
+        boolean inX = x >= PEN_MIN_X && x <= PEN_MAX_X;
+        boolean inZ = z >= PEN_MIN_Z && z <= PEN_MAX_Z;
+        return inX && inZ && (x == PEN_MIN_X || x == PEN_MAX_X || z == PEN_MIN_Z || z == PEN_MAX_Z);
+    }
+
     /** Boîte de la plateforme et de l'air au-dessus, pour retirer les insectes d'une précédente construction. */
     public static AABB area(BlockPos origin) {
         return new AABB(origin.getX(), origin.getY() - 1, origin.getZ() - LEDGE,
                 origin.getX() + width(), origin.getY() + HEIGHT + 1, origin.getZ() + DEPTH);
     }
 
-    private static void removeInsects(ServerLevel level, BlockPos origin) {
+    /** Retire insectes et animaux d'élevage de la vitrine (une construction précédente, ou un /tv showcase répété). */
+    private static void removeFauna(ServerLevel level, BlockPos origin) {
         for (Entity entity : level.getEntitiesOfClass(Entity.class, area(origin),
-                e -> e instanceof Butterfly || e instanceof Ladybug)) {
+                e -> e instanceof Butterfly || e instanceof Ladybug || e instanceof Cow || e instanceof Sheep
+                        || e instanceof Chicken || e instanceof Duck)) {
             entity.discard();
         }
     }
 
     /** Deux papillons et une coccinelle, persistants : ils ne disparaissent pas quand le joueur s'éloigne. */
-    private static void spawnInsects(ServerLevel level, BlockPos origin) {
-        spawnPersistent(level, InsectsModule.BUTTERFLY.get(), origin.offset(12, 3, 2));
-        spawnPersistent(level, InsectsModule.BUTTERFLY.get(), origin.offset(15, 4, 3));
-        spawnPersistent(level, InsectsModule.LADYBUG.get(), origin.offset(13, 1, 11));
+    private static void spawnInsects(ServerLevel level, BlockPos origin, List<Mob> fauna) {
+        spawnPersistent(level, InsectsModule.BUTTERFLY.get(), origin.offset(12, 3, 2), fauna);
+        spawnPersistent(level, InsectsModule.BUTTERFLY.get(), origin.offset(15, 4, 3), fauna);
+        spawnPersistent(level, InsectsModule.LADYBUG.get(), origin.offset(13, 1, 11), fauna);
     }
 
-    private static <T extends PathfinderMob> void spawnPersistent(ServerLevel level, EntityType<T> type, BlockPos pos) {
+    /** Animaux de l'enclos : une vache, un mouton, une poule, deux canards (mâle et femelle), persistants. */
+    private static void spawnLivestock(ServerLevel level, BlockPos origin, List<Mob> fauna) {
+        spawnPersistent(level, EntityType.COW, origin.offset(11, 1, 11), fauna);
+        spawnPersistent(level, EntityType.SHEEP, origin.offset(12, 1, 13), fauna);
+        spawnPersistent(level, EntityType.CHICKEN, origin.offset(14, 1, 12), fauna);
+        Duck male = spawnPersistent(level, DuckModule.DUCK.get(), origin.offset(10, 1, 13), fauna);
+        if (male != null) {
+            male.setMale(true);
+        }
+        Duck female = spawnPersistent(level, DuckModule.DUCK.get(), origin.offset(13, 1, 14), fauna);
+        if (female != null) {
+            female.setMale(false);
+        }
+    }
+
+    private static <T extends PathfinderMob> T spawnPersistent(ServerLevel level, EntityType<T> type, BlockPos pos,
+                                                               List<Mob> fauna) {
         T mob = type.spawn(level, pos, MobSpawnType.COMMAND);
         if (mob != null) {
             mob.setPersistenceRequired();
+            fauna.add(mob);
         }
+        return mob;
     }
 
     private static void placeCrops(Placer placer) {

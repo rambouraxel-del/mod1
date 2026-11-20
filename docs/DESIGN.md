@@ -555,83 +555,67 @@ enregistrés (haies, via `registerHabitatSource`). Total plafonné à 1. Même c
 - [x] Miel de trèfle obtenu avec de vraies fleurs de trèfle (GameTest `ApicultureGameTests`).
 - [ ] Abeilles sauvages qui butinent dans l'apiaire : non vérifié en jeu.
 
-## 18. Élevage (v0.4 : module `livestock`, modules à venir)
+## 18. Élevage (v0.4 : modules `livestock`, `husbandry`, `vet`, `duck`)
 
-Implémenté en v0.4 : le génome et l'état vital des animaux d'élevage, l'héritage, les besoins quotidiens, la
-reproduction saisonnière, `LivestockApi`, le registre d'élevage, et la ponte modulée. Les modules `husbandry`,
-`vet` et `duck` sont enregistrés comme squelettes vides. Les écarts sont listés en 18.7.
+Livré en v0.4 : génome et état vital des animaux d'élevage, héritage, besoins quotidiens, reproduction saisonnière,
+`LivestockApi`, registre d'élevage, bâtiments d'alimentation et de ponte, santé animale, canard. Les écarts sont en 18.7.
 
 ### 18.1 Animaux et génome
 
-- Animaux concernés : tag d'entités `terresvivantes:livestock` (`data/terresvivantes/tags/entity_type/livestock.json`) :
-  vache, vache à champignons, cochon, mouton, poule, chèvre, lapin, et `terresvivantes:duck` (optionnel, `required: false`).
-- Génome `Genome` : productivité, taille, résistance, fertilité, entiers de 0 à 10. Data Attachment d'entité `genome`,
-  sérialisé, sans `copyOnDeath`.
-- Génome initial : chaque trait tiré dans [4, 6]. Attribué à l'arrivée d'un animal sans génome (`EntityJoinLevelEvent`, serveur).
-- Hérédité (`BabyEntitySpawnEvent`) : moyenne des deux parents par trait (arrondi tiré au hasard si impair), puis
-  mutation de ±1 avec la chance de 15 %, bornée à [0, 10]. L'enfant reste dans [min − 1, max + 1].
-- `GenomeLogic` (pure) porte ces règles; `LivestockCodecs` (package `livestock`) porte la persistance.
+- Animaux concernés : tag d'entités `terresvivantes:livestock` (vache, vache à champignons, cochon, mouton, poule, chèvre,
+  lapin, et `terresvivantes:duck`, optionnel).
+- Génome `Genome` : productivité, taille, résistance, fertilité, entiers de 0 à 10. Data Attachment d'entité, sérialisé,
+  sans `copyOnDeath`. Génome initial : chaque trait tiré dans [4, 6].
+- Hérédité : moyenne des parents par trait (arrondi aléatoire si impair), mutation de ±1 avec une chance de 15 %, bornée à [0, 10].
+- `GenomeLogic` et `LivestockLogic` sont purs; `LivestockCodecs` porte la persistance.
 
 ### 18.2 Besoins
 
-- Attachment `livestock_state` : `fed` (0 à 100), `health` (0 à 100), `ailment` (`NONE`, `SICK`, `PARASITES`),
-  `lastFedDay` (jour de saison du dernier apport). Valeur initiale : satiété 50, santé 100, sans maladie.
-- Cycle toutes les 1200 ticks par animal (`EntityTickEvent.Post`, décalé par `id % 1200` pour étaler la charge).
-- Par cycle :
-  - consommation : −8 de satiété (−12 en hiver);
-  - pâturage : +10 si l'espèce broute (vache, vache à champignons, mouton, chèvre, lapin), hors hiver, et si le bloc
-    sous l'animal est un bloc d'herbe (`grass_block`); le jour du repas est alors mis à jour;
-  - santé : satiété à 0 donne −5; satiété au-dessus de 60 donne +2.
-- Sources de nourriture tierces : `LivestockApi.registerFeedSource` (ajout de satiété à chaque cycle, pour les mangeoires).
-- Pas de mort par manque de nourriture en v0.4 : la santé peut tomber à 0 sans effet (réservé au module vet).
+- Attachment `livestock_state` : `fed` (0 à 100), `health` (0 à 100), `ailment` (`NONE`, `SICK`, `PARASITES`), `lastFedDay`.
+  Valeur initiale : satiété 50, santé 100, sans maladie.
+- Cycle de 1200 ticks par animal, décalé par `id % 1200`.
+- Par cycle : consommation −8 de satiété (−12 en hiver); pâturage +10 pour les broutards hors hiver sur `grass_block`;
+  santé −5 à satiété nulle, +2 au-dessus de 60.
+- Sources de nourriture tierces : `LivestockApi.registerFeedSource` (auges).
+- Maladies (`vet`) : `SICK` par surpopulation ou sous-alimentation, `PARASITES` sur pâturage humide ou sous pluie,
+  contagion entre voisins. Pierre à sel : +1 de santé par cycle à proximité. Santé à 0 : mort (`VetConfig.killAtZeroHealth`).
 
 ### 18.3 Reproduction
 
-- `PlayerInteractEvent.EntityInteract` : la nourriture de reproduction est refusée (annulation, message dans la barre
-  d'action) si la satiété est inférieure à 40, ou, si `LivestockConfig.breedingSeasonsOnly` est vrai (défaut), hors
-  printemps et été.
-- Jumeaux : chance de `fertilité moyenne × 3 %` (plafonnée à 1) qu'un second bébé apparaisse, avec son génome hérité.
+- Nourriture de reproduction refusée si la satiété est inférieure à 40, ou hors printemps et été (`breedingSeasonsOnly`, vrai par défaut).
+- Jumeaux : chance de `fertilité moyenne × 3 %` (plafonnée à 1).
 
 ### 18.4 Productions et `LivestockApi`
 
 - `productionMultiplier(animal)` = (0.6 + 0.08 × productivité) × (1.1 si satiété > 60; 0.5 si < 20; 1 sinon)
-  × (0.5 si malade; 1 sinon), multiplié par les modificateurs enregistrés (`registerProductionModifier`).
-- Effet déjà appliqué : la ponte des poules. Chaque cycle de 1200 ticks, `eggTime` est décalé de
-  (multiplicateur − 1) × 1200 ticks, arrondi probabiliste. La cadence de ponte vaut donc le multiplicateur.
-- Non appliqué en v0.4 : la laine (NeoForge 21.1 n'expose pas d'événement de tonte; à traiter avec un hook dédié)
-  et le lait (réservé au module `duck`, puis au module productions).
+  × (0.5 si malade; 1 sinon), puis modificateurs enregistrés.
+- Ponte : poules et canards pondent à la cadence du multiplicateur. Un nichoir proche reçoit l'œuf (8 emplacements).
+- Laine et lait : calculés à partir du multiplicateur (qualité du lait de 0 à 3 étoiles), sans événement de tonte ou de traite NeoForge.
 
 ### 18.5 Registre d'élevage
 
-- Item `livestock_ledger` (`stacksTo 1`) : clic droit sur un animal d'élevage affiche dans le chat : espèce, gènes,
-  nourriture (et jour du dernier repas), santé et état sanitaire, affection.
-- Affection : non définie par le design; affichée comme l'état amoureux vanilla (amoureux, calme, trop jeune).
-- Lecture seule : aucun état n'est modifié (GameTest `ledgerHasNoSideEffects`).
-- Texture provisoire : `item/almanac`, en attendant `item/livestock_ledger` (basculement par l'intégrateur).
+- Item `livestock_ledger` (`stacksTo 1`, texture `item/livestock_ledger`) : clic droit sur un animal d'élevage affiche dans le chat
+  l'espèce, les gènes, la nourriture, la santé et l'état sanitaire.
+- Affection : non définie par le design; affichée comme l'état amoureux vanilla.
+- Lecture seule : aucun état n'est modifié.
 
-### 18.6 Modules à venir (squelettes en v0.4)
+### 18.6 Bâtiments et produits (livrés)
 
-- **husbandry** (bâtiments et alimentation) :
-  - `feeding_trough` : contient foin, blé, aliment composé ou ensilage; nourrit les animaux d'élevage dans un rayon de 6
-    via `LivestockApi.registerFeedSource`;
-  - `nesting_box` : les poules y pondent (le module husbandry alimente le contrat de ponte);
-  - ensilage : craft direct à partir de foin; `feed_mix` : orge, maïs et soja.
-- **vet** (santé animale) :
-  - maladies `SICK` par surpopulation (plus de 8 animaux dans un rayon de 8 blocs) ou par satiété basse prolongée;
-  - `PARASITES` sur pâturage humide ou sous pluie; contagion entre animaux voisins;
-  - `veterinary_kit` pour soigner; `salt_lick` (bloc préventif).
-- **duck** (canard et productions) : entité `terresvivantes:duck` (nage, génome), œufs de canard, plumes,
-  viande crue et cuite; qualité du lait, de la laine et des œufs selon le génome et l'alimentation.
+- **husbandry** : `feeding_trough` (contient foin, blé, aliment composé ou ensilage; nourrit les animaux proches);
+  `nesting_box` (8 emplacements, les œufs de poule et de canard y entrent); ensilage; `feed_mix`.
+- **vet** : `veterinary_kit` (soigne un animal malade); `salt_lick` (bloc préventif).
+- **duck** : entité `terresvivantes:duck` (mâle ou femelle, nage, ponte), œufs de canard, viande crue et cuite.
 
 ### 18.7 Écarts et points ouverts
 
 - Mooshroom compté comme broutard (le design ne le listait pas).
-- Laine et lait : pas de multiplicateur appliqué en v0.4 (voir 18.4).
-- Attachments d'entité non synchronisés vers le client : le registre écrit dans le chat du serveur.
-- Santé 0 sans effet; pas de mort, pas de maladie spontanée en v0.4.
+- Tonte et traite : approximées sans événement NeoForge 21.1 dédié.
+- Auge sans bord creux (le modèle n'a pas de rebord évidé).
+- Attachments non synchronisés vers le client : le registre écrit dans le chat du serveur.
+- QA visuelle en client du canard et de l'élevage à faire.
 
 ### 18.8 Critères de validation (v0.4)
 
-- `./gradlew build` : tests JUnit de `GenomeLogic` et `LivestockLogic` verts.
-- `./gradlew runGameTestServer` : 45 GameTests verts (40 existants et 5 de `LivestockGameTests` : héritage borné,
-  animal non nourri qui perd sa santé, pâturage en été, reproduction refusée en hiver et sous 40, registre sans effet de bord).
+- `./gradlew build` : tests JUnit verts (232, dont la logique des modules livestock, husbandry, vet et duck).
+- `./gradlew runGameTestServer` : 54 GameTests verts (40 de la v0.3 et 14 de l'élevage : livestock 5, husbandry 3, vet 3, duck 3).
+- `./gradlew runData` : `src/generated` régénéré et `GeneratedResourcesTest` vert.

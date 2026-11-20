@@ -6,9 +6,6 @@ import fr.terresvivantes.husbandry.logic.NestLogic;
 import fr.terresvivantes.husbandry.logic.Species;
 import fr.terresvivantes.livestock.LivestockApi;
 import fr.terresvivantes.livestock.logic.LivestockState;
-import fr.terresvivantes.TerresVivantes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,6 +14,9 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.phys.Vec3;
+import fr.terresvivantes.duck.DuckModule;
+import fr.terresvivantes.duck.entity.Duck;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
@@ -30,9 +30,6 @@ import java.util.Collection;
  */
 final class HusbandryEvents {
 
-    /** Canard du module duck, optionnel : sans lui, seules les espèces vanilla sont reconnues. */
-    static final ResourceLocation DUCK_ID = ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "duck");
-
     private HusbandryEvents() {
     }
 
@@ -42,23 +39,35 @@ final class HusbandryEvents {
     }
 
     /**
-     * Ponte : avant le tick vanilla, une poule adulte dont le décompte atteint 0 pond. Si un nichoir proche peut
-     * recevoir l'œuf, il y entre au lieu de tomber au sol, et le délai repart d'un nouveau tirage. La productivité
-     * (cadence) reste gérée par le module livestock.
+     * Ponte : avant le tick, une poule ou un canard adulte dont le décompte va atteindre 0 pond. Si un nichoir proche
+     * peut recevoir l'œuf, il y entre au lieu de tomber au sol, et le délai repart d'un nouveau tirage. La productivité
+     * (cadence) reste gérée par le module livestock (poules) ou par le canard lui-même.
      */
     private static void onEntityTickPre(EntityTickEvent.Pre event) {
-        if (!(event.getEntity() instanceof Chicken chicken) || !(chicken.level() instanceof ServerLevel level)) {
+        if (!(event.getEntity().level() instanceof ServerLevel level)) {
             return;
         }
-        if (!NestLogic.shouldIntercept(chicken.eggTime, chicken.isBaby())) {
-            return;
+        if (event.getEntity() instanceof Chicken chicken) {
+            if (NestLogic.shouldIntercept(chicken.eggTime, chicken.isBaby())
+                    && layInNest(level, chicken.position(), new ItemStack(Items.EGG))) {
+                chicken.eggTime = nextEggTime(level);
+            }
+        } else if (event.getEntity() instanceof Duck duck) {
+            if (NestLogic.shouldIntercept(duck.getEggTime(), duck.isBaby())
+                    && layInNest(level, duck.position(), new ItemStack(DuckModule.DUCK_EGG.get()))) {
+                duck.setEggTime(nextEggTime(level));
+            }
         }
-        NestingBoxBlockEntity nest = HusbandryRegistry.nearestNestWithRoom(level, chicken.position(),
-                HusbandryConfig.nestingRadius());
-        if (nest == null || !nest.addEgg(new ItemStack(Items.EGG))) {
-            return;
-        }
-        chicken.eggTime = NestLogic.nextEggTime(level.getRandom().nextInt(NestLogic.EGG_TIME_SPREAD));
+    }
+
+    /** Dépose l'œuf dans le nichoir le plus proche qui peut le recevoir. Vrai si l'œuf est entré. */
+    private static boolean layInNest(ServerLevel level, Vec3 position, ItemStack egg) {
+        NestingBoxBlockEntity nest = HusbandryRegistry.nearestNestWithRoom(level, position, HusbandryConfig.nestingRadius());
+        return nest != null && nest.addEgg(egg);
+    }
+
+    private static int nextEggTime(ServerLevel level) {
+        return NestLogic.nextEggTime(level.getRandom().nextInt(NestLogic.EGG_TIME_SPREAD));
     }
 
     /**
@@ -125,8 +134,7 @@ final class HusbandryEvents {
         if (type == EntityType.CHICKEN) {
             return Species.CHICKEN;
         }
-        EntityType<?> duck = BuiltInRegistries.ENTITY_TYPE.getOptional(DUCK_ID).orElse(null);
-        if (duck != null && type == duck) {
+        if (type == DuckModule.DUCK.get()) {
             return Species.DUCK;
         }
         return Species.OTHER;

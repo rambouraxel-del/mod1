@@ -1,37 +1,46 @@
 # Statut
 
-## v0.4 « Élevage » : module `livestock` livré et vérifié (`mod_version=0.4.0-dev`)
+## v0.4 « Élevage » : livrée et vérifiée (`mod_version=0.4.0`)
 
-- `./gradlew build` : OK, **195 tests JUnit** (dont 15 de `GenomeLogicTest` et `LivestockLogicTest`).
-- `./gradlew runData` : OK, `src/generated` régénéré (lang, modèle `livestock_ledger`).
-- `./gradlew runGameTestServer` : **45 GameTests** réussis (40 existants et 5 de `LivestockGameTests`).
-- Contrats : `docs/ARCHITECTURE.md` « Contrats v0.4 »; règles : `docs/DESIGN.md` §18.
+- `./gradlew build` : OK, **232 tests JUnit** (dont `GeneratedResourcesTest`).
+- `./gradlew runData` : OK, `src/generated` régénéré.
+- `./gradlew runGameTestServer` : **54 GameTests** réussis, trois passages de suite exigés; 30 passages consécutifs verts sur la version finale.
+- Contrats : `docs/ARCHITECTURE.md` « Contrats v0.4 » et « Contrats v0.4 suite »; règles : `docs/DESIGN.md` §18.
 
 Contenu de la v0.4 :
 
-- **Génome** (productivité, taille, résistance, fertilité, 0 à 10) en Data Attachment d'entité; génome initial de 4 à 6;
-  hérédité moyenne ± mutation; tag `terresvivantes:livestock`.
-- **Besoins** : cycle de 1200 ticks, consommation (×1.5 en hiver), pâturage sur herbe hors hiver, perte de santé à faim nulle.
-- **Reproduction** : refusée sous 40 de satiété et, par défaut, hors printemps et été (`breedingSeasonsOnly`); jumeaux selon la fertilité.
-- **`LivestockApi`** : `getGenome`, `getState`, `feed`, `setAilment`, `productionMultiplier`, hooks
-  `registerProductionModifier` et `registerFeedSource`. La ponte des poules suit le multiplicateur.
-- **Registre d'élevage** (`livestock_ledger`) : clic droit sur un animal, lecture seule dans le chat (texture provisoire).
-- **Squelettes** : `husbandry`, `vet`, `duck` enregistrés, sans contenu.
+- **Élevage** (`livestock`) : génome (productivité, taille, résistance, fertilité, 0 à 10) en Data Attachment; besoins
+  (cycle de 1200 ticks, pâturage hors hiver); reproduction au printemps et en été; `LivestockApi` (dont `NeedsListener`,
+  `FeedSource`); registre d'élevage (`livestock_ledger`, texture dédiée).
+- **Bâtiments et alimentation** (`husbandry`) : auge `feeding_trough` (foin, blé, aliment composé, ensilage; nourrit
+  les animaux proches), nichoir `nesting_box` (8 emplacements; poules et canards y pondent), ensilage, `feed_mix`.
+- **Santé animale** (`vet`) : maladies par surpopulation ou sous-alimentation, parasites sur pâturage humide, contagion,
+  `veterinary_kit`, pierre à sel `salt_lick` (+1 de santé par cycle à proximité).
+- **Canard** (`duck`) : entité `terresvivantes:duck` (mâle et femelle, nage, ponte), œufs, viande crue et cuite,
+  productions selon le génome; qualité du lait en composant `terresvivantes:milk_quality`.
+- **Intégration** : configs COMMON `terresvivantes-livestock`, `-husbandry`, `-vet`, `-duck` enregistrées dans
+  `TerresVivantes`. Ponte des poules et des canards interceptée par le nichoir. Textures v0.4 (`tools/textures/sprites_v04.py`).
+- **Commande `/tv showcase`** : section élevage (auge pleine de foin, nichoir, pierre à sel, enclos avec une vache, un
+  mouton, une poule, deux canards mâle et femelle, persistants).
+- **Stabilité des tests de jeu** : une zone de test n'est pas toujours « entity ticking », donc ses entités peuvent
+  ne pas tiquer ou ne pas être visibles. Les coccinelles sont ticquées explicitement, la vitrine vérifie les animaux
+  d'après le retour de spawn, et le tirage de maladie est fixé dans le test de nourriture (`VetApi.setRandomForTest`).
 
 Problèmes connus et écarts :
 
-- Laine et lait : pas de multiplicateur appliqué (pas d'événement de tonte exposé par NeoForge 21.1).
-- Santé à 0 sans effet (pas de mort); pas de maladie spontanée (module vet à venir).
-- Attachments non synchronisés vers le client : le registre parle dans le chat, pas dans une interface.
+- Tonte et traite approximées : NeoForge 21.1 n'expose pas d'événement de tonte ni de traite. La laine et le lait
+  sont calculés à partir du multiplicateur, sans événement réel.
+- Auge sans bord creux : le modèle n'a pas de rebord évidé.
+- QA visuelle en client à faire pour le canard et l'élevage (captures `docs/qa` de la v0.3 seulement).
+- Santé à 0 : l'animal meurt (`VetConfig.killAtZeroHealth`, vrai par défaut).
 - Affection (registre) : non définie par le design; affichée comme état amoureux vanilla.
-- Texture `livestock_ledger` provisoire (almanac); à basculer quand la texture est livrée.
-- Les mêmes problèmes de QA visuelle qu'en v0.3 (voir ci-dessous).
+- Attachments non synchronisés vers le client : le registre écrit dans le chat du serveur.
 
 Prochaines étapes :
 
-1. v0.4 suite : husbandry (`feeding_trough`, `nesting_box`, ensilage, `feed_mix`), vet (maladies, `veterinary_kit`, `salt_lick`), duck (entité, productions).
-2. QA visuelle en client (procédure v0.3) et vérification des rendus contre `docs/DESIGN.md` §10.
-3. Ensuite : v0.5 transformation, v0.6 équipements, v0.7 économie (`docs/ROADMAP.md`).
+1. **v0.5 Transformation** (`docs/ROADMAP.md`).
+2. QA visuelle en client (procédure v0.3) : canard, élevage, auge, nichoir, pierre à sel.
+3. Hook dédié pour la tonte et la traite, quand NeoForge en fournira un.
 
 ## v0.3 « Biodiversité » : terminé et vérifié (`mod_version=0.3.0`)
 

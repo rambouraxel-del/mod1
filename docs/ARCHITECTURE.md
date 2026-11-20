@@ -23,7 +23,7 @@ src/main/java/fr/terresvivantes/
   datagen/                     providers qui interrogent les hooks de tous les modules
   season/ climate/ soil/ crop/ compost/ food/ tools/ orchard/ water/ health/
   pollination/ flora/ insects/ apiculture/   (v0.3)
-  livestock/ husbandry/ vet/ duck/           (v0.4 : livestock réel, trois squelettes)
+  livestock/ husbandry/ vet/ duck/           (v0.4)
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -81,7 +81,7 @@ Les classes `Module` ne contiennent que l'enregistrement et les hooks; la règle
 ## Configuration
 
 - `TVConfig.COMMON` (type `COMMON`) enregistré par `TerresVivantes`; il reste vide.
-- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard. En v0.3 : flora, insects, apiculture. En v0.4 : livestock.
+- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard. En v0.3 : flora, insects, apiculture. En v0.4 : livestock, husbandry, vet, duck.
 - Une valeur de défaut ne s'applique qu'à la création du fichier : un TOML existant garde ses valeurs.
 - Chaque spec ajoute ses sous-sections avec `builder.push("nom") ... builder.pop()`.
 
@@ -205,10 +205,25 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - Logique pure : `livestock.logic.GenomeLogic` (génome initial, hérédité), `livestock.logic.LivestockLogic`
   (cycle de besoins, multiplicateur, reproduction, jumeaux, arrondi probabiliste).
 - Config : `LivestockConfig` (`terresvivantes-livestock.toml`, `breedingSeasonsOnly`), enregistrée par `TerresVivantes`.
-- Squelettes enregistrés dans `TerresVivantes.MODULES` : `husbandry.HusbandryModule`, `vet.VetModule`, `duck.DuckModule`.
-  Aucun contenu en v0.4; ils n'exposent rien aux autres modules pour l'instant.
+- Modules `husbandry.HusbandryModule`, `vet.VetModule`, `duck.DuckModule` enregistrés dans `TerresVivantes.MODULES`;
+  leurs configs `HusbandryConfig`, `VetConfig`, `DuckConfig` sont enregistrées par l'intégrateur.
 - Tag d'entités `terresvivantes:livestock` : fichier statique `data/terresvivantes/tags/entity_type/livestock.json`
   (l'entrée `terresvivantes:duck` est optionnelle).
+
+### Contrats v0.4 suite (husbandry, vet, duck)
+
+- `LivestockApi.registerNeedsListener(NeedsListener)` : `onNeedsTick(ServerLevel, Animal, LivestockState)`, appelé après
+  chaque cycle de besoins (`runNeedsTick`). Utilisé par `vet` : maladies, parasites, contagion, sel, mort à santé 0.
+- `vet.VetApi` : `isNearSaltLick(level, pos)`, `treat(animal)`, `roll()`. Le tirage est remplaçable en test par
+  `setRandomForTest(DoubleSupplier)`, à remettre avec `resetRandom()`.
+- `husbandry.HusbandryEvents` : intercepte la ponte des poules (`Chicken.eggTime`) et des canards
+  (`Duck.getEggTime` / `setEggTime`) vers le nichoir le plus proche (rayon `HusbandryConfig.nestingRadius`); sinon l'œuf tombe.
+  Les espèces d'alimentation reconnaissent `DuckModule.DUCK`.
+- `duck.logic.ProductionLogic` (pure) : `milkQuality(multiplier)` de 0 à 3 étoiles (composant `terresvivantes:milk_quality`),
+  `extraWool(...)`.
+- Tests de jeu : une zone de test n'est pas toujours « entity ticking », donc ses entités ne tickent pas ou sont
+  invisibles aux requêtes. Les coccinelles du test de nettoyage sont ticquées explicitement (`Ladybug.tick()`); la vitrine
+  vérifie ses animaux d'après le retour de `ShowcaseBuilder.build` (`Result(blocks, fauna)`), pas par requête.
 
 ## Dépendances entre packages
 
