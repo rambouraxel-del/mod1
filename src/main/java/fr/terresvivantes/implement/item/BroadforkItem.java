@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Grelinette : clic droit sur herbe ou terre laboure la zone 3x3 selon les memes regles que la houe
  * (air au-dessus, face non basse). Sur une terre labouree, aere le sol : +matiere organique,
- * limite par un delai d'objet.
+ * au plus une fois par bloc et par jour MC, avec un court delai d'objet.
  */
 public final class BroadforkItem extends Item {
 
@@ -69,7 +69,9 @@ public final class BroadforkItem extends Item {
         if (level.isClientSide() || !(level instanceof ServerLevel)) {
             return InteractionResult.SUCCESS;
         }
-        SoilApi.fertilize(level, pos, 0, 0, 0, ImplementsLogic.AERATION_ORGANIC);
+        if (!SoilApi.aerate((ServerLevel) level, pos, ImplementsLogic.AERATION_ORGANIC)) {
+            return InteractionResult.PASS;
+        }
         player.getCooldowns().addCooldown(this, ImplementsLogic.AERATION_COOLDOWN_TICKS);
         level.playSound(null, pos, SoundEvents.ROOTED_DIRT_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
         context.getItemInHand().hurtAndBreak(1, player, slotFor(context.getHand()));

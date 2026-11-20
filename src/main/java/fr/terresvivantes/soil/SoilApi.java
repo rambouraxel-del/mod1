@@ -60,6 +60,27 @@ public final class SoilApi {
         store(level, farmland, SoilModel.fertilize(current, dn, dp, dk, dOrganic));
     }
 
+    /**
+     * Aerage d'une terre labouree (v0.6) : ajoute de la matiere organique, au plus une fois par bloc et par jour MC.
+     * Renvoie {@code false} sans effet si la terre a deja ete aeree ce jour-la ou si ce n'est pas de la terre labouree.
+     */
+    public static boolean aerate(Level level, BlockPos farmland, int dOrganic) {
+        if (!isFarmland(level, farmland)) {
+            return false;
+        }
+        long today = SoilModel.mcDay(level.getDayTime());
+        Map<Long, Long> days = aeratedDays(level, farmland);
+        long key = farmland.asLong();
+        long last = days.getOrDefault(key, SoilModel.NEVER_AERATED);
+        if (!SoilModel.canAerate(last, today)) {
+            return false;
+        }
+        days.put(key, today);
+        fertilize(level, farmland, 0, 0, 0, dOrganic);
+        markUnsaved(level, farmland);
+        return true;
+    }
+
     /** Facteur de Liebig de la terre (0.25 à 1.0), avec bonus organique. */
     public static float nutrientFactor(Level level, BlockPos farmland) {
         return SoilModel.nutrientFactor(get(level, farmland));
@@ -97,10 +118,16 @@ public final class SoilApi {
         markUnsaved(level, farmland);
     }
 
+    /** Jour MC du dernier aerage de cette terre, ou {@code SoilModel.NEVER_AERATED}. */
+    public static long lastAeratedDay(Level level, BlockPos farmland) {
+        return aeratedDays(level, farmland).getOrDefault(farmland.asLong(), SoilModel.NEVER_AERATED);
+    }
+
     /** Supprime les donnees de sol (fertilite et dernieres cultures) d'une position. */
     public static void clear(Level level, BlockPos farmland) {
         boolean removed = entries(level, farmland).remove(farmland.asLong()) != null;
         removed |= lastCrops(level, farmland).remove(farmland.asLong()) != null;
+        removed |= aeratedDays(level, farmland).remove(farmland.asLong()) != null;
         if (removed) {
             markUnsaved(level, farmland);
         }
@@ -126,6 +153,10 @@ public final class SoilApi {
 
     private static Map<Long, LastCrop> lastCrops(Level level, BlockPos pos) {
         return chunkData(level, pos).lastCrops;
+    }
+
+    private static Map<Long, Long> aeratedDays(Level level, BlockPos pos) {
+        return chunkData(level, pos).aeratedDay;
     }
 
     private static SoilChunkData chunkData(Level level, BlockPos pos) {

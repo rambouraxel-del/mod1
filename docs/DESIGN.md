@@ -680,3 +680,47 @@ commune (`processing`).
 - Non vérifié : rendu visuel client des machines et de l'écran (`tools/textures/sprites_v05.py`).
 - Non couvert par GameTest : l'héritage à deux entrées (3 et 2 donne 2) est testé en JUnit (`ProcessingLogicTest`), car la
   meule n'a qu'une entrée.
+
+## 20. Équipements & automatisation (v0.6 : `implement`, `automation`, `storage`, `pests`)
+
+### 20.1 Implement (livré)
+
+- Grelinette : clic droit sur herbe ou terre labourée, zone 3x3 selon les règles de la houe. Sur une terre labourée,
+  aère le sol : +5 de matière organique, au plus une fois par bloc et par jour MC (`SoilApi.aerate`, mémorisé dans
+  l'attachment de chunk, champ optionnel `aerated_day`). Refus : sans effet, sans usure.
+- Semoir : clic droit sur terre labourée, plante la graine de la main secondaire sur une zone 3x3, ou une ligne de 5 cases
+  si le joueur est accroupi. Une graine et une unité de durabilité par case plantée.
+- Faucille en diamant : récolte la zone 5x5 (rayon 2) des cultures mûres.
+
+### 20.2 Automation (livré)
+
+- Récolteuse : zone de volume 5x5x3 devant la machine (la case de culture au niveau de la machine et deux couches au-dessus).
+  Récolte les cultures mûres (replantées) et les feuilles fruitières mûres (`OrchardApi.harvestRipeLeaves`). Les récoltes
+  vont dans son inventaire, poussé vers le conteneur derrière ou dessous.
+- Planteuse : zone 5x5 devant la machine; plante les graines de son inventaire sur les terres labourées.
+- Cadence : `terresvivantes-automation.toml` (activé par défaut, cycle de 40 ticks, rayon 2). Cinq cases par cycle.
+  Redstone alimentée : pause.
+
+### 20.3 Storage (livré)
+
+- Caisse : un seul type d'item, 8 stacks (512 pour une stack de 64). Rendu sur la face avant; exposée aux trémies.
+- Silo : colonne empilable de 1 à 8 blocs, 16 stacks par bloc (48 pour trois blocs). Insertion par le haut; extraction
+  par le bas seulement. Accepte les items du tag `terresvivantes:silo_storable` (produits agricoles).
+- Recette de la caisse : 8 planches (tag `minecraft:planks`) autour d'un lingot de fer. Silo : 6 lingots de fer cerclant
+  3 planches.
+
+### 20.4 Pests (livré)
+
+- Corbeau : picore les cultures mûres (âge 4 et plus), hors hiver; spawn naturel plafonné (`CrowLogic.MAX_CROWS_PER_AREA`) et
+  désactivable (`terresvivantes-pests.toml`). Biomes : tag `terresvivantes:crow_habitat` (`#c:is_plains`, `#minecraft:is_forest`).
+- Épouvantail : éloigne les corbeaux dans son rayon (`SCARECROW_RADIUS`, 12 blocs par défaut) et réduit l'apparition des ravageurs
+  (`HealthApi.registerPestSuppressor`). Son efficacité s'use après plusieurs jours (`ScarecrowLogic.isStale`).
+- Non fait : bonus de lapins près de l'épouvantail (prévu au design, reporté).
+
+### 20.5 Critères de validation (v0.6, état de cette livraison)
+
+- `./gradlew build` : 309 tests JUnit verts (dont `GeneratedResourcesTest`).
+- `./gradlew runData` : `src/generated` régénéré.
+- `./gradlew runGameTestServer` : 93 GameTests verts, trois passages (dont la récolteuse qui prend une feuille fruitière mûre
+  dans sa couche supérieure, et la vitrine avec sa section équipements).
+- Non vérifié : rendu client des machines, caisse et silo (voir `docs/STATUS.md`, problèmes connus).

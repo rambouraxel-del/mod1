@@ -4,6 +4,7 @@ import fr.terresvivantes.crop.logic.YieldModel;
 import fr.terresvivantes.orchard.logic.FruitTreeDefinition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
@@ -53,6 +54,19 @@ public final class OrchardApi {
     /** Vrai si l'état est un feuillage fruitier (tous les stades, toutes espèces). */
     public static boolean isFruitFoliage(BlockState state) {
         return state.getBlock() instanceof FruitLeavesBlock;
+    }
+
+    /**
+     * Récolte la feuille fruitière mûre (stade 3) à cette position, comme le clic droit à main vide : la feuille
+     * revient au stade 0 et les fruits sont rendus. Liste vide si ce n'est pas un feuillage fruitier mûr.
+     * Les fruits ne sont pas rangés ici : l'appelant (joueur, récolteuse) les insère dans son inventaire.
+     */
+    public static List<ItemStack> harvestRipeLeaves(ServerLevel level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        if (!(state.getBlock() instanceof FruitLeavesBlock leaves)) {
+            return List.of();
+        }
+        return leaves.harvestRipe(level, pos, state);
     }
 
     /** Produit des multiplicateurs de fructification enregistrés à cette position pour une espèce. */

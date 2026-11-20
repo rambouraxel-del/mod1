@@ -1,0 +1,37 @@
+{
+  "values": [
+    {
+      "id": "#c:seeds",
+      "required": false
+    },
+    {
+      "id": "#c:crops",
+      "required": false
+    },
+    "minecraft:wheat",
+    "terresvivantes:tomato",
+    "terresvivantes:tomato_seeds",
+    "terresvivantes:corn",
+    "terresvivantes:corn_seeds",
+    "terresvivantes:soybean",
+    "terresvivantes:soybean_seeds",
+    "terresvivantes:lettuce",
+    "terresvivantes:lettuce_seeds",
+    "terresvivantes:onion",
+    "terresvivantes:onion_seeds",
+    "terresvivantes:garlic",
+    "terresvivantes:garlic_seeds",
+    "terresvivantes:bell_pepper",
+    "terresvivantes:bell_pepper_seeds",
+    "terresvivantes:eggplant",
+    "terresvivantes:eggplant_seeds",
+    "terresvivantes:strawberry",
+    "terresvivantes:strawberry_seeds",
+    "terresvivantes:barley",
+    "terresvivantes:barley_seeds",
+    "terresvivantes:cabbage",
+    "terresvivantes:cabbage_seeds",
+    "terresvivantes:cucumber",
+    "terresvivantes:cucumber_seeds"
+  ]
+}

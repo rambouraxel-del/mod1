@@ -24,6 +24,8 @@ src/main/java/fr/terresvivantes/
   season/ climate/ soil/ crop/ compost/ food/ tools/ orchard/ water/ health/
   pollination/ flora/ insects/ apiculture/   (v0.3)
   livestock/ husbandry/ vet/ duck/           (v0.4)
+  core.quality/ processing/ milling/ dairy/ preserving/ kitchen/   (v0.5)
+  implement/ automation/ storage/ pests/     (v0.6)
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -81,7 +83,7 @@ Les classes `Module` ne contiennent que l'enregistrement et les hooks; la règle
 ## Configuration
 
 - `TVConfig.COMMON` (type `COMMON`) enregistré par `TerresVivantes`; il reste vide.
-- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard. En v0.3 : flora, insects, apiculture. En v0.4 : livestock, husbandry, vet, duck.
+- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard. En v0.3 : flora, insects, apiculture. En v0.4 : livestock, husbandry, vet, duck. En v0.6 : automation, pests (le module storage n'a pas de config).
 - Une valeur de défaut ne s'applique qu'à la création du fichier : un TOML existant garde ses valeurs.
 - Chaque spec ajoute ses sous-sections avec `builder.push("nom") ... builder.pop()`.
 
@@ -269,4 +271,27 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 ## Dépendances entre packages
 
 `crop` ↔ `soil` et `season` ↔ `climate` forment un cycle (facades statiques). Il est accepté en v0.2 : aucune de ces classes ne dépend d'un état initialisé à l'import.
+
+## Contrats v0.6 (équipements & automatisation)
+
+- `orchard.OrchardApi.harvestRipeLeaves(ServerLevel, BlockPos)` : `List<ItemStack>`. Récolte la feuille fruitière mûre
+  (stade 3) comme le clic droit à main vide : la feuille revient au stade 0, les fruits sont rendus (rendement de la
+  pollinisation compris). Liste vide si ce n'est pas un feuillage mûr. Ne range pas les fruits : l'appelant le fait.
+  Implémentation dans `FruitLeavesBlock.harvestRipe`, partagée avec le clic droit.
+- `soil.SoilApi.aerate(Level, BlockPos, int dOrganic)` : `boolean`. Aère une terre labourée, au plus une fois par bloc et
+  par jour MC (`SoilModel.canAerate`, `SoilModel.mcDay` = temps de monde / 24000). Mémorisé dans `SoilChunkData` au champ
+  optionnel `aerated_day` (position vers jour MC; absent avant v0.6, lecture rétrocompatible). `SoilApi.lastAeratedDay`.
+- `automation` : `AutomationBlockEntity` (zone de travail `automation.logic.WorkArea`, curseur, inventaire borné).
+  `HarvesterBlockEntity` parcourt un volume 5x5x3 (couche 0 au niveau de la machine, deux couches au-dessus) et appelle
+  `CropApi.harvestAndReplant` ou `OrchardApi.harvestRipeLeaves`. `PlanterBlockEntity` plante sur la zone 5x5 au même niveau.
+  Configuration `AutomationConfig` (`enabled`, `interval`, `radius`).
+- `storage` : `CrateBlockEntity` (un type d'item, `capacity()`, `setContents`, `itemHandler()`), `SiloBlockEntity`
+  (colonne de 1 à 8 blocs, `controller()`, `height()`, `itemHandler(side)`). Logique pure : `storage.logic.CrateLogic`,
+  `SiloLogic`. Tag d'items `terresvivantes:silo_storable`.
+- `pests.PestsApi` : `track`/`untrack` (épouvantails), `coveringScarecrow`, `protectsCrop`, `pestMultiplier` (branché sur
+  `HealthApi.registerPestSuppressor`). Le corbeau est `pests.entity.Crow`; ses règles pures sont dans `pests.logic`.
+- `implement` : grelinette (`BroadforkItem`), semoir (`SeederItem`), faucille en diamant (`DiamondSickleItem`); règles dans
+  `implement.logic.ImplementsLogic`. Aucune façade publique.
+- Garde-fou de rendu : `core.gametest.RenderShapeGameTests` vérifie que tout bloc `terresvivantes:*` a
+  `RenderShape.MODEL` (aucune exception déclarée).
 

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "minecraft:hay_block"
+    },
+    "P": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "pattern": [
+    " P ",
+    "WHW",
+    "S S"
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:scarecrow"
+  }
+}

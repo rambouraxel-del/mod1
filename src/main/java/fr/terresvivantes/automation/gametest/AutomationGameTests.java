@@ -5,6 +5,9 @@ import fr.terresvivantes.automation.AutomationConfig;
 import fr.terresvivantes.automation.AutomationModule;
 import fr.terresvivantes.automation.HarvesterBlockEntity;
 import fr.terresvivantes.automation.PlanterBlockEntity;
+import fr.terresvivantes.orchard.FruitLeavesBlock;
+import fr.terresvivantes.orchard.OrchardModule;
+import fr.terresvivantes.orchard.logic.OrchardLogic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -37,8 +40,8 @@ public final class AutomationGameTests {
     private static final BlockPos CHEST = new BlockPos(5, 2, 1);
     /** Redstone à côté de la machine, hors de la zone : la machine est alimentée donc en pause. */
     private static final BlockPos REDSTONE = new BlockPos(4, 2, 2);
-    /** Une zone 5x5 se parcourt en 5 cycles de 5 cases. */
-    private static final int HARVEST_CYCLES = 5;
+    /** Le volume 5x5x3 de la récolteuse (75 cases) se parcourt en 15 cycles de 5 cases. */
+    private static final int HARVEST_CYCLES = 15;
     private static final int ZONE_CELLS = 25;
 
     private AutomationGameTests() {
@@ -101,6 +104,35 @@ public final class AutomationGameTests {
         Container chest = (Container) helper.getBlockEntity(CHEST);
         int wheat = countItem(chest, Items.WHEAT);
         helper.assertTrue(wheat >= ZONE_CELLS, "au moins " + ZONE_CELLS + " blés dans le coffre, obtenu " + wheat);
+        helper.succeed();
+    }
+
+    /**
+     * Feuille fruitière mûre à deux couches au-dessus de la case de culture (dans le volume 5x5x3), et feuille
+     * non mûre voisine : après le parcours, la mûre est remise au stade 0 et la non mûre n'est pas touchée.
+     */
+    @GameTest(template = TEMPLATE, batch = BATCH)
+    public static void harvesterPicksRipeFruitLeavesAboveTheField(GameTestHelper helper) {
+        helper.setBlock(MACHINE, AutomationModule.HARVESTER.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+        helper.setBlock(CHEST, Blocks.CHEST.defaultBlockState());
+        field(helper);
+        FruitLeavesBlock apple = OrchardModule.leavesBlock("apple");
+        BlockPos ripe = new BlockPos(5, 4, 5);
+        BlockPos unripe = new BlockPos(6, 3, 6);
+        helper.setBlock(ripe, apple.defaultBlockState()
+                .setValue(FruitLeavesBlock.STAGE, OrchardLogic.MAX_STAGE)
+                .setValue(FruitLeavesBlock.PERSISTENT, true));
+        helper.setBlock(unripe, apple.defaultBlockState()
+                .setValue(FruitLeavesBlock.STAGE, 2)
+                .setValue(FruitLeavesBlock.PERSISTENT, true));
+        HarvesterBlockEntity harvester = helper.getBlockEntity(MACHINE);
+        tickMachine(harvester, helper.getLevel(), HARVEST_CYCLES * AutomationConfig.intervalTicks());
+
+        int ripeStage = helper.getBlockState(ripe).getValue(FruitLeavesBlock.STAGE);
+        helper.assertTrue(ripeStage == 0, "feuille mûre attendue au stade 0 après récolte, obtenu " + ripeStage);
+        int unripeStage = helper.getBlockState(unripe).getValue(FruitLeavesBlock.STAGE);
+        helper.assertTrue(unripeStage == 2, "feuille non mûre attendue intacte au stade 2, obtenu " + unripeStage);
         helper.succeed();
     }
 

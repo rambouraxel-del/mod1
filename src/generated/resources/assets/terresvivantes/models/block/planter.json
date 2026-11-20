@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "terresvivantes:block/planter_front",
+    "side": "terresvivantes:block/planter_side",
+    "top": "terresvivantes:block/planter_top"
+  }
+}

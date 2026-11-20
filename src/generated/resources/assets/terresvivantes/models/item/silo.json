@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "terresvivantes:block/silo_bottom",
+    "side": "terresvivantes:block/silo_side",
+    "top": "terresvivantes:block/silo_top"
+  }
+}

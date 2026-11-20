@@ -1,5 +1,14 @@
 package fr.terresvivantes.core.gametest;
 
+import fr.terresvivantes.automation.AutomationModule;
+import fr.terresvivantes.automation.PlanterBlockEntity;
+import fr.terresvivantes.pests.PestsModule;
+import fr.terresvivantes.pests.entity.Crow;
+import fr.terresvivantes.storage.CrateBlockEntity;
+import fr.terresvivantes.storage.StorageModule;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.compost.CompostBinBlock;
 import fr.terresvivantes.compost.CompostModule;
@@ -182,6 +191,32 @@ public final class ShowcaseGameTests {
                         && level.getBlockState(at(origin, 2, 0, 20)).is(Blocks.CAMPFIRE)
                         && level.getBlockState(at(origin, 2, 0, 20)).getValue(BlockStateProperties.LIT),
                 "marmite attendue sur un feu de camp allumé (z 20)");
+
+        // Section équipements (z 23 à 31) : récolteuse face au sud avec le coffre derrière, champ de blé mûr devant.
+        helper.assertTrue(level.getBlockState(at(origin, 7, 1, 24)).is(AutomationModule.HARVESTER.get())
+                        && level.getBlockState(at(origin, 7, 1, 24)).getValue(HorizontalDirectionalBlock.FACING) == Direction.SOUTH
+                        && level.getBlockState(at(origin, 7, 1, 23)).is(Blocks.CHEST),
+                "récolteuse face au sud et coffre derrière attendus en (7,1,24) et (7,1,23)");
+        for (int x = 5; x <= 9; x++) {
+            helper.assertTrue(level.getBlockState(at(origin, x, 1, 25)).is(Blocks.WHEAT)
+                            && level.getBlockState(at(origin, x, 1, 25)).getValue(CropBlock.AGE) == CropBlock.MAX_AGE,
+                    "blé mûr attendu en (" + x + ",1,25) devant la récolteuse");
+        }
+        helper.assertTrue(level.getBlockState(at(origin, 13, 1, 24)).is(AutomationModule.PLANTER.get())
+                        && level.getBlockEntity(at(origin, 13, 1, 24)) instanceof PlanterBlockEntity planter
+                        && planter.container().getItem(0).is(Items.WHEAT_SEEDS),
+                "planteuse avec graines de blé attendue en (13,1,24)");
+        helper.assertTrue(level.getBlockState(at(origin, 1, 1, 24)).is(StorageModule.CRATE.get())
+                        && level.getBlockEntity(at(origin, 1, 1, 24)) instanceof CrateBlockEntity crate
+                        && crate.item() == CropModule.productItem("tomato") && crate.count() == crate.capacity(),
+                "caisse pleine de tomates attendue en (1,1,24)");
+        for (int y = 1; y <= 3; y++) {
+            helper.assertTrue(level.getBlockState(at(origin, 3, y, 27)).is(StorageModule.SILO.get()),
+                    "silo attendu en (3," + y + ",27) : colonne de 3 blocs");
+        }
+        helper.assertTrue(level.getBlockState(at(origin, 10, 1, 27)).is(PestsModule.SCARECROW.get()),
+                "épouvantail attendu en (10,1,27)");
+        helper.assertTrue(count(fauna, Crow.class) == 2, "deux corbeaux attendus dans la vitrine");
 
         // Air au-dessus de la plateforme.
         helper.assertTrue(level.getBlockState(at(origin, 0, ShowcaseBuilder.HEIGHT, 0)).isAir(),

@@ -22,6 +22,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.util.List;
+
 /**
  * Feuillage fruitier. Hérite des règles vanilla de feuilles (destruction par distance, persistance) et ajoute
  * le stade de fructification (0 feuillage, 1 floraison, 2 fruits verts, 3 fruits mûrs). Évolue par randomTick.
@@ -84,20 +86,33 @@ public final class FruitLeavesBlock extends LeavesBlock {
             return InteractionResult.PASS;
         }
         if (level instanceof ServerLevel server) {
-            int count = OrchardLogic.yieldCount(def, level.getRandom().nextDouble());
-            count = OrchardApi.scaleFruitYield(server, pos, def, count);
-            ItemStack fruit = new ItemStack(OrchardModule.fruitItem(def), count);
-            player.getInventory().add(fruit);
-            if (!fruit.isEmpty()) {
-                player.drop(fruit, false);
+            for (ItemStack fruit : harvestRipe(server, pos, state)) {
+                player.getInventory().add(fruit);
+                if (!fruit.isEmpty()) {
+                    player.drop(fruit, false);
+                }
             }
-            server.setBlock(pos, state.setValue(STAGE, 0), Block.UPDATE_CLIENTS);
-            server.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS,
-                    1.0f, 0.8f + server.getRandom().nextFloat() * 0.4f);
-            server.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                    pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.0);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    /**
+     * Récolte cette feuille si elle est mûre (stade 3) : la feuille revient au stade 0 et les fruits sont rendus
+     * (rendement de la pollinisation compris). Renvoie la liste vide si elle n'est pas mûre. Ne touche pas
+     * à l'inventaire : l'appelant range les fruits (joueur, machine).
+     */
+    public List<ItemStack> harvestRipe(ServerLevel server, BlockPos pos, BlockState state) {
+        if (state.getValue(STAGE) != OrchardLogic.MAX_STAGE) {
+            return List.of();
+        }
+        int count = OrchardLogic.yieldCount(def, server.getRandom().nextDouble());
+        count = OrchardApi.scaleFruitYield(server, pos, def, count);
+        server.setBlock(pos, state.setValue(STAGE, 0), Block.UPDATE_CLIENTS);
+        server.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS,
+                1.0f, 0.8f + server.getRandom().nextFloat() * 0.4f);
+        server.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.0);
+        return count > 0 ? List.of(new ItemStack(OrchardModule.fruitItem(def), count)) : List.of();
     }
 
     /** Même condition que la destruction vanilla : distance maximale et non persistante. */

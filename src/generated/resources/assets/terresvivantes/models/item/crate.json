@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "terresvivantes:block/crate_top",
+    "east": "terresvivantes:block/crate_side",
+    "north": "terresvivantes:block/crate_front",
+    "particle": "terresvivantes:block/crate_side",
+    "south": "terresvivantes:block/crate_side",
+    "up": "terresvivantes:block/crate_top",
+    "west": "terresvivantes:block/crate_side"
+  }
+}

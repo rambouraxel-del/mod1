@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=east": {
+      "model": "terresvivantes:block/planter",
+      "y": 90
+    },
+    "active=false,facing=north": {
+      "model": "terresvivantes:block/planter"
+    },
+    "active=false,facing=south": {
+      "model": "terresvivantes:block/planter",
+      "y": 180
+    },
+    "active=false,facing=west": {
+      "model": "terresvivantes:block/planter",
+      "y": 270
+    },
+    "active=true,facing=east": {
+      "model": "terresvivantes:block/planter",
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "terresvivantes:block/planter"
+    },
+    "active=true,facing=south": {
+      "model": "terresvivantes:block/planter",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "terresvivantes:block/planter",
+      "y": 270
+    }
+  }
+}

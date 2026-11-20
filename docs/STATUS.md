@@ -1,5 +1,46 @@
 # Statut
 
+## v0.6 « Équipements & automatisation » : livrée et vérifiée (`mod_version=0.6.0`)
+
+- `./gradlew build` : OK, **309 tests JUnit** (dont `GeneratedResourcesTest`).
+- `./gradlew runData` : OK, `src/generated` régénéré.
+- `./gradlew runGameTestServer` : **93 GameTests** réussis, trois passages de suite (93/93 à chaque fois), aucune erreur
+  « Parsing error » / « Couldn't parse » dans le log, aucun avertissement de tag.
+- Contrats : `docs/ARCHITECTURE.md` « Contrats v0.6 »; règles : `docs/DESIGN.md` §20.
+
+Contenu de la v0.6 :
+
+- **Implement** (`implement`) : grelinette (labour 3x3; aération limitée à une fois par bloc et par jour MC, mémorisée
+  dans les données de sol, champ optionnel `aerated_day`), semoir (3x3 ou ligne de 5 accroupi), faucille en diamant (5x5).
+- **Automatisation** (`automation`) : récolteuse (volume 5x5x3; cultures mûres et feuilles fruitières mûres via
+  `OrchardApi.harvestRipeLeaves`), planteuse (zone 5x5). Cadence et rayon dans `terresvivantes-automation.toml`.
+- **Stockage** (`storage`) : caisse (8 stacks, recette 8 planches autour d'un lingot de fer, vérifiée dans le JSON généré),
+  silo (colonne de 1 à 8 blocs, 16 stacks par bloc).
+- **Ravageurs** (`pests`) : corbeau (picore les cultures mûres hors hiver), épouvantail (rayon 12, use après plusieurs jours,
+  réduit les ravageurs). Config `terresvivantes-pests.toml`.
+- **Vitrine** `/tv showcase` : section équipements (z 23 à 31; récolteuse face à une rangée de blé mûr avec le coffre
+  derrière, planteuse, caisse de tomates, silo de 3 blocs, épouvantail, 2 corbeaux persistants). Profondeur de la
+  plateforme portée à 32. Vérifiée par le GameTest `showcaseBuildsExpectedBlocks`.
+- **Corrections d'intégration** : tag `terresvivantes:crow_habitat` corrigé (`#c:is_plains` au lieu de l'inexistant
+  `#minecraft:is_plains`, qui produisait un avertissement au chargement).
+
+Problèmes connus :
+
+- **Machines invisibles en jeu (QA client)** : signalé en QA. Hypothèse « BaseEntityBlock.getRenderShape = INVISIBLE » vérifiée :
+  aucun bloc du mod n'hérite de `BaseEntityBlock`, et `RenderShapeGameTests` confirme que tous les blocs `terresvivantes:*`
+  renvoient `RenderShape.MODEL`. Les blockstates et modèles des machines existent et sont corrects. **Cause non trouvée.**
+  Pistes à vérifier en client : rendu des `BlockEntity` (sans BlockEntityRenderer, la BE ne dessine rien), textures
+  absentes à l'exécution, couche de rendu. Le garde-fou `RenderShapeGameTests` reste en place.
+- Rendu de la caisse et du silo non vérifié visuellement (client).
+- Bonus de lapins près de l'épouvantail : non fait (prévu au design).
+- Silo : pas de rendu du contenu, pas de GUI.
+- Procédure de QA client inchangée (`xvfb-run` avec `LIBGL_ALWAYS_SOFTWARE=1`, `/tv showcase`).
+
+Prochaines étapes :
+
+1. QA visuelle en client (v0.5 et v0.6) : machines (rendu invisible à diagnostiquer), caisse, silo, champs de la vitrine.
+2. **v0.7 Économie** : marché de village et étal, contrats de livraison, réputation, monnaie, spécialisation.
+
 ## v0.5 « Transformation » : livrée et vérifiée (`mod_version=0.5.0`)
 
 - `./gradlew build` : OK, **263 tests JUnit** (dont `GeneratedResourcesTest`).

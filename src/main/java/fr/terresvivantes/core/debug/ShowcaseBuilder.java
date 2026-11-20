@@ -2,6 +2,12 @@ package fr.terresvivantes.core.debug;
 
 import fr.terresvivantes.apiculture.ApiaryBlockEntity;
 import fr.terresvivantes.apiculture.ApicultureModule;
+import fr.terresvivantes.automation.AutomationModule;
+import fr.terresvivantes.automation.PlanterBlockEntity;
+import fr.terresvivantes.storage.CrateBlockEntity;
+import fr.terresvivantes.storage.StorageModule;
+import fr.terresvivantes.pests.PestsModule;
+import fr.terresvivantes.pests.entity.Crow;
 import fr.terresvivantes.apiculture.logic.ApiaryLogic;
 import fr.terresvivantes.compost.CompostBinBlock;
 import fr.terresvivantes.compost.CompostModule;
@@ -37,6 +43,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.EntityType;
@@ -79,6 +90,11 @@ import java.util.List;
  *   z 17     transformation: meule (x0), pressoir (x2), baratte (x4), cuve (x6), étagère (x8), tonneau (x10),
  *            séchoir (x12), fumoir (x14)
  *   z 20     marmite (x2, y1) sur feu de camp allumé (x2, y0)
+ *   z 23..31 équipements: coffre (x7, z23) derrière la récolteuse (x7, z24, face au sud), dont le champ 5x5
+ *            (x5..9, z25..29) a une rangée de blé mûr en z 25; planteuse (x13, z24) face à un champ 5x5 vide
+ *            (x11..15, z25..29) avec des graines de blé; caisse de tomates (x1, z24); silo de 3 blocs (x3, z27,
+ *            y1..3); épouvantail (x10, z27) entre les deux champs
+ *   air      deux corbeaux persistants (x10, z29 et x4, z28)
  *   air      deux papillons et une coccinelle, persistants (ils ne disparaissent pas)
  * </pre>
  */
@@ -91,7 +107,7 @@ public final class ShowcaseBuilder {
             List.of(Blocks.WHEAT, Blocks.CARROTS, Blocks.POTATOES, Blocks.BEETROOTS);
     /** Rangée de visite devant la plateforme. */
     public static final int LEDGE = 4;
-    public static final int DEPTH = 24;
+    public static final int DEPTH = 32;
     public static final int HEIGHT = 6;
     static final int ROW_CROPS = 0;
     static final int ROW_BLOCKS = 5;
@@ -100,6 +116,11 @@ public final class ShowcaseBuilder {
     /** Rangée des machines de transformation, et rangée de la marmite (feu de camp dessous). */
     static final int ROW_PROCESSING = 17;
     static final int ROW_POT = 20;
+    /** Section équipements (z 23 à 31) : récolteuse et planteuse face à leur champ de 5x5, caisse, silo, épouvantail. */
+    static final int ROW_EQUIP = 24;
+    static final int ROW_FIELD_FIRST = 25;
+    static final int X_HARVESTER = 7;
+    static final int X_PLANTER = 13;
     static final int FARMLAND_WET = 7;
     /** Fleurs sauvages posées sur la rangée des blocs, x = 12..15 (ordre de {@link #placeFlora}). */
     public static final List<String> FLOWER_IDS = List.of("clover", "lavender", "chamomile", "borage");
@@ -152,9 +173,11 @@ public final class ShowcaseBuilder {
         placeApiary(placer, level, origin);
         placeLivestock(placer, level, origin);
         placeProcessing(placer);
+        placeEquipment(placer, level, origin);
         removeFauna(level, origin);
         spawnInsects(level, origin, fauna);
         spawnLivestock(level, origin, fauna);
+        spawnCrows(level, origin, fauna);
         return new Result(placer.count, List.copyOf(fauna));
     }
 
@@ -183,6 +206,44 @@ public final class ShowcaseBuilder {
         placer.set(14, 1, ROW_PROCESSING, PreservingModule.SMOKEHOUSE.get().defaultBlockState());
         placer.set(2, 0, ROW_POT, Blocks.CAMPFIRE.defaultBlockState().setValue(BlockStateProperties.LIT, true));
         placer.set(2, 1, ROW_POT, KitchenModule.COOKING_POT.get().defaultBlockState());
+    }
+
+    /**
+     * Section équipements. La récolteuse et la planteuse sont posées face au sud : leur zone de travail 5x5 est devant
+     * elles (z 25..29). Le coffre est derrière la récolteuse, là où elle pousse sa récolte.
+     */
+    private static void placeEquipment(Placer placer, ServerLevel level, BlockPos origin) {
+        placer.set(X_HARVESTER, 1, ROW_EQUIP, AutomationModule.HARVESTER.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+        placer.set(X_HARVESTER, 1, ROW_EQUIP - 1, Blocks.CHEST.defaultBlockState());
+        placer.set(X_PLANTER, 1, ROW_EQUIP, AutomationModule.PLANTER.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+        // Champs 5x5 devant les machines : terre labourée; la rangée de blé mûr est la première du champ de récolte.
+        for (int x = X_HARVESTER - 2; x <= X_HARVESTER + 2; x++) {
+            for (int z = ROW_FIELD_FIRST; z < ROW_FIELD_FIRST + 5; z++) {
+                placer.set(x, 0, z, farmland());
+            }
+            placer.set(x, 1, ROW_FIELD_FIRST, Blocks.WHEAT.defaultBlockState().setValue(CropBlock.AGE, CropBlock.MAX_AGE));
+        }
+        for (int x = X_PLANTER - 2; x <= X_PLANTER + 2; x++) {
+            for (int z = ROW_FIELD_FIRST; z < ROW_FIELD_FIRST + 5; z++) {
+                placer.set(x, 0, z, farmland());
+            }
+        }
+        if (level.getBlockEntity(origin.offset(X_PLANTER, 1, ROW_EQUIP)) instanceof PlanterBlockEntity planter) {
+            planter.container().setItem(0, new ItemStack(Items.WHEAT_SEEDS, 64));
+        }
+        placer.set(1, 1, ROW_EQUIP, StorageModule.CRATE.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+        if (level.getBlockEntity(origin.offset(1, 1, ROW_EQUIP)) instanceof CrateBlockEntity crate) {
+            Item tomato = CropModule.productItem("tomato");
+            crate.setContents(tomato, 1);
+            crate.setContents(tomato, crate.capacity());
+        }
+        for (int y = 1; y <= 3; y++) {
+            placer.set(3, y, 27, StorageModule.SILO.get().defaultBlockState());
+        }
+        placer.set(10, 1, 27, PestsModule.SCARECROW.get().defaultBlockState());
     }
 
     private static void placeFlora(Placer placer) {
@@ -243,11 +304,17 @@ public final class ShowcaseBuilder {
                 origin.getX() + width(), origin.getY() + HEIGHT + 1, origin.getZ() + DEPTH);
     }
 
+    /** Deux corbeaux persistants, dans la section équipements. */
+    private static void spawnCrows(ServerLevel level, BlockPos origin, List<Mob> fauna) {
+        spawnPersistent(level, PestsModule.CROW.get(), origin.offset(10, 3, 29), fauna);
+        spawnPersistent(level, PestsModule.CROW.get(), origin.offset(4, 3, 28), fauna);
+    }
+
     /** Retire insectes et animaux d'élevage de la vitrine (une construction précédente, ou un /tv showcase répété). */
     private static void removeFauna(ServerLevel level, BlockPos origin) {
         for (Entity entity : level.getEntitiesOfClass(Entity.class, area(origin),
                 e -> e instanceof Butterfly || e instanceof Ladybug || e instanceof Cow || e instanceof Sheep
-                        || e instanceof Chicken || e instanceof Duck)) {
+                        || e instanceof Chicken || e instanceof Duck || e instanceof Crow)) {
             entity.discard();
         }
     }

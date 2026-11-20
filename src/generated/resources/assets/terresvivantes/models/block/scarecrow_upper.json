@@ -1,0 +1,139 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#post"
+        },
+        "east": {
+          "texture": "#post"
+        },
+        "north": {
+          "texture": "#post"
+        },
+        "south": {
+          "texture": "#post"
+        },
+        "up": {
+          "texture": "#post"
+        },
+        "west": {
+          "texture": "#post"
+        }
+      },
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        4,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#sack"
+        },
+        "east": {
+          "texture": "#sack"
+        },
+        "north": {
+          "texture": "#sack"
+        },
+        "south": {
+          "texture": "#sack"
+        },
+        "up": {
+          "texture": "#sack"
+        },
+        "west": {
+          "texture": "#sack"
+        }
+      },
+      "from": [
+        5,
+        4,
+        5
+      ],
+      "to": [
+        11,
+        13,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#straw"
+        },
+        "east": {
+          "texture": "#straw"
+        },
+        "north": {
+          "texture": "#straw"
+        },
+        "south": {
+          "texture": "#straw"
+        },
+        "up": {
+          "texture": "#straw"
+        },
+        "west": {
+          "texture": "#straw"
+        }
+      },
+      "from": [
+        1,
+        13,
+        1
+      ],
+      "to": [
+        15,
+        14,
+        15
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#straw"
+        },
+        "east": {
+          "texture": "#straw"
+        },
+        "north": {
+          "texture": "#straw"
+        },
+        "south": {
+          "texture": "#straw"
+        },
+        "up": {
+          "texture": "#straw"
+        },
+        "west": {
+          "texture": "#straw"
+        }
+      },
+      "from": [
+        4,
+        14,
+        4
+      ],
+      "to": [
+        12,
+        16,
+        12
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cloth": "terresvivantes:block/scarecrow_cloth",
+    "post": "terresvivantes:block/scarecrow_post",
+    "sack": "terresvivantes:block/scarecrow_sack",
+    "straw": "terresvivantes:block/scarecrow_straw"
+  }
+}

@@ -63,4 +63,20 @@ public final class SoilModel {
     private static int scale(int value, double multiplier) {
         return (int) Math.round(value * multiplier);
     }
+
+    /** Jour MC d'une terre jamais aeree (aucun aerage enregistre). */
+    public static final long NEVER_AERATED = Long.MIN_VALUE;
+
+    /**
+     * Un aerage est permis une fois par bloc et par jour MC : permis si la terre n'a jamais ete aeree,
+     * ou si le dernier aerage date d'un jour MC anterieur a {@code today}.
+     */
+    public static boolean canAerate(long lastAeratedDay, long today) {
+        return lastAeratedDay == NEVER_AERATED || today > lastAeratedDay;
+    }
+
+    /** Jour MC (24000 ticks) d'un temps de monde; les temps negatifs se rangent avant le jour 0. */
+    public static long mcDay(long dayTime) {
+        return Math.floorDiv(dayTime, 24000L);
+    }
 }

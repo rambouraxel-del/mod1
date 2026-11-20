@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "DD",
+    " S",
+    "D "
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:diamond_sickle"
+  }
+}

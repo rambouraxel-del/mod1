@@ -1,0 +1,203 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#post"
+        },
+        "east": {
+          "texture": "#post"
+        },
+        "north": {
+          "texture": "#post"
+        },
+        "south": {
+          "texture": "#post"
+        },
+        "up": {
+          "texture": "#post"
+        },
+        "west": {
+          "texture": "#post"
+        }
+      },
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        16,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#straw"
+        },
+        "east": {
+          "texture": "#straw"
+        },
+        "north": {
+          "texture": "#straw"
+        },
+        "south": {
+          "texture": "#straw"
+        },
+        "up": {
+          "texture": "#straw"
+        },
+        "west": {
+          "texture": "#straw"
+        }
+      },
+      "from": [
+        4,
+        0,
+        5
+      ],
+      "to": [
+        12,
+        6,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cloth"
+        },
+        "east": {
+          "texture": "#cloth"
+        },
+        "north": {
+          "texture": "#cloth"
+        },
+        "south": {
+          "texture": "#cloth"
+        },
+        "up": {
+          "texture": "#cloth"
+        },
+        "west": {
+          "texture": "#cloth"
+        }
+      },
+      "from": [
+        5,
+        6,
+        6
+      ],
+      "to": [
+        11,
+        13,
+        10
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cloth"
+        },
+        "east": {
+          "texture": "#cloth"
+        },
+        "north": {
+          "texture": "#cloth"
+        },
+        "south": {
+          "texture": "#cloth"
+        },
+        "up": {
+          "texture": "#cloth"
+        },
+        "west": {
+          "texture": "#cloth"
+        }
+      },
+      "from": [
+        2,
+        10,
+        6
+      ],
+      "to": [
+        14,
+        12,
+        10
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#straw"
+        },
+        "east": {
+          "texture": "#straw"
+        },
+        "north": {
+          "texture": "#straw"
+        },
+        "south": {
+          "texture": "#straw"
+        },
+        "up": {
+          "texture": "#straw"
+        },
+        "west": {
+          "texture": "#straw"
+        }
+      },
+      "from": [
+        1,
+        10,
+        6
+      ],
+      "to": [
+        3,
+        12,
+        10
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#straw"
+        },
+        "east": {
+          "texture": "#straw"
+        },
+        "north": {
+          "texture": "#straw"
+        },
+        "south": {
+          "texture": "#straw"
+        },
+        "up": {
+          "texture": "#straw"
+        },
+        "west": {
+          "texture": "#straw"
+        }
+      },
+      "from": [
+        13,
+        10,
+        6
+      ],
+      "to": [
+        15,
+        12,
+        10
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cloth": "terresvivantes:block/scarecrow_cloth",
+    "post": "terresvivantes:block/scarecrow_post",
+    "sack": "terresvivantes:block/scarecrow_sack",
+    "straw": "terresvivantes:block/scarecrow_straw"
+  }
+}

@@ -3,6 +3,7 @@ package fr.terresvivantes.automation;
 import fr.terresvivantes.automation.logic.CycleLogic;
 import fr.terresvivantes.automation.logic.WorkArea;
 import fr.terresvivantes.crop.CropApi;
+import fr.terresvivantes.orchard.OrchardApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,14 +22,18 @@ import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import java.util.List;
 
 /**
- * Récolteuse. Chaque cycle parcourt au plus {@value #CELLS_PER_CYCLE} cases de la zone (curseur incrémental) et
- * récolte les cultures mûres via {@link CropApi#harvestAndReplant}. Les récoltes vont dans l'inventaire interne, qui est
- * poussé vers le conteneur adjacent derrière ou dessous. Sans place libre, elle s'arrête.
+ * Récolteuse. La zone est un volume de 5x5x3 devant la machine : la case de culture (niveau de la machine) et deux
+ * couches au-dessus, pour les feuillages fruitiers. Chaque cycle parcourt au plus {@value #CELLS_PER_CYCLE} cases
+ * (curseur incrémental), récolte les cultures mûres via {@link CropApi#harvestAndReplant} et les feuilles fruitières
+ * mûres via {@link OrchardApi#harvestRipeLeaves}. Les récoltes vont dans l'inventaire interne, poussé vers le
+ * conteneur adjacent derrière ou dessous. Sans place libre, elle s'arrête.
  */
 public final class HarvesterBlockEntity extends AutomationBlockEntity {
 
-    /** Cases traitées par cycle : une zone de 25 cases est parcourue en 5 cycles. */
+    /** Cases traitées par cycle : le volume de 75 cases (5x5x3) est parcouru en 15 cycles. */
     static final int CELLS_PER_CYCLE = 5;
+    /** Hauteur de la zone, en couches à partir du niveau de la machine. */
+    static final int HEIGHT = 3;
     private static final int SLOTS = 9;
 
     private final IItemHandler internal;
@@ -52,7 +57,8 @@ public final class HarvesterBlockEntity extends AutomationBlockEntity {
             return;
         }
         WorkArea area = area();
-        int total = area.cellCount();
+        int plane = area.cellCount();
+        int total = plane * HEIGHT;
         int start = cursor();
         int processed = 0;
         boolean harvested = false;
@@ -60,12 +66,10 @@ public final class HarvesterBlockEntity extends AutomationBlockEntity {
             if (!container().hasEmptySlot()) {
                 break;
             }
-            BlockPos cell = cellAt(area, (start + processed) % total);
+            int index = (start + processed) % total;
+            BlockPos cell = cellAt(area, index % plane).above(index / plane);
             processed++;
-            if (!CropApi.isMatureCrop(level.getBlockState(cell))) {
-                continue;
-            }
-            List<ItemStack> drops = CropApi.harvestAndReplant(level, cell, null);
+            List<ItemStack> drops = harvestCell(level, cell);
             if (drops.isEmpty()) {
                 continue;
             }
@@ -82,6 +86,14 @@ public final class HarvesterBlockEntity extends AutomationBlockEntity {
         pushOut(level);
         setActive(level, harvested);
         setChanged();
+    }
+
+    /** Récolte une case : culture mûre (replantée) ou feuille fruitière mûre. Liste vide sinon. */
+    private static List<ItemStack> harvestCell(ServerLevel level, BlockPos cell) {
+        if (CropApi.isMatureCrop(level.getBlockState(cell))) {
+            return CropApi.harvestAndReplant(level, cell, null);
+        }
+        return OrchardApi.harvestRipeLeaves(level, cell);
     }
 
     /** Pousse le contenu vers le conteneur derrière, puis dessous. Le reste reste dans la machine. */

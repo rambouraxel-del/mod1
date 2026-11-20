@@ -53,4 +53,19 @@ class SoilModelTest {
         assertEquals(new SoilData(100, 50, 50, 100),
                 SoilModel.fertilize(SoilData.DEFAULT, 60, 0, 0, 90));
     }
+
+    @Test
+    void aerationAllowedOncePerMcDay() {
+        assertEquals(true, SoilModel.canAerate(SoilModel.NEVER_AERATED, 5));
+        assertEquals(false, SoilModel.canAerate(5, 5));
+        assertEquals(true, SoilModel.canAerate(5, 6));
+        assertEquals(false, SoilModel.canAerate(7, 6));
+    }
+
+    @Test
+    void mcDayUsesTwentyFourThousandTicks() {
+        assertEquals(0, SoilModel.mcDay(23_999));
+        assertEquals(1, SoilModel.mcDay(24_000));
+        assertEquals(-1, SoilModel.mcDay(-1));
+    }
 }
