@@ -28,3 +28,6 @@ replay_pid*
 .classpath
 .DS_Store
 Thumbs.db
+
+# Worktrees d agents
+.claude/
