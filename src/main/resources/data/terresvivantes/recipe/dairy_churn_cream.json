@@ -1,0 +1,22 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "churn",
+  "ingredients": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": "minecraft:milk_bucket",
+        "components": {
+          "terresvivantes:milk_source": "cow"
+        }
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:cream",
+    "count": 2
+  },
+  "time": 200,
+  "quality": "inherit_min"
+}
