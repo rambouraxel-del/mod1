@@ -5,6 +5,7 @@ import fr.terresvivantes.crop.logic.Affinity;
 import fr.terresvivantes.crop.logic.CropDefinition;
 import fr.terresvivantes.crop.logic.CropLogic;
 import fr.terresvivantes.crop.logic.GrowthModel;
+import fr.terresvivantes.season.logic.Season;
 import fr.terresvivantes.season.SeasonApi;
 import fr.terresvivantes.soil.SoilApi;
 import net.minecraft.core.BlockPos;
@@ -23,9 +24,11 @@ final class CropGrowth {
     /** Facteur total d'une culture du mod à sa position, modifiers de {@link CropGrowthHooks} inclus. */
     static float tvFactor(ServerLevel level, BlockPos cropPos, BlockState state, CropDefinition def) {
         BlockPos soil = cropPos.below();
+        Season affinitySeason = CropLogic.affinitySeason(SeasonApi.getSeason(level),
+                ClimateApi.isSheltered(level, cropPos));
         float base = GrowthModel.totalFactor(
                 SeasonApi.seasonGrowthMultiplier(level, cropPos),
-                def.affinityFor(SeasonApi.getSeason(level)).getMultiplier(),
+                def.affinityFor(affinitySeason).getMultiplier(),
                 GrowthModel.climateFactor(ClimateApi.temperatureAt(level, cropPos), def.tempMin(), def.tempMax()),
                 SoilApi.nutrientFactor(level, soil),
                 moisture(level, soil));

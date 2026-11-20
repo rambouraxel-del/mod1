@@ -14,6 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CropDefinitionsTest {
 
+    /** Cultures défavorables en hiver (v0.2) ; les autres sont impossibles en hiver. */
+    private static final Set<String> WINTER_UNFAVORABLE = Set.of("garlic", "cabbage", "onion");
+
     @Test
     void twelveUniqueCrops() {
         List<CropDefinition> all = CropDefinitions.all();
@@ -28,21 +31,25 @@ class CropDefinitionsTest {
     void everyCropHasDisjointSeasonsCoveringSpringSummerAutumnOnly() {
         for (CropDefinition def : CropDefinitions.all()) {
             Set<Season> covered = EnumSet.noneOf(Season.class);
+            assertEquals(1, def.optimal().size(), def.id() + " : une seule saison optimale");
+            assertEquals(1, def.possible().size(), def.id() + " : une seule saison possible");
             for (Set<Season> group : List.of(def.optimal(), def.possible(), def.unfavorable())) {
-                assertEquals(1, group.size(), def.id() + " : une seule saison par niveau d'affinité");
                 for (Season season : group) {
                     assertTrue(covered.add(season), def.id() + " : saison en double");
                 }
             }
-            assertEquals(EnumSet.of(Season.SPRING, Season.SUMMER, Season.AUTUMN), covered,
-                    def.id() + " : l'hiver doit être impossible");
+            Set<Season> expected = WINTER_UNFAVORABLE.contains(def.id())
+                    ? EnumSet.allOf(Season.class)
+                    : EnumSet.of(Season.SPRING, Season.SUMMER, Season.AUTUMN);
+            assertEquals(expected, covered, def.id() + " : hiver impossible, sauf ail, chou et oignon (défavorables)");
         }
     }
 
     @Test
-    void winterIsImpossibleForEveryCrop() {
+    void winterIsImpossibleExceptForGarlicCabbageOnion() {
         for (CropDefinition def : CropDefinitions.all()) {
-            assertEquals(Affinity.IMPOSSIBLE, def.affinityFor(Season.WINTER), def.id());
+            Affinity expected = WINTER_UNFAVORABLE.contains(def.id()) ? Affinity.UNFAVORABLE : Affinity.IMPOSSIBLE;
+            assertEquals(expected, def.affinityFor(Season.WINTER), def.id());
         }
     }
 

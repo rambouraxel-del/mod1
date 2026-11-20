@@ -100,6 +100,9 @@ public final class TVCropBlock extends CropBlock {
         float factor = CropGrowth.tvFactor(level, pos, state, definition);
         GrowthDecision decision = GrowthModel.decide(factor, random.nextDouble(), random.nextDouble());
         CropGrowthHooks.notifyGrowthAttempt(level, pos, state, definition, decision, factor);
+        if (!level.getBlockState(pos).is(this)) {
+            return; // un listener a remplacé la culture (ex. flétrissement)
+        }
         if (decision == GrowthDecision.DENY) {
             return;
         }

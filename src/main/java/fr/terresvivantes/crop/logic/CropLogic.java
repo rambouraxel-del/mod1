@@ -1,5 +1,7 @@
 package fr.terresvivantes.crop.logic;
 
+import fr.terresvivantes.season.logic.Season;
+
 /**
  * Logique pure du module Crop (stades et croissance des cultures). Aucun import net.minecraft: testable en JUnit.
  */
@@ -54,6 +56,14 @@ public final class CropLogic {
     /** Ramène un âge dans [0, MAX_AGE]. */
     public static int clampAge(int age) {
         return Math.max(0, Math.min(MAX_AGE, age));
+    }
+
+    /**
+     * Saison d'après laquelle l'affinité d'une culture est évaluée (DESIGN 6.2, v0.2) : sous serre en hiver,
+     * l'affinité est celle du printemps; sinon, la saison réelle.
+     */
+    public static Season affinitySeason(Season season, boolean sheltered) {
+        return season == Season.WINTER && sheltered ? Season.SPRING : season;
     }
 
     /** Facteur d'humidité d'après la propriété vanilla MOISTURE (0 = sec, 0.5 ; sinon 1.0). */

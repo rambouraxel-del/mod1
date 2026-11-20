@@ -62,4 +62,18 @@ class CropLogicTest {
         assertEquals(2, CropLogic.LEGUME_NITROGEN_FIXATION);
         assertTrue(CropLogic.MAX_AGE == CropLogic.GROWTH_STEPS);
     }
+
+    @Test
+    void shelteredWinterUsesSpringAffinity() {
+        assertEquals(fr.terresvivantes.season.logic.Season.SPRING,
+                CropLogic.affinitySeason(fr.terresvivantes.season.logic.Season.WINTER, true));
+    }
+
+    @Test
+    void outdoorWinterAndOtherSeasonsKeepTheirAffinity() {
+        assertEquals(fr.terresvivantes.season.logic.Season.WINTER,
+                CropLogic.affinitySeason(fr.terresvivantes.season.logic.Season.WINTER, false));
+        assertEquals(fr.terresvivantes.season.logic.Season.SUMMER,
+                CropLogic.affinitySeason(fr.terresvivantes.season.logic.Season.SUMMER, true));
+    }
 }

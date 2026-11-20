@@ -55,13 +55,22 @@ public final class GreenhouseGameTests {
         helper.succeed();
     }
 
-    /** Même blé, même terre, sans verre, en hiver : il ne pousse pas. */
+    /**
+     * Même blé, même terre, sans verre, en hiver : le multiplicateur extérieur vaut 0.15 (v0.2), contre 0.6
+     * sous verre. Vérification déterministe du multiplicateur, car 0.15 ne bloque plus la croissance.
+     */
     @GameTest(template = "crop_arena")
-    public static void wheatWithoutGlassDoesNotGrowInWinter(GameTestHelper helper) {
+    public static void winterOutdoorMultiplierIsLowerThanUnderGlass(GameTestHelper helper) {
         setSeason(helper, "winter");
-        placeWheat(helper, false);
-        int age = forceUntilGrowth(helper);
-        helper.assertTrue(age == 0, "sans verre en hiver, le blé ne doit pas pousser (âge " + age + ")");
+        ServerLevel level = helper.getLevel();
+        BlockPos crop = helper.absolutePos(CROP);
+        float outside = SeasonApi.seasonGrowthMultiplier(level, crop);
+        helper.assertTrue(Math.abs(outside - 0.15f) < 1e-4f,
+                "sans verre en hiver, le multiplicateur doit être 0.15, obtenu " + outside);
+        helper.setBlock(ROOF, Blocks.GLASS);
+        float sheltered = SeasonApi.seasonGrowthMultiplier(level, crop);
+        helper.assertTrue(Math.abs(sheltered - 0.6f) < 1e-4f,
+                "sous verre en hiver, le multiplicateur doit être 0.6, obtenu " + sheltered);
         helper.succeed();
     }
 
