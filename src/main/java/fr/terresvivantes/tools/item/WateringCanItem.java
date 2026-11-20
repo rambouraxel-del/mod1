@@ -2,6 +2,7 @@ package fr.terresvivantes.tools.item;
 
 import fr.terresvivantes.tools.ToolsModule;
 import fr.terresvivantes.tools.logic.ToolsLogic;
+import fr.terresvivantes.water.WaterApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -59,7 +60,7 @@ public final class WateringCanItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         if (!filled) {
-            return InteractionResult.PASS;
+            return fillFromBarrel(context);
         }
         Level level = context.getLevel();
         BlockPos center = context.getClickedPos();
@@ -95,6 +96,27 @@ public final class WateringCanItem extends Item {
                 stack.setDamageValue(used);
             }
         }
+        return InteractionResult.SUCCESS;
+    }
+
+    /** Arrosoir vide : clic sur un tonneau de pluie non vide (module water) pour le remplir. */
+    private static InteractionResult fillFromBarrel(UseOnContext context) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        if (!WaterApi.isRainBarrel(level.getBlockState(pos))) {
+            return InteractionResult.PASS;
+        }
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (!WaterApi.tryDrawWater(level, pos, WaterApi.CAN_FILL_LEVELS)) {
+            return InteractionResult.FAIL;
+        }
+        Player player = context.getPlayer();
+        if (player != null) {
+            player.setItemInHand(context.getHand(), new ItemStack(ToolsModule.WATERING_CAN_FILLED.get()));
+        }
+        level.playSound(player, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
         return InteractionResult.SUCCESS;
     }
 }
