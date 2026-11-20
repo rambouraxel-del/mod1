@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.data.tags.TagsProvider;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
@@ -49,5 +50,10 @@ public interface TVModule {
     /** Ajoute les tags de blocs du module via la fonction fournie par le provider. */
     default void registerBlockTags(Function<TagKey<Block>, TagsProvider.TagAppender<Block>> tags,
                                    HolderLookup.Provider lookup) {
+    }
+
+    /** Ajoute les tags d'items du module via la fonction fournie par le provider. */
+    default void registerItemTags(Function<TagKey<Item>, TagsProvider.TagAppender<Item>> tags,
+                                  HolderLookup.Provider lookup) {
     }
 }

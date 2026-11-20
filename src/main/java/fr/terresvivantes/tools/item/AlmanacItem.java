@@ -34,10 +34,11 @@ public final class AlmanacItem extends Item {
                 SeasonApi.getDayOfSeason(level),
                 SeasonApi.getDaysPerSeason()));
 
-        int temperature = Math.round(ClimateApi.temperatureAt(level, player.blockPosition()));
-        player.sendSystemMessage(Component.translatable("message.terresvivantes.almanac.temperature", temperature));
+        float exactTemperature = ClimateApi.temperatureAt(level, player.blockPosition());
+        player.sendSystemMessage(Component.translatable("message.terresvivantes.almanac.temperature",
+                Math.round(exactTemperature)));
 
-        List<String> crops = CropApi.optimalCropIdsFor(season);
+        List<String> crops = CropApi.optimalCropIdsFor(season, exactTemperature);
         if (crops.isEmpty()) {
             player.sendSystemMessage(Component.translatable("message.terresvivantes.almanac.no_crops"));
         } else {

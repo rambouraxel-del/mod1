@@ -3,13 +3,17 @@ package fr.terresvivantes;
 import fr.terresvivantes.climate.ClimateModule;
 import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.core.TVModule;
+import fr.terresvivantes.compost.CompostConfig;
 import fr.terresvivantes.core.config.TVConfig;
 import fr.terresvivantes.core.network.TVNetwork;
 import fr.terresvivantes.core.registry.TVCreativeTab;
+import fr.terresvivantes.crop.CropConfig;
 import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.datagen.TVDataGen;
 import fr.terresvivantes.food.FoodModule;
+import fr.terresvivantes.season.SeasonConfig;
 import fr.terresvivantes.season.SeasonModule;
+import fr.terresvivantes.soil.SoilConfig;
 import fr.terresvivantes.soil.SoilModule;
 import fr.terresvivantes.tools.ToolsModule;
 import net.neoforged.bus.api.IEventBus;
@@ -39,6 +43,10 @@ public final class TerresVivantes {
 
     public TerresVivantes(IEventBus modBus, ModContainer container) {
         container.registerConfig(ModConfig.Type.COMMON, TVConfig.COMMON);
+        container.registerConfig(ModConfig.Type.COMMON, SeasonConfig.SPEC, SeasonConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, SoilConfig.SPEC, SoilConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, CompostConfig.SPEC, CompostConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, CropConfig.SPEC, CropConfig.FILE_NAME);
         TVCreativeTab.register(modBus);
         TVNetwork.register(modBus);
         TVDataGen.register(modBus);

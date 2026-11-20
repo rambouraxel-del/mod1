@@ -4,6 +4,8 @@ import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.compost.logic.CompostLogic;
 import fr.terresvivantes.core.TVModule;
 import fr.terresvivantes.core.registry.TVCreativeTab;
+import fr.terresvivantes.crop.logic.CropDefinition;
+import fr.terresvivantes.crop.logic.CropDefinitions;
 import fr.terresvivantes.datagen.LangSink;
 import fr.terresvivantes.soil.SoilApi;
 import net.minecraft.core.Direction;
@@ -236,6 +238,31 @@ public final class CompostModule implements TVModule {
                         .setRolls(ConstantValue.exactly(1.0f))
                         .add(LootItem.lootTableItem(COMPOST_BIN.get()))
                         .when(ExplosionCondition.survivesExplosion())));
+    }
+
+    /**
+     * Tag {@code terresvivantes:compostable} : feuilles, herbes, graines et légumes vanilla organiques,
+     * plus les 12 produits et les 12 graines du module crop.
+     */
+    @Override
+    public void registerItemTags(Function<TagKey<Item>, TagsProvider.TagAppender<Item>> tags,
+                                 HolderLookup.Provider lookup) {
+        TagsProvider.TagAppender<Item> compostable = tags.apply(COMPOSTABLE);
+        compostable.addOptionalTag(ResourceLocation.withDefaultNamespace("leaves"))
+                .add(vanilla("short_grass"), vanilla("tall_grass"), vanilla("fern"))
+                .add(vanilla("wheat"), vanilla("wheat_seeds"), vanilla("beetroot"), vanilla("beetroot_seeds"))
+                .add(vanilla("carrot"), vanilla("potato"), vanilla("pumpkin_seeds"), vanilla("melon_seeds"),
+                        vanilla("sweet_berries"));
+        for (CropDefinition def : CropDefinitions.all()) {
+            compostable.add(ResourceKey.create(Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, def.id())));
+            compostable.add(ResourceKey.create(Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, def.id() + "_seeds")));
+        }
+    }
+
+    private static ResourceKey<Item> vanilla(String path) {
+        return ResourceKey.create(Registries.ITEM, ResourceLocation.withDefaultNamespace(path));
     }
 
     @Override

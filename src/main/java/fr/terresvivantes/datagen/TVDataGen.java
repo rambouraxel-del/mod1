@@ -44,6 +44,8 @@ public final class TVDataGen {
         generator.addProvider(server, new LootTableProvider(output, Set.of(),
                 List.of(new LootTableProvider.SubProviderEntry(TVBlockLoot::new, LootContextParamSets.BLOCK)),
                 lookup));
-        generator.addProvider(server, new TVBlockTagsProvider(output, lookup, helper));
+        TVBlockTagsProvider blockTags = new TVBlockTagsProvider(output, lookup, helper);
+        generator.addProvider(server, blockTags);
+        generator.addProvider(server, new TVItemTagsProvider(output, lookup, blockTags.contentsGetter()));
     }
 }

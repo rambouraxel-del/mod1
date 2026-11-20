@@ -50,4 +50,16 @@ public final class CropApi {
                 .map(def -> def.id())
                 .toList();
     }
+
+    /**
+     * Identifiants des cultures optimales pour la saison ET dont la plage de tolérance
+     * ({@code tempMin}..{@code tempMax}) contient la température locale en °C.
+     */
+    public static List<String> optimalCropIdsFor(Season season, float temperature) {
+        return CropDefinitions.all().stream()
+                .filter(def -> def.optimal().contains(season))
+                .filter(def -> temperature >= def.tempMin() && temperature <= def.tempMax())
+                .map(def -> def.id())
+                .toList();
+    }
 }
