@@ -40,6 +40,9 @@ import fr.terresvivantes.duck.DuckModule;
 import fr.terresvivantes.insects.InsectsModule;
 import fr.terresvivantes.pollination.PollinationModule;
 import fr.terresvivantes.datagen.TVDataGen;
+import fr.terresvivantes.economy.EconomyModule;
+import fr.terresvivantes.guild.GuildModule;
+import fr.terresvivantes.market.MarketModule;
 import fr.terresvivantes.food.FoodModule;
 import fr.terresvivantes.implement.ImplementsModule;
 import fr.terresvivantes.health.HealthConfig;
@@ -98,6 +101,9 @@ public final class TerresVivantes {
             new AutomationModule(),
             new StorageModule(),
             new PestsModule(),
+            new EconomyModule(),
+            new MarketModule(),
+            new GuildModule(),
             new DebugModule()
     );
 

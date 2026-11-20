@@ -26,6 +26,7 @@ src/main/java/fr/terresvivantes/
   livestock/ husbandry/ vet/ duck/           (v0.4)
   core.quality/ processing/ milling/ dairy/ preserving/ kitchen/   (v0.5)
   implement/ automation/ storage/ pests/     (v0.6)
+  economy/ market/ guild/                    (v0.7; market et guild vides)
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -295,3 +296,22 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - Garde-fou de rendu : `core.gametest.RenderShapeGameTests` vérifie que tout bloc `terresvivantes:*` a
   `RenderShape.MODEL` (aucune exception déclarée).
 
+## Contrats v0.7 (économie)
+
+- `economy.EconomyApi` (façade) :
+  - `int priceOf(ServerLevel, ItemStack)` : cuivre par unité = base x qualité x saison x saturation; 0 si non vendable.
+  - `void recordSale(ServerLevel, ItemStack)` : +1 point de saturation sur le marché de la dimension (sans effet si non vendable).
+  - `int saturationPercent(ServerLevel, ItemStack)` : part du prix de base laissée par le marché (100 à 40).
+  - `int reputation(ServerPlayer)`, `void addReputation(ServerPlayer, int)` (jamais négative), `String reputationTier(ServerPlayer)`
+    (libellé français de référence), `ReputationLogic.Tier reputationTierOf(ServerPlayer)` (clé de traduction `langKey()`).
+  - `static long coinsToCopper(long copper, long silver, long gold)`; `ItemStack[] copperToCoins(int copper)` (or, argent, cuivre; piles de 64).
+- `economy.EconomyModule.REPUTATION` : `Supplier<AttachmentType<Integer>>`, `copyOnDeath()`. Pièces : `COPPER_COIN`, `SILVER_COIN`, `GOLD_COIN`.
+- `economy.MarketData` : SavedData par dimension (`get(ServerLevel)`, `pointsAt(id, day)`, `sell(id, day)`).
+- Logique pure, sans `net.minecraft` : `economy.logic.PriceModel`, `MarketLogic` (record : saturation et jour MC, décroissance
+  0.9 par jour), `CoinLogic`, `ReputationLogic` (`Tier`), `BasePrices` (lecture du JSON plat par expression régulière).
+- Table de prix : `src/main/resources/data/terresvivantes/economy/base_prices.json`, chargée une fois par `EconomyApi`.
+- Dépendances : `economy` lit `season.SeasonApi`, `core.quality.QualityModule`, `crop.logic.CropDefinitions`,
+  `orchard.logic.FruitTreeDefinitions`. Aucun module n'appelle `economy` sauf pour vendre (market et guild, à venir).
+- Commandes : `/tv price` et `/tv reputation` (`economy.EconomyCommands`, branchées par `core.command.TVCommands`).
+  La racine `/tv` n'exige plus le niveau 2 : `season` et `showcase` le demandent chacun.
+- Modules `market` et `guild` : vides, enregistrés dans `TerresVivantes.MODULES`.
