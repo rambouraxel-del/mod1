@@ -28,6 +28,7 @@ from sprites import SPRITES, SEED_TEMPLATE, SEED_COLORS  # noqa: E402
 from sprites_ext import SPRITES_EXT  # noqa: E402
 from sprites_v03 import SPRITES_V03  # noqa: E402
 from sprites_v04 import SPRITES_V04, build_duck_entities  # noqa: E402
+from sprites_v05 import SPRITES_V05, build_processing_gui  # noqa: E402
 import insects_textures  # noqa: E402
 
 ROOT = HERE.parents[1]
@@ -111,7 +112,7 @@ def render(rows, overrides=None):
 def build_all():
     """Retourne une liste (dossier, nom, image) pour toutes les textures."""
     out = []
-    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03 + SPRITES_V04:
+    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03 + SPRITES_V04 + SPRITES_V05:
         out.append((folder, name, render(rows)))
     # Sachets de graines: meme gabarit, couleurs propres a chaque culture.
     for crop, (seed_col, band_col) in SEED_COLORS.items():
@@ -150,6 +151,15 @@ def write_duck_entities():
         img.save(path, format="PNG", optimize=False)
         written.append((path, img))
     return written
+
+
+def write_gui():
+    """GUI de traitement (256x256), dans textures/gui/processing.png."""
+    path = TEX_ROOT / "gui" / "processing.png"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    img = build_processing_gui()
+    img.save(path, format="PNG", optimize=False)
+    return path
 
 
 def verify_entity(written):
@@ -220,6 +230,8 @@ def main():
             print("ERREUR", e)
         sys.exit(1)
     build_preview(entries)
+    gui = write_gui()
+    print(f"gui: {gui}")
     print(f"{len(written)} textures ecrites dans {TEX_ROOT}")
     print(f"{len(entity)} textures d'entites (insectes 32x32, canards 64x32) ecrites dans {TEX_ROOT / 'entity'}")
     print(f"preview: {PREVIEW_PATH}")
