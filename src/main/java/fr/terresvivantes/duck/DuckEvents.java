@@ -1,9 +1,9 @@
 package fr.terresvivantes.duck;
 
+import fr.terresvivantes.core.quality.QualityModule;
 import fr.terresvivantes.duck.logic.ProductionLogic;
 import fr.terresvivantes.livestock.LivestockApi;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -23,7 +23,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 /**
@@ -31,8 +30,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
  * <ul>
  *   <li>tonte d'un mouton : laine supplémentaire selon le multiplicateur (vérification {@code readyForShearing} avant
  *       la tonte vanilla; pas d'événement de tonte NeoForge);</li>
- *   <li>traite d'une vache ou d'une chèvre au seau : le seau de lait reçoit la qualité en étoiles;</li>
- *   <li>infobulle : affichage des étoiles de qualité sur le lait.</li>
+ *   <li>traite d'une vache ou d'une chèvre au seau : le seau de lait reçoit la qualité générique (1 à 3).</li>
  * </ul>
  */
 final class DuckEvents {
@@ -44,7 +42,6 @@ final class DuckEvents {
 
     static void register(IEventBus bus) {
         bus.addListener(DuckEvents::onEntityInteract);
-        bus.addListener(DuckEvents::onTooltip);
     }
 
     private static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
@@ -75,7 +72,7 @@ final class DuckEvents {
             Player player = event.getEntity();
             int quality = ProductionLogic.milkQuality(LivestockApi.productionMultiplier(animal));
             ItemStack milk = new ItemStack(Items.MILK_BUCKET);
-            milk.set(DuckModule.MILK_QUALITY.get(), quality);
+            QualityModule.setQuality(milk, quality);
             player.playSound(SoundEvents.COW_MILK, 1.0F, 1.0F);
             player.setItemInHand(event.getHand(), ItemUtils.createFilledResult(stack, player, milk));
         }
@@ -87,13 +84,5 @@ final class DuckEvents {
         ItemEntity drop = new ItemEntity(sheep.level(), pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
                 new ItemStack(wool));
         sheep.level().addFreshEntity(drop);
-    }
-
-    private static void onTooltip(ItemTooltipEvent event) {
-        Integer quality = event.getItemStack().get(DuckModule.MILK_QUALITY.get());
-        if (quality != null) {
-            event.getToolTip().add(Component.translatable("tooltip.terresvivantes.milk_quality",
-                    ProductionLogic.stars(quality)));
-        }
     }
 }

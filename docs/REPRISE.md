@@ -2,12 +2,12 @@
 
 ## 1. État exact
 
-- Version : `mod_version=0.4.0` (NeoForge 21.1.267, Minecraft 1.21.1).
+- Version : `mod_version=0.5.0-dev` (NeoForge 21.1.267, Minecraft 1.21.1). v0.5 « Transformation » en cours, voir `docs/STATUS.md`.
 - Branche : `claude/terres-vivantes-minecraft-g4o0hy`. Dernier commit : celui qui ajoute la v0.4 (`git log -1`).
 - Vérifications (sur ce commit) :
-  - `./gradlew build` : OK, 232 tests JUnit verts.
+  - `./gradlew build` : OK, 247 tests JUnit verts (v0.5).
   - `./gradlew runData` : OK, `src/generated` régénéré, `GeneratedResourcesTest` vert.
-  - `./gradlew runGameTestServer` : 54/54, trois passages de suite exigés, 30 passages consécutifs verts sur la version finale.
+  - `./gradlew runGameTestServer` : 58/58 (v0.5), deux passages verts; v0.4 : 54/54 avec trois passages de suite exigés.
 - Modules et statut :
   - season, climate, soil, crop, compost, food, tools, orchard, water, health, pollination : livrés (v0.1 à v0.3).
   - flora, insects, apiculture : livrés (v0.3).
@@ -35,8 +35,10 @@ b. Agents modules en parallèle, en worktrees isolés. Règles : ne modifier que
 c. Agent textures en worktree (`tools/textures`, Pillow, grilles 16x16).
 d. Intégrateur : merges `--no-ff`, configs, `runData`, GameTests (plusieurs passages), documentation, push, nettoyage des worktrees.
 
-## 4. Prochaine étape : v0.5 Transformation
+## 4. Prochaine étape : v0.5 Transformation (en cours)
 
 - Voir `docs/ROADMAP.md` (v0.5 transformation, puis v0.6 équipements, v0.7 économie).
 - Avant de commencer : QA visuelle en client de la v0.4 (canard, élevage, auge, nichoir, pierre à sel).
-- Reprendre le contrat `milk_quality` (composant déjà défini, utilisé en v0.5 selon `DuckModule`).
+- Qualité : composant générique `terresvivantes:quality` (`core.quality`); `milk_quality` migré et retiré en v0.5.
+- Transformation : infrastructure `processing` et meule (`milling`) livrées. Restent dairy, preserving, kitchen et les
+  pressoir et farines (`docs/STATUS.md`, section v0.5).

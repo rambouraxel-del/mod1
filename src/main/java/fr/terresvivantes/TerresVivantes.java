@@ -5,6 +5,12 @@ import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.core.TVModule;
 import fr.terresvivantes.core.command.TVCommands;
 import fr.terresvivantes.core.debug.DebugModule;
+import fr.terresvivantes.core.quality.QualityModule;
+import fr.terresvivantes.processing.ProcessingModule;
+import fr.terresvivantes.milling.MillingModule;
+import fr.terresvivantes.dairy.DairyModule;
+import fr.terresvivantes.preserving.PreservingModule;
+import fr.terresvivantes.kitchen.KitchenModule;
 import fr.terresvivantes.compost.CompostConfig;
 import fr.terresvivantes.core.config.TVConfig;
 import fr.terresvivantes.core.network.TVNetwork;
@@ -58,6 +64,8 @@ public final class TerresVivantes {
 
     /** Liste fixe des modules. Ajouter un module ici est le seul changement partage autorise. */
     private static final List<TVModule> MODULES = List.of(
+            new QualityModule(),
+            new ProcessingModule(),
             new SeasonModule(),
             new ClimateModule(),
             new SoilModule(),
@@ -76,6 +84,10 @@ public final class TerresVivantes {
             new HusbandryModule(),
             new VetModule(),
             new DuckModule(),
+            new MillingModule(),
+            new DairyModule(),
+            new PreservingModule(),
+            new KitchenModule(),
             new DebugModule()
     );
 

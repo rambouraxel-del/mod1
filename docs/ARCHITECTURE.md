@@ -219,11 +219,42 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - `husbandry.HusbandryEvents` : intercepte la ponte des poules (`Chicken.eggTime`) et des canards
   (`Duck.getEggTime` / `setEggTime`) vers le nichoir le plus proche (rayon `HusbandryConfig.nestingRadius`); sinon l'œuf tombe.
   Les espèces d'alimentation reconnaissent `DuckModule.DUCK`.
-- `duck.logic.ProductionLogic` (pure) : `milkQuality(multiplier)` de 0 à 3 étoiles (composant `terresvivantes:milk_quality`),
+- `duck.logic.ProductionLogic` (pure) : `milkQuality(multiplier)` de 1 à 3 étoiles (composant générique `terresvivantes:quality`, v0.5),
   `extraWool(...)`.
 - Tests de jeu : une zone de test n'est pas toujours « entity ticking », donc ses entités ne tickent pas ou sont
   invisibles aux requêtes. Les coccinelles du test de nettoyage sont ticquées explicitement (`Ladybug.tick()`); la vitrine
   vérifie ses animaux d'après le retour de `ShowcaseBuilder.build` (`Result(blocks, fauna)`), pas par requête.
+
+## Contrats v0.5 (transformation)
+
+- `core.quality.QualityModule` (module, enregistré en premier) : composant `terresvivantes:quality` (entier 1 à 3, persistant
+  et synchronisé), infobulle générique. Façade statique : `QualityModule.QUALITY`, `qualityOf(ItemStack)` (renvoie
+  `QualityLogic.ABSENT` = 0 si absent), `setQuality(ItemStack, int)` (borne 1 à 3).
+- `core.quality.logic.QualityLogic` (pure) : `inheritMin(int[])`, `inheritAvg(int[])` (0 = absent, compté comme 1; tout
+  absent donne absent), `ageQuality(base, daysAged)` (+1 étoile tous les 6 jours), `stars(q)`, `clamp(q)`.
+- `processing.ProcessingApi` (façade) :
+  - `MachineType registerMachine(String id, int inputSlots, boolean container)` (1 à 4 entrées; identifiant unique);
+  - `Optional<MachineType> machine(String id)`, `Collection<MachineType> machines()`;
+  - `registerItemHandler(RegisterCapabilitiesEvent, BlockEntityType<T>)` : capacité d'items par face (haut = entrées,
+    côtés = conteneur, bas = sortie). À appeler sur le bus mod.
+- `processing.MachineType` (record) : `id`, `inputSlots`, `container`; `containerSlot()` (-1 si absent), `outputSlot()`
+  (toujours le dernier), `slotCount()`.
+- `processing.ProcessingBlock` (abstrait, étend `HorizontalDirectionalBlock`) : propriétés `FACING` et `ACTIVE`; clic droit
+  ouvre le menu; ticker serveur; éjection du contenu à la casse. Le module fournit `newBlockEntity` et `codec()`.
+- `processing.ProcessingBlockEntity` (abstrait) : constructeur `(type, pos, state, MachineType)`; `serverTick`;
+  `inventory()` (`ProcessingInventory`); `itemHandler(Direction)`; `dataAccess()` (progression, durée); hooks
+  `craftingTick(level, pos)` (son ou particules pendant la mouture) et `craftFinished(level, pos, recipe)`.
+- `processing.ProcessingRecipe` (type `terresvivantes:processing`, sérialiseur `ProcessingModule.SERIALIZER`) :
+  `plan`, `assemble` (sortie avec qualité, sans consommer), `craft` (sortie et consommation), `machine()`, `time()`,
+  `quality()`. Format JSON : voir `ProcessingRecipeSerializer` et `docs/DESIGN.md` §19.1.
+- `processing.logic` (pure) : `QualityMode` (`none`, `inherit_min`, `inherit_avg`, `age`), `ProcessingLogic.outputQuality`,
+  `allocate` (affectation des entrées aux slots, retour arrière), `isComplete`.
+- `processing.ProcessingMenu` / `processing.client.ProcessingScreen` : menu et écran génériques (`MenuType` dans
+  `ProcessingModule.MENU`).
+- Recette de référence : `data/terresvivantes/recipe/millstone_wheat_flour.json` (module `milling`, `MillingModule.MILLSTONE_TYPE`).
+- Modules `milling` (meule, farine), `dairy`, `preserving`, `kitchen` (ces trois derniers vides en v0.5) : enregistrés dans
+  `TerresVivantes.MODULES`.
+- Pour une nouvelle machine : voir `docs/AGENT_GUIDE.md` (section « Créer une machine de transformation »).
 
 ## Dépendances entre packages
 

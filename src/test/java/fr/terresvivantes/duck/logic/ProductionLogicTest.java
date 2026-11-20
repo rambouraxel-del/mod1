@@ -31,13 +31,4 @@ class ProductionLogicTest {
         assertEquals(1, ProductionLogic.extraWool(1.25F, 2, 0.4));
         assertEquals(0, ProductionLogic.extraWool(1.25F, 2, 0.6));
     }
-
-    @Test
-    void starsAreBoundedBetweenOneAndThree() {
-        assertEquals("★☆☆", ProductionLogic.stars(1));
-        assertEquals("★★☆", ProductionLogic.stars(2));
-        assertEquals("★★★", ProductionLogic.stars(3));
-        assertEquals("★☆☆", ProductionLogic.stars(0));
-        assertEquals("★★★", ProductionLogic.stars(9));
-    }
 }

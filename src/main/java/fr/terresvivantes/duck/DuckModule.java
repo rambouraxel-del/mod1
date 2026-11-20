@@ -10,14 +10,11 @@ import fr.terresvivantes.duck.entity.DuckEggEntity;
 import fr.terresvivantes.duck.item.DuckEggItem;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -41,8 +38,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
  * Module duck (v0.4) : le canard (entité d'élevage qui nage et flotte), son œuf lancé, sa viande crue et cuite, son
- * œuf d'apparition, et les productions liées au génome : laine supplémentaire à la tonte, qualité du lait en
- * étoiles (composant {@code terresvivantes:milk_quality}, utilisé en v0.5).
+ * œuf d'apparition, et les productions liées au génome : laine supplémentaire à la tonte. La qualité du lait est
+ * un composant générique ({@code terresvivantes:quality}, v0.5).
  *
  * <p>Façade de productivité : {@link fr.terresvivantes.livestock.LivestockApi}. Règles pures : {@code duck.logic}.
  */
@@ -51,8 +48,6 @@ public final class DuckModule implements TVModule {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(TerresVivantes.MODID);
     private static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
             DeferredRegister.create(Registries.ENTITY_TYPE, TerresVivantes.MODID);
-    private static final DeferredRegister.DataComponents COMPONENTS =
-            DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, TerresVivantes.MODID);
 
     /** Viande crue : peut donner une faim légère (30 %), comme le poulet cru. */
     private static final FoodProperties RAW_FOOD = new FoodProperties.Builder()
@@ -92,17 +87,10 @@ public final class DuckModule implements TVModule {
     public static final DeferredItem<DeferredSpawnEggItem> DUCK_SPAWN_EGG = ITEMS.register("duck_spawn_egg",
             () -> new DeferredSpawnEggItem(DUCK, 0x3E7D3B, 0x7A5230, new Item.Properties()));
 
-    /** Qualité du lait (1 à 3 étoiles), posée sur le seau de lait à la traite. */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> MILK_QUALITY =
-            COMPONENTS.registerComponentType("milk_quality", builder -> builder
-                    .persistent(ExtraCodecs.intRange(1, 3))
-                    .networkSynchronized(ByteBufCodecs.VAR_INT));
-
     @Override
     public void register(IEventBus modBus) {
         ITEMS.register(modBus);
         ENTITY_TYPES.register(modBus);
-        COMPONENTS.register(modBus);
         modBus.addListener(DuckModule::onEntityAttributes);
         modBus.addListener(DuckModule::onSpawnPlacements);
 
@@ -136,7 +124,6 @@ public final class DuckModule implements TVModule {
         sink.add("item.terresvivantes.raw_duck", "Raw Duck", "Canard cru");
         sink.add("item.terresvivantes.cooked_duck", "Cooked Duck", "Canard cuit");
         sink.add("item.terresvivantes.duck_spawn_egg", "Duck Spawn Egg", "Œuf d'apparition de canard");
-        sink.add("tooltip.terresvivantes.milk_quality", "Quality: %1$s", "Qualité: %1$s");
     }
 
     @Override

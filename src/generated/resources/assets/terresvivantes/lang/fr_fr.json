@@ -22,6 +22,7 @@
   "block.terresvivantes.iron_sprinkler": "Arroseur en fer",
   "block.terresvivantes.lavender": "Lavande",
   "block.terresvivantes.lettuce_crop": "Culture de laitue",
+  "block.terresvivantes.millstone": "Meule",
   "block.terresvivantes.nesting_box": "Nichoir",
   "block.terresvivantes.olive_leaves": "Feuillage d'olivier",
   "block.terresvivantes.olive_sapling": "Pousse d'olivier",
@@ -119,6 +120,7 @@
   "item.terresvivantes.walnut_bread": "Pain aux noix",
   "item.terresvivantes.watering_can": "Arrosoir",
   "item.terresvivantes.watering_can_filled": "Arrosoir (plein)",
+  "item.terresvivantes.wheat_flour": "Farine de blé",
   "item.terresvivantes.wildflower_honey": "Miel de fleurs sauvages",
   "item.terresvivantes.wood_ash": "Cendre de bois",
   "itemGroup.terresvivantes": "Terres Vivantes",
@@ -194,5 +196,5 @@
   "terresvivantes.season.summer": "Été",
   "terresvivantes.season.winter": "Hiver",
   "tooltip.terresvivantes.honey_frame": "Miel : %s",
-  "tooltip.terresvivantes.milk_quality": "Qualité: %1$s"
+  "tooltip.terresvivantes.quality": "Qualité: %s"
 }

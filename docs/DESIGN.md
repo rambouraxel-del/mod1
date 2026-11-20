@@ -619,3 +619,62 @@ Livré en v0.4 : génome et état vital des animaux d'élevage, héritage, besoi
 - `./gradlew build` : tests JUnit verts (232, dont la logique des modules livestock, husbandry, vet et duck).
 - `./gradlew runGameTestServer` : 54 GameTests verts (40 de la v0.3 et 14 de l'élevage : livestock 5, husbandry 3, vet 3, duck 3).
 - `./gradlew runData` : `src/generated` régénéré et `GeneratedResourcesTest` vert.
+
+---
+
+## 19. Transformation (v0.5 : `processing`, `milling`, `dairy`, `preserving`, `kitchen`)
+
+Objectif : transformer les récoltes et les produits d'élevage en produits plus utiles, avec une qualité qui se
+transmet des entrées à la sortie. Une machine = un bloc + une BlockEntity + des recettes JSON; l'infrastructure est
+commune (`processing`).
+
+### 19.1 Infrastructure (livré)
+
+- **Qualité générique** (`core.quality`) : composant `terresvivantes:quality` (entier 1 à 3) sur tout item qui le porte.
+  L'infobulle affiche « Qualité: ★★☆ » (clé `tooltip.terresvivantes.quality`). Le lait de la traite le reçoit
+  (ancien composant `milk_quality` du canard retiré).
+- **Recette** (`terresvivantes:processing`), données dans `data/terresvivantes/recipe/` :
+  `machine`, `ingredients` (liste de `{ingredient, count}`), `container` (optionnel, un item consommé en 1 unité),
+  `result` (`{id, count}`), `time` (ticks), `quality` (`none`, `inherit_min`, `inherit_avg`, `age`).
+- **Qualité de sortie** : `inherit_min` = plus basse des entrées; `inherit_avg` = moyenne arrondie; `age` = base =
+  plus basse, le gain avec le temps vient de `QualityLogic.ageQuality` (étagère d'affinage, module dairy); `none` = pas
+  de composant. Une entrée sans composant compte pour 1. Si aucune entrée n'a de qualité, la sortie n'en a pas.
+- **Machine** : N entrées (1 à 4), conteneur optionnel, une sortie. Haut = entrées, côtés = conteneur, bas = sortie.
+  Progression synchronisée par `ContainerData`; propriété `active` pour le visuel. Le ticker sort tout de suite si les
+  entrées sont vides; la recette est cherchée seulement quand le contenu change.
+- **Écran générique** : `ProcessingMenu` / `ProcessingScreen`, fond `textures/gui/processing.png` (176 x 166).
+  Clic droit sur la machine : menu.
+
+### 19.2 Milling (livré : meule)
+
+- `millstone` : 1 entrée, pas de conteneur. Blé → farine de blé (×1, 100 ticks, `inherit_min`).
+- Prévu : farines d'orge et de maïs; pressoir (jus de pomme, pêche, orange; huile d'olive, avec bouteilles en verre).
+
+### 19.3 Dairy (prévu)
+
+- Baratte : lait → beurre + crème.
+- Cuve à fromage : lait + qualité → caillé (qualité héritée).
+- Étagère d'affinage : caillé → fromage jeune → fromage affiné selon les jours (qualité `age`, `ageQuality`).
+- Fromage de chèvre (variante du même chemin).
+
+### 19.4 Preserving (prévu)
+
+- Tonneau de fermentation (plusieurs jours de jeu) : jus → cidre ou vinaigre; chou → choucroute; concombre → cornichons.
+- Séchoir : fruits secs, viande séchée.
+- Fumoir : viandes et poissons fumés, au bois ou au charbon.
+
+### 19.5 Kitchen (prévu)
+
+- Marmite (`cooking_pot`) : 4 entrées et un bol.
+- 12 plats : pizza_slice, quiche, cheese_omelette, apple_tart, cheese_sandwich, olive_bread, duck_confit,
+  corn_tortilla, pancakes, vegetable_gratin, french_onion_soup, butter_cookie.
+
+### 19.6 Critères de validation (v0.5, état de cette livraison)
+
+- `./gradlew build` : tests JUnit verts (logique qualité, logique de transformation, modules existants).
+- `./gradlew runGameTestServer` : 58 GameTests verts (54 existants et 4 de la meule : mouture en 120 ticks au plus,
+  qualité 3 conservée, farine sans qualité si le blé n'en a pas, trémie au-dessus qui alimente l'entrée).
+- `./gradlew runData` : `src/generated` régénéré, `GeneratedResourcesTest` vert.
+- Non vérifié : rendu visuel client de la meule et de l'écran (textures provisoires, `tools/textures/sprites_v05.py`).
+- Non couvert par GameTest : l'héritage à deux entrées (3 et 2 donne 2) est testé en JUnit (`ProcessingLogicTest`), car la
+  meule n'a qu'une entrée.

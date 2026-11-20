@@ -1,5 +1,28 @@
 # Statut
 
+## v0.5 « Transformation » : en cours (`mod_version=0.5.0-dev`)
+
+- `./gradlew build` : OK, **247 tests JUnit** (dont `GeneratedResourcesTest`).
+- `./gradlew runData` : OK, `src/generated` régénéré.
+- `./gradlew runGameTestServer` : **58 GameTests** réussis, deux passages.
+- Contrats : `docs/ARCHITECTURE.md` « Contrats v0.5 »; règles : `docs/DESIGN.md` §19.
+
+Livré :
+
+- **Qualité générique** (`core.quality`) : composant `terresvivantes:quality` sur tout item, infobulle « Qualité: ★★☆ ».
+  `milk_quality` du canard migré vers ce composant et retiré.
+- **Infrastructure** (`processing`) : recette `terresvivantes:processing` (JSON), machine générique (entrées, conteneur,
+  sortie, progression, ACTIVE, capacités par face, NBT, éjection), menu et écran génériques.
+- **Meule** (`milling`) : blé → farine de blé, 100 ticks, `inherit_min`. Exemple de référence pour les autres machines.
+- Modules vides enregistrés : `dairy`, `preserving`, `kitchen`.
+
+Reste à faire (v0.5) :
+
+1. Dairy, preserving, kitchen (contenu décrit en `docs/DESIGN.md` §19.3 à §19.5).
+2. Pressoir, farines d'orge et de maïs (milling).
+3. Textures et écran définitifs (`tools/textures/sprites_v05.py` est provisoire).
+4. QA visuelle en client : meule, écran de la machine, canard et élevage (procédure v0.3).
+
 ## v0.4 « Élevage » : livrée et vérifiée (`mod_version=0.4.0`)
 
 - `./gradlew build` : OK, **232 tests JUnit** (dont `GeneratedResourcesTest`).

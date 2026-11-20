@@ -1,6 +1,7 @@
 package fr.terresvivantes.duck.gametest;
 
 import fr.terresvivantes.TerresVivantes;
+import fr.terresvivantes.core.quality.QualityModule;
 import fr.terresvivantes.duck.DuckModule;
 import fr.terresvivantes.duck.entity.Duck;
 import fr.terresvivantes.livestock.LivestockApi;
@@ -101,8 +102,8 @@ public final class DuckGameTests {
         helper.assertTrue(event.getCancellationResult().consumesAction(), "l'action doit être consommée");
         ItemStack held = player.getItemInHand(InteractionHand.MAIN_HAND);
         helper.assertTrue(held.is(Items.MILK_BUCKET), "le seau doit devenir un seau de lait, obtenu " + held);
-        Integer quality = held.get(DuckModule.MILK_QUALITY.get());
-        helper.assertTrue(quality != null && quality == 3, "qualité du lait attendue 3, obtenue " + quality);
+        int quality = QualityModule.qualityOf(held);
+        helper.assertTrue(quality == 3, "qualité du lait attendue 3, obtenue " + quality);
         helper.succeed();
     }
 

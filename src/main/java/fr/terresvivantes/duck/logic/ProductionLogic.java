@@ -1,7 +1,8 @@
 package fr.terresvivantes.duck.logic;
 
 /**
- * Qualité du lait, laine supplémentaire et affichage des étoiles de qualité. Aucun import net.minecraft.
+ * Qualité du lait et laine supplémentaire. Aucun import net.minecraft. Les étoiles sont dans
+ * {@code core.quality.logic.QualityLogic}.
  */
 public final class ProductionLogic {
 
@@ -32,11 +33,5 @@ public final class ProductionLogic {
             return 0;
         }
         return DuckLogic.roundProbabilistic((multiplier - 1.0) * baseCount, roll);
-    }
-
-    /** Texte des étoiles de qualité : "★★☆" pour 2 (borné entre 1 et 3). */
-    public static String stars(int quality) {
-        int filled = Math.max(1, Math.min(MAX_QUALITY, quality));
-        return "★".repeat(filled) + "☆".repeat(MAX_QUALITY - filled);
     }
 }

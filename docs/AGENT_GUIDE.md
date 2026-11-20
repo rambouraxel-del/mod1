@@ -46,3 +46,20 @@ Vérifié : build OK / tests OK / runData OK (ou non lancé, avec raison)
 Fichiers partagés demandés : <aucun ou liste>
 Problèmes : <aucun ou liste>
 ```
+
+## Créer une machine de transformation (v0.5)
+
+1. Déclarer la machine : `public static final MachineType X_TYPE = ProcessingApi.registerMachine("x", 2, false);`
+   (identifiant unique, 1 à 4 entrées, conteneur oui ou non).
+2. Bloc : `public final class XBlock extends ProcessingBlock` avec `CODEC = BlockBehaviour.simpleCodec(XBlock::new)`,
+   `codec()` qui le renvoie, et `newBlockEntity` qui crée `XBlockEntity`.
+3. BlockEntity : `public final class XBlockEntity extends ProcessingBlockEntity` avec le constructeur
+   `super(X_BE.get(), pos, state, X_TYPE)`; surcharger `craftingTick` et `craftFinished` pour les sons et particules.
+4. Dans le module : `DeferredBlock`, `BlockItem`, `BlockEntityType.Builder.of(XBlockEntity::new, X.get()).build(null)`;
+   sur le bus mod, `modBus.addListener(e -> ProcessingApi.registerItemHandler(e, X_BE.get()))`.
+5. Recettes : fichiers JSON `data/terresvivantes/recipe/<nom>.json` avec `"type": "terresvivantes:processing"` et
+   `"machine": "x"` (format dans `ProcessingRecipeSerializer`).
+6. Datagen : `registerBlockStates` (modèles avec `ProcessingBlock.ACTIVE`), `registerItemModels` (modèle d'item autonome,
+   sans dépendre d'un modèle de bloc créé plus tard), `registerLootTables` (drop du bloc), `registerLang` (en et fr).
+7. Tests : un GameTest de mouture (voir `milling/gametest/MillingGameTests`) et la logique pure en JUnit.
+

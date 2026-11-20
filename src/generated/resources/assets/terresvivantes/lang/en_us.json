@@ -22,6 +22,7 @@
   "block.terresvivantes.iron_sprinkler": "Iron Sprinkler",
   "block.terresvivantes.lavender": "Lavender",
   "block.terresvivantes.lettuce_crop": "Lettuce Crop",
+  "block.terresvivantes.millstone": "Millstone",
   "block.terresvivantes.nesting_box": "Nesting Box",
   "block.terresvivantes.olive_leaves": "Olive Leaves",
   "block.terresvivantes.olive_sapling": "Olive Sapling",
@@ -119,6 +120,7 @@
   "item.terresvivantes.walnut_bread": "Walnut Bread",
   "item.terresvivantes.watering_can": "Watering Can",
   "item.terresvivantes.watering_can_filled": "Watering Can (Filled)",
+  "item.terresvivantes.wheat_flour": "Wheat Flour",
   "item.terresvivantes.wildflower_honey": "Wildflower Honey",
   "item.terresvivantes.wood_ash": "Wood Ash",
   "itemGroup.terresvivantes": "Terres Vivantes",
@@ -194,5 +196,5 @@
   "terresvivantes.season.summer": "Summer",
   "terresvivantes.season.winter": "Winter",
   "tooltip.terresvivantes.honey_frame": "Honey: %s",
-  "tooltip.terresvivantes.milk_quality": "Quality: %1$s"
+  "tooltip.terresvivantes.quality": "Quality: %s"
 }
