@@ -1,0 +1,10 @@
+{
+  "type": "terresvivantes:grass_seeds",
+  "chance": 0.08,
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:blocks/short_grass"
+    }
+  ]
+}
