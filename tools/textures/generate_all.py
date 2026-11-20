@@ -25,6 +25,7 @@ sys.path.insert(0, str(HERE))
 
 from sprites import SPRITES, SEED_TEMPLATE, SEED_COLORS  # noqa: E402
 from sprites_ext import SPRITES_EXT  # noqa: E402
+from sprites_v03 import SPRITES_V03  # noqa: E402
 
 ROOT = HERE.parents[1]
 TEX_ROOT = ROOT / "src/main/resources/assets/terresvivantes/textures"
@@ -106,7 +107,7 @@ def render(rows, overrides=None):
 def build_all():
     """Retourne une liste (dossier, nom, image) pour toutes les textures."""
     out = []
-    for folder, name, rows in SPRITES + SPRITES_EXT:
+    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03:
         out.append((folder, name, render(rows)))
     # Sachets de graines: meme gabarit, couleurs propres a chaque culture.
     for crop, (seed_col, band_col) in SEED_COLORS.items():
