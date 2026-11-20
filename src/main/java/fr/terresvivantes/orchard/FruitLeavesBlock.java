@@ -85,6 +85,7 @@ public final class FruitLeavesBlock extends LeavesBlock {
         }
         if (level instanceof ServerLevel server) {
             int count = OrchardLogic.yieldCount(def, level.getRandom().nextDouble());
+            count = OrchardApi.scaleFruitYield(server, pos, def, count);
             ItemStack fruit = new ItemStack(OrchardModule.fruitItem(def), count);
             player.getInventory().add(fruit);
             if (!fruit.isEmpty()) {

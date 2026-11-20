@@ -73,8 +73,10 @@ public final class OrchardGameTests {
 
         Item fruit = OrchardModule.fruitItem(cherry);
         int count = player.getInventory().countItem(fruit);
-        helper.assertTrue(count >= cherry.yieldMin() && count <= cherry.yieldMax(),
-                "récolte attendue entre " + cherry.yieldMin() + " et " + cherry.yieldMax() + ", obtenu " + count);
+        // Sans pollinisateur, le rendement vaut x0.6 (module pollination) : la borne basse est abaissée.
+        int low = (int) Math.floor(cherry.yieldMin() * 0.6f);
+        helper.assertTrue(count >= low && count <= cherry.yieldMax(),
+                "récolte attendue entre " + low + " et " + cherry.yieldMax() + ", obtenu " + count);
         int stage = level.getBlockState(pos).getValue(FruitLeavesBlock.STAGE);
         helper.assertTrue(stage == 0, "la feuille doit revenir au stade 0, obtenu " + stage);
         helper.succeed();

@@ -11,6 +11,10 @@ import fr.terresvivantes.core.network.TVNetwork;
 import fr.terresvivantes.core.registry.TVCreativeTab;
 import fr.terresvivantes.crop.CropConfig;
 import fr.terresvivantes.crop.CropModule;
+import fr.terresvivantes.apiculture.ApicultureModule;
+import fr.terresvivantes.flora.FloraModule;
+import fr.terresvivantes.insects.InsectsModule;
+import fr.terresvivantes.pollination.PollinationModule;
 import fr.terresvivantes.datagen.TVDataGen;
 import fr.terresvivantes.food.FoodModule;
 import fr.terresvivantes.health.HealthConfig;
@@ -51,6 +55,10 @@ public final class TerresVivantes {
             new OrchardModule(),
             new WaterModule(),
             new HealthModule(),
+            new PollinationModule(),
+            new FloraModule(),
+            new InsectsModule(),
+            new ApicultureModule(),
             new DebugModule()
     );
 

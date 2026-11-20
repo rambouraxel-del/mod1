@@ -52,6 +52,15 @@ public final class HealthModel {
     /** Facteur de rendement d'une culture malade. */
     public static final float SICK_YIELD_FACTOR = 0.5f;
 
+    /** Facteur de croissance d'une culture touchée par des pucerons (v0.3). */
+    public static final float APHID_GROWTH_FACTOR = 0.5f;
+
+    /** Facteur de rendement d'une culture touchée par des pucerons (v0.3). */
+    public static final float APHID_YIELD_FACTOR = 0.8f;
+
+    /** Réduction maximale des chances de maladie ou de ravageur par la biodiversité (indice 1 : chance × 0.5). */
+    public static final float BIODIVERSITY_REDUCTION = 0.5f;
+
     /** Nombre d'utilisations du pulvérisateur avant recharge. */
     public static final int SPRAYER_CHARGES = 16;
 
@@ -84,7 +93,7 @@ public final class HealthModel {
 
     /** Vrai si la maladie impose le flétrissement. */
     public static boolean withersFromDisease(Disease disease, int diseaseTicks) {
-        return disease != Disease.NONE && diseaseTicks >= WITHER_DISEASE_TICKS;
+        return disease != Disease.NONE && !disease.isPest() && diseaseTicks >= WITHER_DISEASE_TICKS;
     }
 
     /**
@@ -92,8 +101,8 @@ public final class HealthModel {
      * Immunisée ou sans maladie : 0.
      */
     public static double infectionChance(Disease disease, Conditions conditions) {
-        if (disease == Disease.NONE || conditions.immune()) {
-            return 0.0;
+        if (disease == Disease.NONE || disease.isPest() || conditions.immune()) {
+            return 0.0; // les pucerons apparaissent par HealthApi.infest (module insects), pas par infection
         }
         double chance = BASE_INFECTION_CHANCE;
         if (disease == Disease.MILDEW
@@ -141,6 +150,31 @@ public final class HealthModel {
     /** Facteur de rendement : x0.5 si malade, sinon x1. */
     public static float yieldFactor(boolean sick) {
         return sick ? SICK_YIELD_FACTOR : 1.0f;
+    }
+
+    /** Facteur de croissance selon l'état : x0.5 pucerons, x0.3 maladie, x1 sain. */
+    public static float growthFactor(Disease disease) {
+        if (disease == Disease.NONE) {
+            return 1.0f;
+        }
+        return disease.isPest() ? APHID_GROWTH_FACTOR : SICK_GROWTH_FACTOR;
+    }
+
+    /** Facteur de rendement selon l'état : x0.8 pucerons, x0.5 maladie, x1 sain. */
+    public static float yieldFactor(Disease disease) {
+        if (disease == Disease.NONE) {
+            return 1.0f;
+        }
+        return disease.isPest() ? APHID_YIELD_FACTOR : SICK_YIELD_FACTOR;
+    }
+
+    /**
+     * Facteur de chance de maladie ou de ravageur selon la biodiversité : ×(1 − 0.5 × indice), indice borné à [0, 1].
+     * Indice 0 : ×1; indice 1 : ×0.5.
+     */
+    public static double biodiversityFactor(float index) {
+        float clamped = Math.max(0f, Math.min(1f, index));
+        return 1.0 - BIODIVERSITY_REDUCTION * clamped;
     }
 
     /**

@@ -1,8 +1,10 @@
 package fr.terresvivantes.orchard;
 
+import fr.terresvivantes.crop.logic.YieldModel;
 import fr.terresvivantes.orchard.logic.FruitTreeDefinition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,7 +23,16 @@ public final class OrchardApi {
         float modify(ServerLevel level, BlockPos pos, FruitTreeDefinition def);
     }
 
+    /**
+     * Multiplicateur du nombre de fruits récoltés sur une feuille mûre (contrat v0.3). 1.0 neutre.
+     */
+    @FunctionalInterface
+    public interface FruitYieldModifier {
+        float modify(ServerLevel level, BlockPos pos, FruitTreeDefinition def);
+    }
+
     private static final List<FruitSetModifier> FRUIT_SET_MODIFIERS = new CopyOnWriteArrayList<>();
+    private static final List<FruitYieldModifier> FRUIT_YIELD_MODIFIERS = new CopyOnWriteArrayList<>();
 
     private OrchardApi() {
     }
@@ -34,12 +45,36 @@ public final class OrchardApi {
         FRUIT_SET_MODIFIERS.add(modifier);
     }
 
-    /** Produit des multiplicateurs enregistrés à cette position pour une espèce. */
+    /** Enregistre un multiplicateur de rendement des fruits (v0.3, pollinisation). À appeler à l'initialisation. */
+    public static void registerFruitYieldModifier(FruitYieldModifier modifier) {
+        FRUIT_YIELD_MODIFIERS.add(modifier);
+    }
+
+    /** Vrai si l'état est un feuillage fruitier (tous les stades, toutes espèces). */
+    public static boolean isFruitFoliage(BlockState state) {
+        return state.getBlock() instanceof FruitLeavesBlock;
+    }
+
+    /** Produit des multiplicateurs de fructification enregistrés à cette position pour une espèce. */
     static float fruitSetFactor(ServerLevel level, BlockPos pos, FruitTreeDefinition def) {
         float factor = 1.0f;
         for (FruitSetModifier modifier : FRUIT_SET_MODIFIERS) {
             factor *= Math.max(0f, modifier.modify(level, pos, def));
         }
         return factor;
+    }
+
+    /** Produit des multiplicateurs de rendement enregistrés à cette position pour une espèce. */
+    static float fruitYieldFactor(ServerLevel level, BlockPos pos, FruitTreeDefinition def) {
+        float factor = 1.0f;
+        for (FruitYieldModifier modifier : FRUIT_YIELD_MODIFIERS) {
+            factor *= Math.max(0f, modifier.modify(level, pos, def));
+        }
+        return factor;
+    }
+
+    /** Applique le rendement enregistré au nombre de fruits d'une récolte (arrondi probabiliste). */
+    static int scaleFruitYield(ServerLevel level, BlockPos pos, FruitTreeDefinition def, int count) {
+        return YieldModel.scaledCount(count, fruitYieldFactor(level, pos, def), level.getRandom().nextDouble());
     }
 }

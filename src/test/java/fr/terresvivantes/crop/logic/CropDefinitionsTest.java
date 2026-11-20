@@ -106,9 +106,9 @@ class CropDefinitionsTest {
     void invalidDefinitionIsRejected() {
         assertThrows(IllegalArgumentException.class, () -> new CropDefinition("x", Set.of(), Set.of(), Set.of(),
                 30, 10, new CropDefinition.Nutrients(0, 0, 0), new CropDefinition.Nutrients(0, 0, 0),
-                5, 1, 2, false));
+                5, 1, 2, false, false));
         assertThrows(IllegalArgumentException.class, () -> new CropDefinition("x", Set.of(), Set.of(), Set.of(),
                 10, 30, new CropDefinition.Nutrients(0, 0, 0), new CropDefinition.Nutrients(0, 0, 0),
-                0, 1, 2, false));
+                0, 1, 2, false, false));
     }
 }

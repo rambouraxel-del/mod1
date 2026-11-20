@@ -1,7 +1,7 @@
 package fr.terresvivantes.health.logic;
 
 /**
- * Maladies des cultures (DESIGN v0.2, module health). Aucun import net.minecraft.
+ * Maladies et ravageurs des cultures (DESIGN v0.2 et v0.3, module health). Aucun import net.minecraft.
  * L'identifiant de culture est celui de {@code CropApi.cropIdOf} : id de définition ({@code tomato}) ou
  * identifiant vanilla ({@code minecraft:wheat}).
  */
@@ -10,7 +10,12 @@ public enum Disease {
     /** Oïdium : favorisé par la terre saturée d'eau et la pluie ou la chaleur. */
     MILDEW,
     /** Rouille : favorisée par la pluie entre 12 et 24 °C. */
-    RUST;
+    RUST,
+    /**
+     * Pucerons (ravageur, v0.3) : croissance ×0.5, rendement ×0.8, pas de flétrissement. L'apparition relève du
+     * module insects ({@code HealthApi.infest}), pas d'une susceptibilité de culture.
+     */
+    APHIDS;
 
     /** Maladie à laquelle une culture est sensible. Une culture non listée n'a aucune maladie. */
     public static Disease susceptibility(String cropId) {
@@ -19,5 +24,10 @@ public enum Disease {
             case "barley", "corn", "soybean", "minecraft:wheat" -> RUST;
             default -> NONE;
         };
+    }
+
+    /** Vrai pour un ravageur (pucerons) : il n'est pas une maladie fongique et ne fait pas flétrir la culture. */
+    public boolean isPest() {
+        return this == APHIDS;
     }
 }

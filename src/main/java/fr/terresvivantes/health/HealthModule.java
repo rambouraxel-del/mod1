@@ -115,6 +115,7 @@ public final class HealthModule implements TVModule {
         sink.add("message.terresvivantes.health.healthy", "Disease: none", "Maladie : aucune");
         sink.add("message.terresvivantes.health.disease.mildew", "powdery mildew", "oïdium");
         sink.add("message.terresvivantes.health.disease.rust", "rust", "rouille");
+        sink.add("message.terresvivantes.health.disease.aphids", "aphids", "pucerons");
         sink.add("message.terresvivantes.health.immune", "Immunity: %s", "Immunité : %s");
         sink.add("message.terresvivantes.health.yes", "until end of season", "jusqu'à la fin de la saison");
         sink.add("message.terresvivantes.health.no", "no", "non");

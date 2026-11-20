@@ -5,6 +5,7 @@ import fr.terresvivantes.crop.CropApi;
 import fr.terresvivantes.crop.CropGrowthHooks;
 import fr.terresvivantes.crop.logic.CropDefinition;
 import fr.terresvivantes.crop.logic.GrowthDecision;
+import fr.terresvivantes.pollination.BiodiversityApi;
 import fr.terresvivantes.health.logic.CropHealth;
 import fr.terresvivantes.health.logic.Disease;
 import fr.terresvivantes.health.logic.HealthModel;
@@ -30,14 +31,14 @@ final class HealthGrowth {
         CropGrowthHooks.registerListener(HealthGrowth::onGrowthAttempt);
     }
 
-    /** Culture malade : croissance x0.3. */
+    /** Culture malade : croissance x0.3; touchée par des pucerons : x0.5. */
     private static float growthModifier(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def) {
-        return HealthModel.growthFactor(HealthApi.isSick(level, pos));
+        return HealthModel.growthFactor(HealthApi.diseaseOf(level, pos));
     }
 
-    /** Culture malade : rendement x0.5. */
+    /** Culture malade : rendement x0.5; touchée par des pucerons : x0.8. */
     private static float yieldModifier(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def) {
-        return HealthModel.yieldFactor(HealthApi.isSick(level, pos));
+        return HealthModel.yieldFactor(HealthApi.diseaseOf(level, pos));
     }
 
     /**
@@ -63,7 +64,8 @@ final class HealthGrowth {
             Disease susceptibility = Disease.susceptibility(cropId);
             if (susceptibility != Disease.NONE) {
                 boolean immune = before.immune(day);
-                double chance = HealthModel.infectionChance(susceptibility, conditions(level, pos, cropId, immune));
+                double chance = HealthModel.infectionChance(susceptibility, conditions(level, pos, cropId, immune))
+                        * HealthModel.biodiversityFactor(BiodiversityApi.index(level, pos));
                 if (HealthModel.infects(chance, level.getRandom().nextDouble())) {
                     disease = susceptibility;
                     ticks = 0;
@@ -125,8 +127,11 @@ final class HealthGrowth {
         return HealthApi.isCrop(state) && cropId.equals(CropApi.cropIdOf(state));
     }
 
-    /** Particules de spores à chaque tentative d'une culture malade. */
+    /** Particules de spores à chaque tentative d'une culture malade (pas pour les pucerons). */
     private static void spores(ServerLevel level, BlockPos pos, Disease disease) {
+        if (disease.isPest()) {
+            return;
+        }
         var type = disease == Disease.MILDEW ? HealthModule.SPORE_MILDEW.get() : HealthModule.SPORE_RUST.get();
         level.sendParticles(type, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 2, 0.25, 0.15, 0.25, 0.01);
     }

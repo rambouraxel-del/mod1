@@ -55,7 +55,7 @@ Tests de jeu (13) : smoke du mod ; intégration saison / culture / sol / engrais
 
 ## En cours
 
-- Rien pour l'instant.
+- v0.3 « Biodiversité » : pollinisation, indice de biodiversité, pucerons (état `APHIDS`) et points d'extension faits (`docs/DESIGN.md` §17, `docs/ARCHITECTURE.md` « Contrats v0.3 »). Reste : modules `flora`, `insects`, `apiculture` (coquilles vides).
 
 ## Prochaines étapes
 

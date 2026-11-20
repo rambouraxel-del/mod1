@@ -487,3 +487,68 @@ Configuration : `terresvivantes-orchard.toml` (`transitionChance`, `saplingChanc
 - Effet voulu : l'arrosage devient une décision en été, sans punir les cultures sous la pluie ou sous arroseur.
 
 Configuration : `terresvivantes-water.toml`.
+
+## 17. Biodiversité (v0.3 : pollinisation, indice, modules à venir)
+
+Implémenté dans cette version : le package `pollination` (score, indice, caches, points d'extension), les effets
+sur les cultures, les vergers et la santé (pucerons, réduction par biodiversité), l'almanach. Les modules `flora`,
+`insects`, `apiculture` existent comme coquilles vides, à remplir dans les étapes suivantes.
+
+### 17.1 Pollinisation
+
+`PollinationApi.score(ServerLevel, BlockPos)` ∈ [0, 1] : somme bornée puis plafond à 1.
+
+| Composante | Rayon | Contribution | Plafond |
+|---|---|---|---|
+| Abeilles vanilla (`Bee`) | 16 | 0.1 chacune | 0.4 (4 abeilles) |
+| Ruches et nids vanilla (`BeehiveBlock`) | 24 | 0.2 chacun | 0.4 (2 ruches) |
+| Types de fleurs (tag `minecraft:flowers`) | 8 | 0.05 par type | 0.3 |
+| Sources enregistrées (apiaires, papillons du mod) | variable | somme | bornée par la source |
+
+- Cache : `ChunkScoreCache`, clé (dimension, chunk, tranche verticale de 16 blocs), valable 600 ticks. Le score est
+  calculé au centre de la tranche : toutes les positions de la tranche partagent la valeur pendant ce délai.
+  `scoreUncached` lit sans cache (tests, diagnostic).
+- Effets, appliqués par `PollinationModule` :
+  - cultures dont `CropDefinition.needsPollination` (concombre, fraise, aubergine, poivron) : rendement
+    `YieldModifier` ×(0.6 + 0.7 × score), soit ×0.6 sans pollinisateur, ×1.3 au max. Les autres cultures : ×1.
+  - arbres fruitiers : fructification `OrchardApi` ×(0.5 + score); rendement ×(0.6 + 0.7 × score).
+- Pumpkin et melon vanilla : non couverts. Leurs fruits poussent sur la tige (`StemBlock`), hors du contrat
+  `CropGrowthHooks`; à traiter avec le module qui touche leur croissance.
+- Papillons du mod : pas encore d'entité. Le module insects les comptera via `registerPollinatorSource`, en
+  appliquant lui-même le cap de 0.2 (0.05 par papillon dans le rayon 12).
+
+### 17.2 Indice de biodiversité
+
+`BiodiversityApi.index(ServerLevel, BlockPos)` ∈ [0, 1] : fleurs (rayon 8, 0.05 par type, plafond 0.3), feuillage
+fruitier (rayon 6, 0.005 par feuille, plafond 0.25), abeilles (rayon 16, 0.05 chacune, plafond 0.2) et habitats
+enregistrés (haies, via `registerHabitatSource`). Total plafonné à 1. Même cache que la pollinisation.
+
+- Santé : chance d'infection par maladie ×(1 − 0.5 × indice). Les pucerons suivront la même règle (module insects).
+- Almanach : affiche la pollinisation et la biodiversité locales, en pourcentage.
+
+### 17.3 Ravageur : pucerons (état `APHIDS` de `Disease`)
+
+- Croissance ×0.5, rendement ×0.8, pas de flétrissement. Se propage aux voisines identiques comme une maladie.
+- Apparition : `HealthApi.infest` (culture saine uniquement). Retrait : `HealthApi.cure`. Aucune infection spontanée.
+- `HealthApi.registerPestSuppressor` : multiplicateurs de la chance d'apparition, lus par `HealthApi.pestSuppression`.
+  Le module insects les utilisera (coccinelles à proximité).
+- Le fongicide retire aussi les pucerons (il remet la santé à zéro); c'est un choix temporaire.
+
+### 17.4 Modules à venir (coquilles vides en v0.3)
+
+- **flora** : fleurs sauvages clover, lavender, chamomile, borage (worldgen par biome, propagation lente au
+  printemps sur herbe voisine); haie d'aubépine `hawthorn_hedge` (feuillage, fleurit au printemps, habitat).
+- **insects** : papillon (entité ambiante, 4 couleurs, butine le jour au printemps et en été), coccinelle (sur les
+  cultures, mange les pucerons), puceron (`infest`, suppression par `registerPestSuppressor`), lucioles (particules
+  nocturnes en été près des herbes et de l'eau). Filet à papillons; bocaux `ladybug_jar` (relâche) et `butterfly_jar`.
+- **apiculture** : `apiary` (ruche à 4 cadres, BlockEntity; colonie qui croît avec 6 fleurs proches et la saison;
+  dormance en hiver; produit `honey_frame` dont le miel suit la fleur dominante : wildflower, clover, lavender,
+  orchard); `honey_extractor` (cadre vers bouteille de miel typée et cire); `bee_smoker` (récolte sans énerver).
+  Peuplement : placement près d'une ruche vanilla, ou abeilles vanilla relâchées dans l'apiaire.
+
+### 17.5 Critères de validation (v0.3)
+
+- [x] Score croissant avec des fleurs variées et une abeille (GameTest `PollinationGameTests`).
+- [x] Concombre sans pollinisateur : rendement moyen inférieur à celui avec pollinisateurs (test pur).
+- [x] Maladie : chance réduite par la biodiversité (test pur).
+- [ ] Abeilles sauvages qui butinent; coccinelles; ruches et miel; haies et fleurs : modules à venir.

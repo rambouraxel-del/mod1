@@ -22,6 +22,7 @@ src/main/java/fr/terresvivantes/
     gametest/TVSmokeGameTests.java test de fumée du serveur gametest
   datagen/                     providers qui interrogent les hooks de tous les modules
   season/ climate/ soil/ crop/ compost/ food/ tools/ orchard/ water/ health/
+  pollination/ flora/ insects/ apiculture/   (v0.3; flora, insects, apiculture vides)
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -162,7 +163,20 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - `/tv showcase [pos]` : `ShowcaseBuilder.build(level, origin)` pose la plateforme; `origin` est la surface du coin (x min, z min). Sans position, origine = joueur + (-8, 20, 0). Le joueur est téléporté sur la rampe (`viewPoint`), face à la plateforme. Depuis la console, la position est obligatoire.
 - Disposition : colonnes 0..11 cultures du mod, 12..15 vanilla (z 0..3, âges 0, 2, 5, 7); z 5 blocs du mod; z 8 saplings; z 10..15 feuillages (stades 0..3, persistants). Air au-dessus.
 
-### Dépendances entre packages
+### Contrats v0.3
+
+- `pollination.PollinationApi.score(ServerLevel, BlockPos)` : score de pollinisation ∈ [0,1], mis en cache par (dimension, chunk, tranche de 16 blocs) pendant 600 ticks; `scoreUncached` sans cache. Abeilles, ruches vanilla, fleurs; `registerPollinatorSource(PollinatorSource)` pour les apiaires et papillons.
+- `pollination.BiodiversityApi.index(ServerLevel, BlockPos)` : indice de biodiversité ∈ [0,1], même cache; `registerHabitatSource(HabitatSource)` pour les haies.
+- `pollination.logic.PollinationModel` : score, `cropYieldFactor` (×0.6 à ×1.3), `fruitYieldFactor`, `fruitSetFactor` (×0.5 à ×1.5); logique pure.
+- `pollination.logic.BiodiversityModel.index(flowers, fruitLeaves, bees, habitat)` : indice pur.
+- `crop.logic.CropDefinition.needsPollination` : vrai pour concombre, fraise, aubergine, poivron; lu par le `YieldModifier` enregistré par `PollinationModule`.
+- `orchard.OrchardApi.registerFruitYieldModifier(FruitYieldModifier)` : multiplicateur du rendement d'une feuille mûre (appliqué dans `FruitLeavesBlock`); `OrchardApi.isFruitFoliage(BlockState)`. `registerFruitSetModifier` reçoit ×(0.5 + score).
+- `health.HealthApi.infest(Level, BlockPos)` / `cure(Level, BlockPos)` : pucerons (`Disease.APHIDS`, croissance ×0.5, rendement ×0.8, pas de flétrissement); `diseaseOf(Level, BlockPos)`.
+- `health.HealthApi.registerPestSuppressor(PestSuppressor)` / `pestSuppression(ServerLevel, BlockPos)` : produit des multiplicateurs d'apparition des ravageurs (lu par insects).
+- `health.logic.HealthModel.biodiversityFactor(index)` : ×(1 − 0.5 × indice), appliqué à la chance d'infection dans `HealthGrowth`.
+- Almanach (`tools`) : affiche la pollinisation et la biodiversité locales.
+
+## Dépendances entre packages
 
 `crop` ↔ `soil` et `season` ↔ `climate` forment un cycle (facades statiques). Il est accepté en v0.2 : aucune de ces classes ne dépend d'un état initialisé à l'import.
 

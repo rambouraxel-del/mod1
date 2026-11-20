@@ -19,6 +19,7 @@ import java.util.Set;
  * @param yieldMin    quantité minimale du produit à maturité
  * @param yieldMax    quantité maximale du produit à maturité
  * @param legume      vrai si la culture fixe l'azote (fertilise +N au lieu de consommer N)
+ * @param needsPollination vrai si le rendement dépend des pollinisateurs (v0.3, module pollination)
  */
 public record CropDefinition(
         String id,
@@ -32,7 +33,8 @@ public record CropDefinition(
         float growthDays,
         int yieldMin,
         int yieldMax,
-        boolean legume) {
+        boolean legume,
+        boolean needsPollination) {
 
     /** Quantités de N, P et K. */
     public record Nutrients(int n, int p, int k) {

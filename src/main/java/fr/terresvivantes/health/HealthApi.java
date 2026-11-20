@@ -17,7 +17,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Façade publique du module health. Les autres modules n'appellent que cette classe.
@@ -48,6 +50,62 @@ public final class HealthApi {
     /** Vrai si la culture est malade. */
     public static boolean isSick(Level level, BlockPos pos) {
         return get(level, pos).sick();
+    }
+
+    /** Maladie ou ravageur en cours d'une culture ({@link Disease#NONE} si saine). */
+    public static Disease diseaseOf(Level level, BlockPos pos) {
+        return get(level, pos).disease();
+    }
+
+    /**
+     * Multiplicateur de l'apparition des ravageurs, produit des suppresseurs enregistrés (v0.3). 1.0 sans suppresseur.
+     * Destiné au module insects : une coccinelle à proximité réduit la chance qu'une culture se couvre de pucerons.
+     */
+    @FunctionalInterface
+    public interface PestSuppressor {
+        float multiplier(ServerLevel level, BlockPos pos);
+    }
+
+    private static final List<PestSuppressor> PEST_SUPPRESSORS = new CopyOnWriteArrayList<>();
+
+    /** Enregistre un suppresseur de ravageurs. À appeler à l'initialisation du mod. */
+    public static void registerPestSuppressor(PestSuppressor suppressor) {
+        PEST_SUPPRESSORS.add(suppressor);
+    }
+
+    /** Produit des suppresseurs enregistrés à cette position (valeurs négatives ramenées à 0). */
+    public static float pestSuppression(ServerLevel level, BlockPos pos) {
+        float factor = 1.0f;
+        for (PestSuppressor suppressor : PEST_SUPPRESSORS) {
+            factor *= Math.max(0f, suppressor.multiplier(level, pos));
+        }
+        return factor;
+    }
+
+    /**
+     * Installe des pucerons sur une culture saine (v0.3). Ne fait rien sur une culture déjà malade ou une position
+     * sans culture. Le stress et l'immunité sont conservés. Retourne vrai si l'infestation a eu lieu.
+     */
+    public static boolean infest(Level level, BlockPos pos) {
+        if (!isCrop(level.getBlockState(pos))) {
+            return false;
+        }
+        CropHealth health = get(level, pos);
+        if (health.sick()) {
+            return false;
+        }
+        put(level, pos, new CropHealth(health.stress(), Disease.APHIDS, 0, health.immuneUntilDay()));
+        return true;
+    }
+
+    /** Retire les pucerons d'une culture (v0.3). Retourne vrai s'il y en avait. Les maladies ne sont pas touchées. */
+    public static boolean cure(Level level, BlockPos pos) {
+        CropHealth health = get(level, pos);
+        if (!health.disease().isPest()) {
+            return false;
+        }
+        put(level, pos, new CropHealth(health.stress(), Disease.NONE, 0, health.immuneUntilDay()));
+        return true;
     }
 
     /** Vrai si la culture est immunisée à la date courante (serveur). */
@@ -129,6 +187,7 @@ public final class HealthApi {
         return switch (disease) {
             case MILDEW -> "message.terresvivantes.health.disease.mildew";
             case RUST -> "message.terresvivantes.health.disease.rust";
+            case APHIDS -> "message.terresvivantes.health.disease.aphids";
             case NONE -> "message.terresvivantes.health.healthy";
         };
     }
