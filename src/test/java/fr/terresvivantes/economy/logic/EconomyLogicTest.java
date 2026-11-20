@@ -22,10 +22,14 @@ class EconomyLogicTest {
 
     @Test
     void coinsConvertBothWaysWithMinimalPieces() {
-        assertEquals(445L, CoinLogic.coinsToCopper(5, 2, 1));
-        assertArrayEquals(new long[] {1, 2, 5}, CoinLogic.copperToCoins(445));
+        assertEquals(104L, CoinLogic.coinsToCopper(5, 2, 1));
+        assertArrayEquals(new long[] {1, 2, 5}, CoinLogic.copperToCoins(104));
         assertArrayEquals(new long[] {0, 0, 0}, CoinLogic.copperToCoins(-3));
-        assertArrayEquals(new long[] {0, 1, 0}, CoinLogic.copperToCoins(20));
+        assertArrayEquals(new long[] {0, 1, 0}, CoinLogic.copperToCoins(9), "9 cuivre = 1 argent");
+        assertArrayEquals(new long[] {1, 0, 0}, CoinLogic.copperToCoins(81), "81 cuivre = 1 or");
+        assertArrayEquals(new long[] {0, 2, 2}, CoinLogic.copperToCoins(20));
+        assertEquals(9L, CoinLogic.coinsToCopper(0, 1, 0), "1 argent = 9 cuivre");
+        assertEquals(81L, CoinLogic.coinsToCopper(0, 9, 0), "9 argent = 1 or = 81 cuivre");
     }
 
     @Test
