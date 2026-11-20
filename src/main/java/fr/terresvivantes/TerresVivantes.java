@@ -18,6 +18,11 @@ import fr.terresvivantes.apiculture.logic.HoneyType;
 import fr.terresvivantes.flora.FloraConfig;
 import fr.terresvivantes.flora.FloraModule;
 import fr.terresvivantes.insects.InsectsConfig;
+import fr.terresvivantes.livestock.LivestockConfig;
+import fr.terresvivantes.livestock.LivestockModule;
+import fr.terresvivantes.husbandry.HusbandryModule;
+import fr.terresvivantes.vet.VetModule;
+import fr.terresvivantes.duck.DuckModule;
 import fr.terresvivantes.insects.InsectsModule;
 import fr.terresvivantes.pollination.PollinationModule;
 import fr.terresvivantes.datagen.TVDataGen;
@@ -64,6 +69,10 @@ public final class TerresVivantes {
             new FloraModule(),
             new InsectsModule(),
             new ApicultureModule(),
+            new LivestockModule(),
+            new HusbandryModule(),
+            new VetModule(),
+            new DuckModule(),
             new DebugModule()
     );
 
@@ -79,6 +88,7 @@ public final class TerresVivantes {
         container.registerConfig(ModConfig.Type.COMMON, FloraConfig.SPEC, FloraConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, InsectsConfig.SPEC, InsectsConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, ApicultureConfig.SPEC, ApicultureConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, LivestockConfig.SPEC, LivestockConfig.FILE_NAME);
         TVCreativeTab.register(modBus);
         TVNetwork.register(modBus);
         NeoForge.EVENT_BUS.addListener(TVCommands::onRegisterCommands);

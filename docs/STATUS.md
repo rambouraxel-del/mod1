@@ -1,5 +1,38 @@
 # Statut
 
+## v0.4 « Élevage » : module `livestock` livré et vérifié (`mod_version=0.4.0-dev`)
+
+- `./gradlew build` : OK, **195 tests JUnit** (dont 15 de `GenomeLogicTest` et `LivestockLogicTest`).
+- `./gradlew runData` : OK, `src/generated` régénéré (lang, modèle `livestock_ledger`).
+- `./gradlew runGameTestServer` : **45 GameTests** réussis (40 existants et 5 de `LivestockGameTests`).
+- Contrats : `docs/ARCHITECTURE.md` « Contrats v0.4 »; règles : `docs/DESIGN.md` §18.
+
+Contenu de la v0.4 :
+
+- **Génome** (productivité, taille, résistance, fertilité, 0 à 10) en Data Attachment d'entité; génome initial de 4 à 6;
+  hérédité moyenne ± mutation; tag `terresvivantes:livestock`.
+- **Besoins** : cycle de 1200 ticks, consommation (×1.5 en hiver), pâturage sur herbe hors hiver, perte de santé à faim nulle.
+- **Reproduction** : refusée sous 40 de satiété et, par défaut, hors printemps et été (`breedingSeasonsOnly`); jumeaux selon la fertilité.
+- **`LivestockApi`** : `getGenome`, `getState`, `feed`, `setAilment`, `productionMultiplier`, hooks
+  `registerProductionModifier` et `registerFeedSource`. La ponte des poules suit le multiplicateur.
+- **Registre d'élevage** (`livestock_ledger`) : clic droit sur un animal, lecture seule dans le chat (texture provisoire).
+- **Squelettes** : `husbandry`, `vet`, `duck` enregistrés, sans contenu.
+
+Problèmes connus et écarts :
+
+- Laine et lait : pas de multiplicateur appliqué (pas d'événement de tonte exposé par NeoForge 21.1).
+- Santé à 0 sans effet (pas de mort); pas de maladie spontanée (module vet à venir).
+- Attachments non synchronisés vers le client : le registre parle dans le chat, pas dans une interface.
+- Affection (registre) : non définie par le design; affichée comme état amoureux vanilla.
+- Texture `livestock_ledger` provisoire (almanac); à basculer quand la texture est livrée.
+- Les mêmes problèmes de QA visuelle qu'en v0.3 (voir ci-dessous).
+
+Prochaines étapes :
+
+1. v0.4 suite : husbandry (`feeding_trough`, `nesting_box`, ensilage, `feed_mix`), vet (maladies, `veterinary_kit`, `salt_lick`), duck (entité, productions).
+2. QA visuelle en client (procédure v0.3) et vérification des rendus contre `docs/DESIGN.md` §10.
+3. Ensuite : v0.5 transformation, v0.6 équipements, v0.7 économie (`docs/ROADMAP.md`).
+
 ## v0.3 « Biodiversité » : terminé et vérifié (`mod_version=0.3.0`)
 
 - `./gradlew build` : OK, **180 tests JUnit** (dont `GeneratedResourcesTest`, avec le contrôle render_type des blocs à texture transparente).

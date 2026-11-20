@@ -23,6 +23,7 @@ src/main/java/fr/terresvivantes/
   datagen/                     providers qui interrogent les hooks de tous les modules
   season/ climate/ soil/ crop/ compost/ food/ tools/ orchard/ water/ health/
   pollination/ flora/ insects/ apiculture/   (v0.3)
+  livestock/ husbandry/ vet/ duck/           (v0.4 : livestock réel, trois squelettes)
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -80,7 +81,7 @@ Les classes `Module` ne contiennent que l'enregistrement et les hooks; la règle
 ## Configuration
 
 - `TVConfig.COMMON` (type `COMMON`) enregistré par `TerresVivantes`; il reste vide.
-- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard. En v0.3 : flora, insects, apiculture.
+- Chaque module a sa propre spec `<Nom>Config.SPEC` (type `COMMON`) avec son `FILE_NAME` (ex. `terresvivantes-crop.toml`). C'est l'intégrateur qui l'enregistre dans `TerresVivantes` : `container.registerConfig(ModConfig.Type.COMMON, X.SPEC, X.FILE_NAME)`. Enregistrées en v0.2 : season, soil, compost, crop, water, health, orchard. En v0.3 : flora, insects, apiculture. En v0.4 : livestock.
 - Une valeur de défaut ne s'applique qu'à la création du fichier : un TOML existant garde ses valeurs.
 - Chaque spec ajoute ses sous-sections avec `builder.push("nom") ... builder.pop()`.
 
@@ -184,6 +185,30 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
   feuillage fruitier en fleur (`OrchardApi.isFruitFoliage`, stade 1), tag `minecraft:flowers` (miel sauvage). Null sinon.
 - `ApicultureApi.populatedApiaries(ServerLevel, BlockPos, radius)` : nombre d'apiaires peuplés proches.
 - `apiculture.logic.HoneyType` (enum, sans import Minecraft) : WILDFLOWER, CLOVER, LAVENDER, ORCHARD.
+
+### Contrats v0.4 (livestock)
+
+- `livestock.LivestockApi` (façade) :
+  - `Genome getGenome(Animal)`; `LivestockState getState(Animal)`; `void setState(Animal, LivestockState)`;
+  - `void feed(Animal, int amount)` (borné à 100, note le jour du repas);
+  - `void setAilment(Animal, Ailment)`;
+  - `float productionMultiplier(Animal)` = formule `LivestockLogic.productionMultiplier` × modificateurs enregistrés;
+  - `void runNeedsTick(ServerLevel, Animal)` (cycle de besoins; appelé par le module toutes les 1200 ticks);
+  - `boolean isLivestock(Entity)`, `boolean isGrazer(Entity)`, `LIVESTOCK_TAG`.
+- Hooks (listes `CopyOnWriteArrayList`, enregistrées à l'initialisation) :
+  - `LivestockApi.ProductionModifier { float modify(Animal animal); }` via `registerProductionModifier`;
+  - `LivestockApi.FeedSource { int feed(ServerLevel level, Animal animal); }` via `registerFeedSource`
+    (points de satiété ajoutés à chaque cycle, 0 si rien).
+- Attachments d'entité (`LivestockModule.GENOME`, `LivestockModule.STATE`) : sérialisés, sans copyOnDeath.
+  Codecs dans `livestock.LivestockCodecs`; records purs dans `livestock.logic` (`Genome`, `LivestockState`,
+  `Ailment`), sans codec, pour que les tests JUnit n'aient pas besoin de DataFixerUpper.
+- Logique pure : `livestock.logic.GenomeLogic` (génome initial, hérédité), `livestock.logic.LivestockLogic`
+  (cycle de besoins, multiplicateur, reproduction, jumeaux, arrondi probabiliste).
+- Config : `LivestockConfig` (`terresvivantes-livestock.toml`, `breedingSeasonsOnly`), enregistrée par `TerresVivantes`.
+- Squelettes enregistrés dans `TerresVivantes.MODULES` : `husbandry.HusbandryModule`, `vet.VetModule`, `duck.DuckModule`.
+  Aucun contenu en v0.4; ils n'exposent rien aux autres modules pour l'instant.
+- Tag d'entités `terresvivantes:livestock` : fichier statique `data/terresvivantes/tags/entity_type/livestock.json`
+  (l'entrée `terresvivantes:duck` est optionnelle).
 
 ## Dépendances entre packages
 

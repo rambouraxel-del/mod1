@@ -1,6 +1,7 @@
 package fr.terresvivantes.core.gametest;
 
 import fr.terresvivantes.TerresVivantes;
+import fr.terresvivantes.health.HealthConfig;
 import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.soil.SoilApi;
@@ -60,7 +61,10 @@ public final class TVIntegrationGameTests {
     public static void tomatoGrowsInSummer(GameTestHelper helper) {
         setSeason(helper, "summer");
         placeFertileTomato(helper);
+        // Sans maladie ni flétrissement aléatoires : le test ne vérifie que la croissance estivale.
+        HealthConfig.disableRandomEventsForTest(true);
         forceRandomTicks(helper, FORCED_TICKS);
+        HealthConfig.disableRandomEventsForTest(false);
         int age = helper.getBlockState(CROP).getValue(CropBlock.AGE);
         helper.assertTrue(age > 0, "en été la tomate doit pousser, âge obtenu " + age);
         helper.succeed();

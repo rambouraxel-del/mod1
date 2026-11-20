@@ -1,18 +1,20 @@
-# Reprise du projet (pause après v0.3)
+# Reprise du projet (après v0.4 Élevage, module `livestock`)
 
 ## 1. État exact
 
-- Version : `mod_version=0.3.0` (NeoForge 21.1.267, Minecraft 1.21.1).
+- Version : `mod_version=0.4.0-dev` (NeoForge 21.1.267, Minecraft 1.21.1).
 - Branche : `claude/terres-vivantes-minecraft-g4o0hy`. Dernier commit : celui qui ajoute ce fichier (`git log -1`).
 - Vérifications (sur ce commit) :
-  - `./gradlew build` : OK, 180 tests JUnit, 0 échec.
+  - `./gradlew build` : OK, 195 tests JUnit verts (15 de logique livestock inclus).
   - `./gradlew runData` : OK, `src/generated` régénéré.
-  - `./gradlew runGameTestServer` : 3 passages de suite, 40/40 à chaque fois.
+  - `./gradlew runGameTestServer` : 45/45 (40 existants et 5 de livestock).
 - Modules et statut :
   - season, climate, soil, crop, compost, food, tools, orchard, water, health, pollination : livrés (v0.1 à v0.3).
   - flora : livré (4 fleurs sauvages, pots, haie d'aubépine).
   - insects : livré (papillons, coccinelle, pucerons, lucioles, filet, bocal à papillon).
   - apiculture : livré (apiaire, extracteur, enfumoir, miels typés).
+  - livestock : livré en v0.4 (génome, besoins, reproduction, `LivestockApi`, registre d'élevage).
+  - husbandry, vet, duck : squelettes vides enregistrés (v0.4 suite).
   - debug : `/tv showcase` (inclut fleurs, haie, apiaire, insectes).
 
 ## 2. Problèmes connus et dettes
@@ -38,7 +40,7 @@ c. Agent textures en worktree (`tools/textures`, Pillow, grilles 16x16).
 d. Intégrateur : merges `--no-ff`, configs, `runData`, GameTests trois fois, documentation, push, nettoyage des
    worktrees.
 
-## 4. Prochaine étape : v0.4 Élevage (plan prêt)
+## 4. Prochaine étape : v0.4 suite (husbandry, vet, duck)
 
 - Contrats : module `livestock`. Génome par Data Attachment d'entité : productivité, taille, résistance, fertilité
   (0 à 10); héritage moyen des parents avec mutation. Besoins : nourriture quotidienne, pâturage sur herbe hors hiver.
