@@ -11,6 +11,8 @@ import fr.terresvivantes.milling.MillingModule;
 import fr.terresvivantes.dairy.DairyModule;
 import fr.terresvivantes.preserving.PreservingModule;
 import fr.terresvivantes.kitchen.KitchenModule;
+import fr.terresvivantes.automation.AutomationConfig;
+import fr.terresvivantes.automation.AutomationModule;
 import fr.terresvivantes.compost.CompostConfig;
 import fr.terresvivantes.core.config.TVConfig;
 import fr.terresvivantes.core.network.TVNetwork;
@@ -90,6 +92,7 @@ public final class TerresVivantes {
             new PreservingModule(),
             new KitchenModule(),
             new ImplementsModule(),
+            new AutomationModule(),
             new DebugModule()
     );
 
@@ -109,6 +112,7 @@ public final class TerresVivantes {
         container.registerConfig(ModConfig.Type.COMMON, HusbandryConfig.SPEC, HusbandryConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, VetConfig.SPEC, VetConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, DuckConfig.SPEC, DuckConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, AutomationConfig.SPEC, AutomationConfig.FILE_NAME);
         TVCreativeTab.register(modBus);
         TVNetwork.register(modBus);
         NeoForge.EVENT_BUS.addListener(TVCommands::onRegisterCommands);
