@@ -1,0 +1,19 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fermentation_barrel",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:apple_juice"
+      },
+      "count": 1
+    }
+  ],
+  "container": "minecraft:glass_bottle",
+  "result": {
+    "id": "terresvivantes:cider",
+    "count": 1
+  },
+  "time": 48000,
+  "quality": "inherit_avg"
+}

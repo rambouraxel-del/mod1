@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "drying_rack",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:peach"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:dried_fruit",
+    "count": 2
+  },
+  "time": 24000,
+  "quality": "inherit_min"
+}

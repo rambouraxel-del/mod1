@@ -1,0 +1,25 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fermentation_barrel",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:cucumber"
+      },
+      "count": 3
+    },
+    {
+      "ingredient": {
+        "item": "terresvivantes:vinegar"
+      },
+      "count": 1
+    }
+  ],
+  "container": "minecraft:glass_bottle",
+  "result": {
+    "id": "terresvivantes:pickles",
+    "count": 3
+  },
+  "time": 24000,
+  "quality": "inherit_avg"
+}

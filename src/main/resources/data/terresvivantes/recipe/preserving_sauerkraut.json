@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fermentation_barrel",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:cabbage"
+      },
+      "count": 3
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:sauerkraut",
+    "count": 2
+  },
+  "time": 48000,
+  "quality": "inherit_avg"
+}
