@@ -634,8 +634,8 @@ commune (`processing`).
   L'infobulle affiche « Qualité: ★★☆ » (clé `tooltip.terresvivantes.quality`). Le lait de la traite le reçoit
   (ancien composant `milk_quality` du canard retiré).
 - **Recette** (`terresvivantes:processing`), données dans `data/terresvivantes/recipe/` :
-  `machine`, `ingredients` (liste de `{ingredient, count}`), `container` (optionnel, un item consommé en 1 unité),
-  `result` (`{id, count}`), `time` (ticks), `quality` (`none`, `inherit_min`, `inherit_avg`, `age`).
+  `machine`, `ingredients` (liste de `{ingredient, count}`), `container` (optionnel, un `Ingredient` item ou tag consommé en 1 unité; l'ancien format chaîne reste lisible),
+  `result` (`{id, count}`), `time` (ticks, 1 à 2 400 000), `quality` (`none`, `inherit_min`, `inherit_avg`, `age`).
 - **Qualité de sortie** : `inherit_min` = plus basse des entrées; `inherit_avg` = moyenne arrondie; `age` = base =
   plus basse, le gain avec le temps vient de `QualityLogic.ageQuality` (étagère d'affinage, module dairy); `none` = pas
   de composant. Une entrée sans composant compte pour 1. Si aucune entrée n'a de qualité, la sortie n'en a pas.
@@ -648,33 +648,35 @@ commune (`processing`).
 ### 19.2 Milling (livré : meule)
 
 - `millstone` : 1 entrée, pas de conteneur. Blé → farine de blé (×1, 100 ticks, `inherit_min`).
-- Prévu : farines d'orge et de maïs; pressoir (jus de pomme, pêche, orange; huile d'olive, avec bouteilles en verre).
+- Livré : farines d'orge et de maïs; pressoir (jus de pomme, pêche, orange; huile d'olive avec flacon).
 
-### 19.3 Dairy (prévu)
+### 19.3 Dairy (livré)
 
 - Baratte : lait → beurre + crème.
 - Cuve à fromage : lait + qualité → caillé (qualité héritée).
 - Étagère d'affinage : caillé → fromage jeune → fromage affiné selon les jours (qualité `age`, `ageQuality`).
-- Fromage de chèvre (variante du même chemin).
+- Fromage de chèvre (variante du même chemin). Lait sans composant `milk_source` = vache; `goat` = chèvre (traite vanilla).
+- Restes : le seau vide est rendu par le framework (slot conteneur, sortie, sinon éjection).
 
-### 19.4 Preserving (prévu)
+### 19.4 Preserving (livré)
 
 - Tonneau de fermentation (plusieurs jours de jeu) : jus → cidre ou vinaigre; chou → choucroute; concombre → cornichons.
 - Séchoir : fruits secs, viande séchée.
-- Fumoir : viandes et poissons fumés, au bois ou au charbon.
+- Fumoir : viandes et poissons fumés; une recette par produit, combustible = tag `terresvivantes:smoker_fuel`
+  (bûches, charbon, charbon de bois).
 
-### 19.5 Kitchen (prévu)
+### 19.5 Kitchen (livré)
 
-- Marmite (`cooking_pot`) : 4 entrées et un bol.
+- Marmite (`cooking_pot`) : 4 entrées et un conteneur (bol). Recette de référence : omelette au fromage (160 ticks).
 - 12 plats : pizza_slice, quiche, cheese_omelette, apple_tart, cheese_sandwich, olive_bread, duck_confit,
   corn_tortilla, pancakes, vegetable_gratin, french_onion_soup, butter_cookie.
 
 ### 19.6 Critères de validation (v0.5, état de cette livraison)
 
 - `./gradlew build` : tests JUnit verts (logique qualité, logique de transformation, modules existants).
-- `./gradlew runGameTestServer` : 58 GameTests verts (54 existants et 4 de la meule : mouture en 120 ticks au plus,
-  qualité 3 conservée, farine sans qualité si le blé n'en a pas, trémie au-dessus qui alimente l'entrée).
+- `./gradlew runGameTestServer` : 75 GameTests verts, trois passages (dont la chaîne lait de vache qualité 3 → caillé →
+  fromage affiné 3, la traite d'une chèvre → fromage de chèvre, l'huile d'olive, la marmite à l'omelette et la vitrine).
 - `./gradlew runData` : `src/generated` régénéré, `GeneratedResourcesTest` vert.
-- Non vérifié : rendu visuel client de la meule et de l'écran (textures provisoires, `tools/textures/sprites_v05.py`).
+- Non vérifié : rendu visuel client des machines et de l'écran (`tools/textures/sprites_v05.py`).
 - Non couvert par GameTest : l'héritage à deux entrées (3 et 2 donne 2) est testé en JUnit (`ProcessingLogicTest`), car la
   meule n'a qu'une entrée.

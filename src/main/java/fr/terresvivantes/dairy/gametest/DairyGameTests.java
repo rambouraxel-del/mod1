@@ -10,8 +10,15 @@ import fr.terresvivantes.dairy.logic.MilkSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.goat.Goat;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -23,6 +30,9 @@ public final class DairyGameTests {
     private static final String TEMPLATE = "orchard_arena";
     private static final String BATCH = "dairy";
     private static final BlockPos MACHINE = new BlockPos(5, 2, 5);
+    /** Étagère voisine de la cuve, pour la chaîne lait → caillé → affinage. */
+    private static final BlockPos SHELF = new BlockPos(7, 2, 5);
+    private static final BlockPos GOAT_POS = new BlockPos(9, 2, 9);
     /** Durées des recettes (ticks), avec une marge de vérification. */
     private static final int CHURN_TICKS = 200;
     private static final int VAT_TICKS = 400;
@@ -84,19 +94,87 @@ public final class DairyGameTests {
         });
     }
 
-    /**
-     * Le lait de vache ne se transforme pas en fromage de chèvre : la cuve reste vide si l'espèce ne correspond pas.
-     */
-    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
-    public static void cheeseVatIgnoresMilkOfAnotherSpecies(GameTestHelper helper) {
+    /** Un seau de lait sans composant d'espèce est du lait de vache : il donne du caillé, pas du fromage de chèvre. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 500)
+    public static void cheeseVatTreatsPlainMilkAsCowMilk(GameTestHelper helper) {
         helper.setBlock(MACHINE, DairyModule.CHEESE_VAT.get());
         CheeseVatBlockEntity vat = helper.getBlockEntity(MACHINE);
-        ItemStack plainMilk = new ItemStack(Items.MILK_BUCKET);
-        vat.inventory().setStackInSlot(0, plainMilk);
-        helper.runAfterDelay(MARGIN, () -> {
-            ItemStack output = vat.inventory().getStackInSlot(DairyModule.CHEESE_VAT_TYPE.outputSlot());
-            helper.assertTrue(output.isEmpty(), "un seau de lait sans espèce ne doit pas donner de caillé, obtenu " + output);
+        vat.inventory().setStackInSlot(0, new ItemStack(Items.MILK_BUCKET));
+        helper.runAfterDelay(VAT_TICKS + MARGIN, () -> {
+            ItemStack curd = vat.inventory().getStackInSlot(DairyModule.CHEESE_VAT_TYPE.outputSlot());
+            helper.assertTrue(curd.is(DairyModule.CHEESE_CURD.get()) && curd.getCount() == 2,
+                    "un seau sans espèce doit donner du caillé (2) comme le lait de vache, obtenu " + curd);
             helper.succeed();
+        });
+    }
+
+    /**
+     * Une chèvre vanilla traite au seau : le seau reçoit le composant {@code milk_source=goat}, et la cuve en fait du
+     * fromage de chèvre.
+     */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 500)
+    public static void milkingGoatSetsGoatSourceAndGoatCheeseFollows(GameTestHelper helper) {
+        Goat goat = helper.spawn(EntityType.GOAT, GOAT_POS);
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET));
+        PlayerInteractEvent.EntityInteract event =
+                new PlayerInteractEvent.EntityInteract(player, InteractionHand.MAIN_HAND, goat);
+        NeoForge.EVENT_BUS.post(event);
+
+        ItemStack milk = player.getItemInHand(InteractionHand.MAIN_HAND);
+        helper.assertTrue(milk.is(Items.MILK_BUCKET), "la traite de chèvre doit donner un seau de lait, obtenu " + milk);
+        helper.assertTrue(MilkSource.GOAT.equals(milk.get(DairyModule.MILK_SOURCE.get())),
+                "composant milk_source attendu à goat, obtenu " + milk.get(DairyModule.MILK_SOURCE.get()));
+
+        helper.setBlock(MACHINE, DairyModule.CHEESE_VAT.get());
+        CheeseVatBlockEntity vat = helper.getBlockEntity(MACHINE);
+        vat.inventory().setStackInSlot(0, milk.copy());
+        helper.runAfterDelay(VAT_TICKS + MARGIN, () -> {
+            ItemStack cheese = vat.inventory().getStackInSlot(DairyModule.CHEESE_VAT_TYPE.outputSlot());
+            helper.assertTrue(cheese.is(DairyModule.GOAT_CHEESE.get()) && cheese.getCount() == 1,
+                    "fromage de chèvre attendu (1), obtenu " + cheese);
+            helper.succeed();
+        });
+    }
+
+    /**
+     * Chaîne complète : lait de vache de qualité 3 → cuve → caillé 3 → étagère (affinage forcé du jeune) → fromage
+     * affiné 3. Chaque étape est avancée à la main quand elle dure des jours (24000 et 144000 ticks).
+     */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 800)
+    public static void cowMilkQualityThreeRipensToAgedCheese(GameTestHelper helper) {
+        helper.setBlock(MACHINE, DairyModule.CHEESE_VAT.get());
+        CheeseVatBlockEntity vat = helper.getBlockEntity(MACHINE);
+        vat.inventory().setStackInSlot(0, cowMilk(3));
+        helper.runAfterDelay(VAT_TICKS + MARGIN, () -> {
+            ItemStack curd = vat.inventory().getStackInSlot(DairyModule.CHEESE_VAT_TYPE.outputSlot());
+            helper.assertTrue(curd.is(DairyModule.CHEESE_CURD.get()) && QualityModule.qualityOf(curd) == 3,
+                    "caillé de qualité 3 attendu, obtenu " + curd);
+            vat.inventory().setStackInSlot(DairyModule.CHEESE_VAT_TYPE.outputSlot(), ItemStack.EMPTY);
+            helper.setBlock(SHELF, DairyModule.AGING_SHELF.get());
+            AgingShelfBlockEntity shelf = helper.getBlockEntity(SHELF);
+            ItemStack oneCurd = new ItemStack(DairyModule.CHEESE_CURD.get());
+            QualityModule.setQuality(oneCurd, 3);
+            shelf.inventory().setStackInSlot(0, oneCurd);
+            helper.runAfterDelay(5, () -> {
+                shelf.dataAccess().set(0, shelf.totalTime() - 2);
+                helper.runAfterDelay(MARGIN, () -> {
+                    ItemStack young = shelf.inventory().getStackInSlot(DairyModule.AGING_SHELF_TYPE.outputSlot());
+                    helper.assertTrue(young.is(DairyModule.YOUNG_CHEESE.get()) && QualityModule.qualityOf(young) == 3,
+                            "fromage jeune de qualité 3 attendu, obtenu " + young);
+                    shelf.inventory().setStackInSlot(DairyModule.AGING_SHELF_TYPE.outputSlot(), ItemStack.EMPTY);
+                    shelf.inventory().setStackInSlot(0, young.copy());
+                    helper.runAfterDelay(5, () -> {
+                        shelf.dataAccess().set(0, shelf.totalTime() - 2);
+                        helper.runAfterDelay(MARGIN, () -> {
+                            ItemStack aged = shelf.inventory().getStackInSlot(DairyModule.AGING_SHELF_TYPE.outputSlot());
+                            helper.assertTrue(aged.is(DairyModule.AGED_CHEESE.get()) && QualityModule.qualityOf(aged) == 3,
+                                    "fromage affiné de qualité 3 attendu, obtenu " + aged);
+                            helper.succeed();
+                        });
+                    });
+                });
+            });
         });
     }
 

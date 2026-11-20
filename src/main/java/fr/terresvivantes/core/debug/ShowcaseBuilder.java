@@ -9,6 +9,7 @@ import fr.terresvivantes.compost.logic.CompostLogic;
 import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.crop.logic.CropDefinition;
 import fr.terresvivantes.crop.logic.CropDefinitions;
+import fr.terresvivantes.dairy.DairyModule;
 import fr.terresvivantes.duck.DuckModule;
 import fr.terresvivantes.duck.entity.Duck;
 import fr.terresvivantes.flora.FloraModule;
@@ -19,6 +20,9 @@ import fr.terresvivantes.husbandry.HusbandryModule;
 import fr.terresvivantes.husbandry.logic.FeedType;
 import fr.terresvivantes.husbandry.logic.TroughLogic;
 import fr.terresvivantes.insects.InsectsModule;
+import fr.terresvivantes.kitchen.KitchenModule;
+import fr.terresvivantes.milling.MillingModule;
+import fr.terresvivantes.preserving.PreservingModule;
 import fr.terresvivantes.insects.entity.Butterfly;
 import fr.terresvivantes.insects.entity.Ladybug;
 import fr.terresvivantes.orchard.FruitLeavesBlock;
@@ -47,6 +51,7 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +61,9 @@ import java.util.List;
  * un exemple de chaque bloc du mod, des saplings et des feuillages fruitiers aux quatre stades, les fleurs
  * sauvages, une haie, un apiaire peuplé avec son extracteur, deux papillons et une coccinelle (persistants), et un
  * enclos d'élevage (clôture de chêne) avec auge pleine de foin, nichoir, pierre à sel, une vache, un mouton, une poule
- * et deux canards (mâle et femelle), persistants.
+ * et deux canards (mâle et femelle), persistants, et une rangée de transformation : une machine de chaque sorte
+ * (meule, pressoir, baratte, cuve à fromage, étagère d'affinage, tonneau, séchoir, fumoir) et une marmite sur un feu
+ * de camp allumé.
  *
  * <p>Repère relatif à l'origine (surface de la plateforme, herbe) : x de 0 à {@link #width()}-1, z de -{@link #LEDGE}
  * à {@link #DEPTH}-1, y = -1 (pierre), 0 (surface), 1 à {@link #HEIGHT} (air dégagé).
@@ -69,6 +76,9 @@ import java.util.List;
  *   z 10..15 feuillages: une ligne par espèce, stades 0..3 (x0..3), persistants;
  *            apiaire peuplé (x5, z 10) et extracteur (x7, z 10)
  *   x 8..15, z 9..15  enclos (clôture); intérieur x 9..14, z 10..14: auge (9,10), nichoir (14,10), sel (9,14)
+ *   z 17     transformation: meule (x0), pressoir (x2), baratte (x4), cuve (x6), étagère (x8), tonneau (x10),
+ *            séchoir (x12), fumoir (x14)
+ *   z 20     marmite (x2, y1) sur feu de camp allumé (x2, y0)
  *   air      deux papillons et une coccinelle, persistants (ils ne disparaissent pas)
  * </pre>
  */
@@ -81,12 +91,15 @@ public final class ShowcaseBuilder {
             List.of(Blocks.WHEAT, Blocks.CARROTS, Blocks.POTATOES, Blocks.BEETROOTS);
     /** Rangée de visite devant la plateforme. */
     public static final int LEDGE = 4;
-    public static final int DEPTH = 16;
+    public static final int DEPTH = 24;
     public static final int HEIGHT = 6;
     static final int ROW_CROPS = 0;
     static final int ROW_BLOCKS = 5;
     static final int ROW_SAPLINGS = 8;
     static final int ROW_LEAVES = 10;
+    /** Rangée des machines de transformation, et rangée de la marmite (feu de camp dessous). */
+    static final int ROW_PROCESSING = 17;
+    static final int ROW_POT = 20;
     static final int FARMLAND_WET = 7;
     /** Fleurs sauvages posées sur la rangée des blocs, x = 12..15 (ordre de {@link #placeFlora}). */
     public static final List<String> FLOWER_IDS = List.of("clover", "lavender", "chamomile", "borage");
@@ -138,6 +151,7 @@ public final class ShowcaseBuilder {
         placeFlora(placer);
         placeApiary(placer, level, origin);
         placeLivestock(placer, level, origin);
+        placeProcessing(placer);
         removeFauna(level, origin);
         spawnInsects(level, origin, fauna);
         spawnLivestock(level, origin, fauna);
@@ -155,6 +169,20 @@ public final class ShowcaseBuilder {
             }
         }
         removeFauna(level, origin);
+    }
+
+    /** Une machine de transformation de chaque sorte, en rangée; la marmite a son feu de camp dessous. */
+    private static void placeProcessing(Placer placer) {
+        placer.set(0, 1, ROW_PROCESSING, MillingModule.MILLSTONE.get().defaultBlockState());
+        placer.set(2, 1, ROW_PROCESSING, MillingModule.FRUIT_PRESS.get().defaultBlockState());
+        placer.set(4, 1, ROW_PROCESSING, DairyModule.CHURN.get().defaultBlockState());
+        placer.set(6, 1, ROW_PROCESSING, DairyModule.CHEESE_VAT.get().defaultBlockState());
+        placer.set(8, 1, ROW_PROCESSING, DairyModule.AGING_SHELF.get().defaultBlockState());
+        placer.set(10, 1, ROW_PROCESSING, PreservingModule.FERMENTATION_BARREL.get().defaultBlockState());
+        placer.set(12, 1, ROW_PROCESSING, PreservingModule.DRYING_RACK.get().defaultBlockState());
+        placer.set(14, 1, ROW_PROCESSING, PreservingModule.SMOKEHOUSE.get().defaultBlockState());
+        placer.set(2, 0, ROW_POT, Blocks.CAMPFIRE.defaultBlockState().setValue(BlockStateProperties.LIT, true));
+        placer.set(2, 1, ROW_POT, KitchenModule.COOKING_POT.get().defaultBlockState());
     }
 
     private static void placeFlora(Placer placer) {

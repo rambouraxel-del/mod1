@@ -4,14 +4,16 @@
   "ingredients": [
     {
       "ingredient": {
-        "item": "minecraft:cod"
+        "item": "minecraft:porkchop"
       },
       "count": 1
     }
   ],
-  "container": "minecraft:charcoal",
+  "container": {
+    "tag": "terresvivantes:smoker_fuel"
+  },
   "result": {
-    "id": "terresvivantes:smoked_fish",
+    "id": "terresvivantes:smoked_ham",
     "count": 1
   },
   "time": 600,

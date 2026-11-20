@@ -1,27 +1,44 @@
 # Statut
 
-## v0.5 « Transformation » : en cours (`mod_version=0.5.0-dev`)
+## v0.5 « Transformation » : livrée et vérifiée (`mod_version=0.5.0`)
 
-- `./gradlew build` : OK, **247 tests JUnit** (dont `GeneratedResourcesTest`).
+- `./gradlew build` : OK, **263 tests JUnit** (dont `GeneratedResourcesTest`).
 - `./gradlew runData` : OK, `src/generated` régénéré.
-- `./gradlew runGameTestServer` : **58 GameTests** réussis, deux passages.
+- `./gradlew runGameTestServer` : **75 GameTests** réussis, trois passages de suite (75/75 à chaque fois), aucune erreur
+  « Parsing error » / « Couldn't parse » dans le log.
 - Contrats : `docs/ARCHITECTURE.md` « Contrats v0.5 »; règles : `docs/DESIGN.md` §19.
 
-Livré :
+Contenu de la v0.5 :
 
 - **Qualité générique** (`core.quality`) : composant `terresvivantes:quality` sur tout item, infobulle « Qualité: ★★☆ ».
   `milk_quality` du canard migré vers ce composant et retiré.
-- **Infrastructure** (`processing`) : recette `terresvivantes:processing` (JSON), machine générique (entrées, conteneur,
-  sortie, progression, ACTIVE, capacités par face, NBT, éjection), menu et écran génériques.
-- **Meule** (`milling`) : blé → farine de blé, 100 ticks, `inherit_min`. Exemple de référence pour les autres machines.
-- Modules vides enregistrés : `dairy`, `preserving`, `kitchen`.
+- **Infrastructure** (`processing`) : recette `terresvivantes:processing` (JSON). Le conteneur est un `Ingredient`
+  (item ou tag; l'ancien format chaîne reste lisible). Durée bornée à 2 400 000 ticks. Les restes des ingrédients
+  consommés (seau vide) sont placés dans le slot conteneur, sinon dans la sortie, sinon éjectés.
+- **Meule et pressoir** (`milling`) : blé → farine de blé, orge → farine d'orge, maïs → farine de maïs; pommes, pêches,
+  oranges → jus; olives (4) + flacon → huile d'olive.
+- **Laiterie** (`dairy`) : baratte (lait → crème, crème → beurre), cuve à fromage (lait → caillé, lait de chèvre →
+  fromage de chèvre), étagère d'affinage (caillé → fromage jeune → fromage affiné). Un seau sans composant
+  `milk_source` est du lait de vache (ingrédient `neoforge:difference`). Traite d'une chèvre vanilla : composant `goat`.
+- **Conservation** (`preserving`) : tonneau de fermentation (jus → cidre, concombres + vinaigre → cornichons),
+  séchoir, fumoir (une recette par produit, combustible = tag `terresvivantes:smoker_fuel`: bûches, charbon, charbon de bois).
+- **Cuisine** (`kitchen`) : marmite sur source de chaleur (feu de camp), 12 plats. Test de référence : omelette au fromage.
+- **Vitrine** `/tv showcase` : rangée de transformation (une machine de chaque sorte, marmite sur feu de camp allumé).
+- Textures v0.5 : `tools/textures/sprites_v05.py`; les jus de pomme et de pêche sont désormais générés (plus de recoloriage
+  à la main). `generate_all.py` est idempotent.
 
-Reste à faire (v0.5) :
+Problèmes connus :
 
-1. Dairy, preserving, kitchen (contenu décrit en `docs/DESIGN.md` §19.3 à §19.5).
-2. Pressoir, farines d'orge et de maïs (milling).
-3. Textures et écran définitifs (`tools/textures/sprites_v05.py` est provisoire).
-4. QA visuelle en client : meule, écran de la machine, canard et élevage (procédure v0.3).
+- Tonte et traite approximées : NeoForge 21.1 n'expose pas d'événement dédié (voir v0.4).
+- Pas de QA visuelle en client pour la v0.5 : meule, pressoir, machines, écrans, jus. Procédure v0.3 (`xvfb-run`).
+- Tests lents : la chaîne d'affinage (24000 et 144000 ticks) est avancée à la main dans les GameTests.
+- Le combustible du fumoir inclut les bûches (`logs_that_burn`) : choix d'équilibrage à confirmer.
+
+Prochaines étapes :
+
+1. QA visuelle en client : élevage (v0.4) et machines de transformation (v0.5).
+2. **v0.6 Équipements & automatisation** (`docs/ROADMAP.md`) : semoir, charrue attelée, silos, granges, convoyeurs et
+   trémies agricoles, épouvantail.
 
 ## v0.4 « Élevage » : livrée et vérifiée (`mod_version=0.4.0`)
 

@@ -1,0 +1,94 @@
+{
+  "variants": {
+    "active=false,content=curd,facing=east": {
+      "model": "terresvivantes:block/cheese_vat_curd",
+      "y": 90
+    },
+    "active=false,content=curd,facing=north": {
+      "model": "terresvivantes:block/cheese_vat_curd"
+    },
+    "active=false,content=curd,facing=south": {
+      "model": "terresvivantes:block/cheese_vat_curd",
+      "y": 180
+    },
+    "active=false,content=curd,facing=west": {
+      "model": "terresvivantes:block/cheese_vat_curd",
+      "y": 270
+    },
+    "active=false,content=empty,facing=east": {
+      "model": "terresvivantes:block/cheese_vat",
+      "y": 90
+    },
+    "active=false,content=empty,facing=north": {
+      "model": "terresvivantes:block/cheese_vat"
+    },
+    "active=false,content=empty,facing=south": {
+      "model": "terresvivantes:block/cheese_vat",
+      "y": 180
+    },
+    "active=false,content=empty,facing=west": {
+      "model": "terresvivantes:block/cheese_vat",
+      "y": 270
+    },
+    "active=false,content=milk,facing=east": {
+      "model": "terresvivantes:block/cheese_vat_milk",
+      "y": 90
+    },
+    "active=false,content=milk,facing=north": {
+      "model": "terresvivantes:block/cheese_vat_milk"
+    },
+    "active=false,content=milk,facing=south": {
+      "model": "terresvivantes:block/cheese_vat_milk",
+      "y": 180
+    },
+    "active=false,content=milk,facing=west": {
+      "model": "terresvivantes:block/cheese_vat_milk",
+      "y": 270
+    },
+    "active=true,content=curd,facing=east": {
+      "model": "terresvivantes:block/cheese_vat_curd",
+      "y": 90
+    },
+    "active=true,content=curd,facing=north": {
+      "model": "terresvivantes:block/cheese_vat_curd"
+    },
+    "active=true,content=curd,facing=south": {
+      "model": "terresvivantes:block/cheese_vat_curd",
+      "y": 180
+    },
+    "active=true,content=curd,facing=west": {
+      "model": "terresvivantes:block/cheese_vat_curd",
+      "y": 270
+    },
+    "active=true,content=empty,facing=east": {
+      "model": "terresvivantes:block/cheese_vat",
+      "y": 90
+    },
+    "active=true,content=empty,facing=north": {
+      "model": "terresvivantes:block/cheese_vat"
+    },
+    "active=true,content=empty,facing=south": {
+      "model": "terresvivantes:block/cheese_vat",
+      "y": 180
+    },
+    "active=true,content=empty,facing=west": {
+      "model": "terresvivantes:block/cheese_vat",
+      "y": 270
+    },
+    "active=true,content=milk,facing=east": {
+      "model": "terresvivantes:block/cheese_vat_milk",
+      "y": 90
+    },
+    "active=true,content=milk,facing=north": {
+      "model": "terresvivantes:block/cheese_vat_milk"
+    },
+    "active=true,content=milk,facing=south": {
+      "model": "terresvivantes:block/cheese_vat_milk",
+      "y": 180
+    },
+    "active=true,content=milk,facing=west": {
+      "model": "terresvivantes:block/cheese_vat_milk",
+      "y": 270
+    }
+  }
+}

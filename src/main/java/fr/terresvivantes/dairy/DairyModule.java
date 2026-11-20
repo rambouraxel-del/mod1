@@ -8,19 +8,15 @@ import fr.terresvivantes.dairy.item.QualityFoodItem;
 import fr.terresvivantes.datagen.LangSink;
 import fr.terresvivantes.processing.MachineType;
 import fr.terresvivantes.processing.ProcessingApi;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Containers;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -141,15 +137,6 @@ public final class DairyModule implements TVModule {
         ProcessingApi.registerItemHandler(event, CHURN_BE.get());
         ProcessingApi.registerItemHandler(event, CHEESE_VAT_BE.get());
         ProcessingApi.registerItemHandler(event, AGING_SHELF_BE.get());
-    }
-
-    /**
-     * Rend le seau vide après une recette qui consomme du lait. Le framework de transformation ne rend pas le
-     * contenant : le seau est éjecté au-dessus de la machine.
-     */
-    public static void ejectBucket(ServerLevel level, BlockPos pos) {
-        Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
-                new ItemStack(Items.BUCKET));
     }
 
     private static FoodProperties light() {

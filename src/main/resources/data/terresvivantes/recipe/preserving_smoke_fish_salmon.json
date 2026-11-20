@@ -9,7 +9,9 @@
       "count": 1
     }
   ],
-  "container": "minecraft:charcoal",
+  "container": {
+    "tag": "terresvivantes:smoker_fuel"
+  },
   "result": {
     "id": "terresvivantes:smoked_fish",
     "count": 1

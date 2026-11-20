@@ -33,7 +33,9 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
@@ -48,6 +50,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * Module preserving (v0.5) : tonneau de fermentation (cidre, vinaigre, choucroute, cornichons), séchoir (fruits secs,
@@ -247,6 +250,19 @@ public final class PreservingModule implements TVModule {
             case WEST -> 270;
             default -> 0;
         };
+    }
+
+    /** Combustible du fumoir : bûches, charbon et charbon de bois (une seule recette par produit). */
+    public static final TagKey<Item> SMOKER_FUEL = TagKey.create(Registries.ITEM,
+            ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "smoker_fuel"));
+
+    @Override
+    public void registerItemTags(Function<TagKey<Item>, TagsProvider.TagAppender<Item>> tags,
+                                 HolderLookup.Provider lookup) {
+        tags.apply(SMOKER_FUEL)
+                .addOptionalTag(ResourceLocation.withDefaultNamespace("logs_that_burn"))
+                .add(ResourceKey.create(Registries.ITEM, ResourceLocation.withDefaultNamespace("coal")),
+                        ResourceKey.create(Registries.ITEM, ResourceLocation.withDefaultNamespace("charcoal")));
     }
 
     @Override

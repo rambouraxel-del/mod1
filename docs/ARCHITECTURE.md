@@ -245,16 +245,26 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
   `inventory()` (`ProcessingInventory`); `itemHandler(Direction)`; `dataAccess()` (progression, durée); hooks
   `craftingTick(level, pos)` (son ou particules pendant la mouture) et `craftFinished(level, pos, recipe)`.
 - `processing.ProcessingRecipe` (type `terresvivantes:processing`, sérialiseur `ProcessingModule.SERIALIZER`) :
-  `plan`, `assemble` (sortie avec qualité, sans consommer), `craft` (sortie et consommation), `machine()`, `time()`,
-  `quality()`. Format JSON : voir `ProcessingRecipeSerializer` et `docs/DESIGN.md` §19.1.
+  `plan`, `assemble` (sortie avec qualité, sans consommer), `craft(input, registries, leftovers)` (sortie et consommation;
+  les restes des ingrédients consommés, par exemple le seau vide, sont ajoutés à `leftovers`), `machine()`, `time()`,
+  `quality()`, `container()` (`Optional<Ingredient>`). `ProcessingBlockEntity` place les restes : slot conteneur si libre,
+  sinon sortie si elle accepte, sinon éjection au-dessus de la machine.
+- Format JSON final (`ProcessingRecipeSerializer`) : `type`, `machine`, `ingredients` (`{ingredient, count}`, `ingredient`
+  est un `Ingredient` : `{item}`, `{tag}`, ou un type `neoforge:*`), `container` (optionnel : `Ingredient`, ou l'ancienne
+  chaîne d'id d'item), `result` (`{id, count}`), `time` (1 à 2 400 000), `quality` (`none`, `inherit_min`, `inherit_avg`, `age`).
+- Lait de vache (dairy) : `{"type":"neoforge:difference","base":{"item":"minecraft:milk_bucket"},"subtracted":{"type":"neoforge:components","items":"minecraft:milk_bucket","components":{"terresvivantes:milk_source":"goat"}}}`.
+  Lait de chèvre : `neoforge:components` avec `milk_source=goat`.
+- Combustible du fumoir : tag d'items `terresvivantes:smoker_fuel` (`PreservingModule.SMOKER_FUEL`, généré par
+  `registerItemTags` : `#minecraft:logs_that_burn`, charbon, charbon de bois).
 - `processing.logic` (pure) : `QualityMode` (`none`, `inherit_min`, `inherit_avg`, `age`), `ProcessingLogic.outputQuality`,
   `allocate` (affectation des entrées aux slots, retour arrière), `isComplete`.
 - `processing.ProcessingMenu` / `processing.client.ProcessingScreen` : menu et écran génériques (`MenuType` dans
   `ProcessingModule.MENU`).
 - Recette de référence : `data/terresvivantes/recipe/millstone_wheat_flour.json` (module `milling`, `MillingModule.MILLSTONE_TYPE`).
-- Modules `milling` (meule, farine), `dairy`, `preserving`, `kitchen` (ces trois derniers vides en v0.5) : enregistrés dans
-  `TerresVivantes.MODULES`.
+- Modules `milling` (meule, pressoir, farines, jus, huile), `dairy` (baratte, cuve, étagère), `preserving` (tonneau,
+  séchoir, fumoir), `kitchen` (marmite) : enregistrés dans `TerresVivantes.MODULES`. Aucune config nouvelle en v0.5.
 - Pour une nouvelle machine : voir `docs/AGENT_GUIDE.md` (section « Créer une machine de transformation »).
+- Restes de contenants : `ProcessingRecipe.craft` les rend (seau vide); aucun module ne les éjecte lui-même.
 
 ## Dépendances entre packages
 

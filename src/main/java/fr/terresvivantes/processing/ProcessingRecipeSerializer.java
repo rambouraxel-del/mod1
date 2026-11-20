@@ -7,12 +7,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.terresvivantes.processing.ProcessingRecipe.IngredientEntry;
 import fr.terresvivantes.processing.logic.QualityMode;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -35,6 +33,9 @@ import java.util.ArrayList;
  */
 public final class ProcessingRecipeSerializer implements RecipeSerializer<ProcessingRecipe> {
 
+    /** Durée maximale d'une recette (ticks) : 2 400 000, soit environ 33 jours de jeu (affinage long). */
+    public static final int MAX_TIME = 2_400_000;
+
     private static final Codec<QualityMode> QUALITY_CODEC = Codec.STRING.comapFlatMap(id -> {
         try {
             return DataResult.success(QualityMode.fromId(id));
@@ -48,12 +49,19 @@ public final class ProcessingRecipeSerializer implements RecipeSerializer<Proces
             ExtraCodecs.intRange(1, 64).optionalFieldOf("count", 1).forGetter(IngredientEntry::count)
     ).apply(instance, IngredientEntry::new));
 
+    /** Ancien format du conteneur : une simple chaîne d'id d'item (rétrocompatible). */
+    private static final Codec<Ingredient> ITEM_ID_CONTAINER = BuiltInRegistries.ITEM.byNameCodec()
+            .xmap(Ingredient::of, ingredient -> ingredient.getItems()[0].getItem());
+
+    /** Conteneur : un {@link Ingredient} (item ou tag), ou l'ancienne chaîne d'id d'item. */
+    private static final Codec<Ingredient> CONTAINER_CODEC = Codec.withAlternative(Ingredient.CODEC, ITEM_ID_CONTAINER);
+
     private static final MapCodec<ProcessingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("machine").forGetter(ProcessingRecipe::machine),
             ENTRY_CODEC.listOf().fieldOf("ingredients").forGetter(ProcessingRecipe::ingredients),
-            BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("container").forGetter(ProcessingRecipe::container),
+            CONTAINER_CODEC.optionalFieldOf("container").forGetter(ProcessingRecipe::container),
             ItemStack.STRICT_CODEC.fieldOf("result").forGetter(ProcessingRecipe::result),
-            ExtraCodecs.intRange(1, 72000).fieldOf("time").forGetter(ProcessingRecipe::time),
+            ExtraCodecs.intRange(1, MAX_TIME).fieldOf("time").forGetter(ProcessingRecipe::time),
             QUALITY_CODEC.fieldOf("quality").forGetter(ProcessingRecipe::quality)
     ).apply(instance, ProcessingRecipe::new));
 
@@ -65,7 +73,7 @@ public final class ProcessingRecipeSerializer implements RecipeSerializer<Proces
     private static final StreamCodec<RegistryFriendlyByteBuf, ProcessingRecipe> STREAM = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, ProcessingRecipe::machine,
             ByteBufCodecs.collection(ArrayList::new, ENTRY_STREAM), ProcessingRecipe::ingredients,
-            ByteBufCodecs.optional(ByteBufCodecs.registry(Registries.ITEM)), ProcessingRecipe::container,
+            ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), ProcessingRecipe::container,
             ItemStack.STREAM_CODEC, ProcessingRecipe::result,
             ByteBufCodecs.VAR_INT, ProcessingRecipe::time,
             ByteBufCodecs.STRING_UTF8.map(QualityMode::fromId, QualityMode::id), ProcessingRecipe::quality,

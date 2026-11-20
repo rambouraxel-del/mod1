@@ -4,10 +4,16 @@
   "ingredients": [
     {
       "ingredient": {
-        "type": "neoforge:components",
-        "items": "minecraft:milk_bucket",
-        "components": {
-          "terresvivantes:milk_source": "cow"
+        "type": "neoforge:difference",
+        "base": {
+          "item": "minecraft:milk_bucket"
+        },
+        "subtracted": {
+          "type": "neoforge:components",
+          "items": "minecraft:milk_bucket",
+          "components": {
+            "terresvivantes:milk_source": "goat"
+          }
         }
       },
       "count": 1

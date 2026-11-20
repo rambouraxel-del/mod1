@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=east": {
+      "model": "terresvivantes:block/churn",
+      "y": 90
+    },
+    "active=false,facing=north": {
+      "model": "terresvivantes:block/churn"
+    },
+    "active=false,facing=south": {
+      "model": "terresvivantes:block/churn",
+      "y": 180
+    },
+    "active=false,facing=west": {
+      "model": "terresvivantes:block/churn",
+      "y": 270
+    },
+    "active=true,facing=east": {
+      "model": "terresvivantes:block/churn",
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "terresvivantes:block/churn"
+    },
+    "active=true,facing=south": {
+      "model": "terresvivantes:block/churn",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "terresvivantes:block/churn",
+      "y": 270
+    }
+  }
+}

@@ -34,6 +34,8 @@ public final class MillingGameTests {
     private static final BlockPos PRESS = new BlockPos(5, 2, 5);
     /** Jus de pomme : 120 ticks de pressage, vérifié à 150. */
     private static final int PRESS_CHECK_TICKS = 150;
+    /** Huile d'olive : 200 ticks de pressage, vérifié à 230. */
+    private static final int OLIVE_OIL_CHECK_TICKS = 230;
 
     private MillingGameTests() {
     }
@@ -126,6 +128,30 @@ public final class MillingGameTests {
                     "jus de pomme attendu après " + PRESS_CHECK_TICKS + " ticks, obtenu " + juice);
             helper.succeed();
         });
+    }
+
+    /** Quatre olives dans la presse, un flacon : une huile d'olive est prête en 200 ticks (vérifiée à 230). */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 300)
+    public static void fruitPressMakesOliveOilFromFourOlives(GameTestHelper helper) {
+        helper.setBlock(PRESS, MillingModule.FRUIT_PRESS.get());
+        FruitPressBlockEntity press = helper.getBlockEntity(PRESS);
+        press.inventory().setStackInSlot(0, new ItemStack(olive(), 4));
+        press.inventory().setStackInSlot(MillingModule.FRUIT_PRESS_TYPE.containerSlot(),
+                new ItemStack(Items.GLASS_BOTTLE, 1));
+        helper.runAfterDelay(OLIVE_OIL_CHECK_TICKS, () -> {
+            ItemStack oil = press.inventory().getStackInSlot(MillingModule.FRUIT_PRESS_TYPE.outputSlot());
+            helper.assertTrue(oil.is(oliveOil()) && oil.getCount() == 1,
+                    "huile d'olive attendue après " + OLIVE_OIL_CHECK_TICKS + " ticks, obtenu " + oil);
+            helper.succeed();
+        });
+    }
+
+    private static Item olive() {
+        return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "olive"));
+    }
+
+    private static Item oliveOil() {
+        return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "olive_oil"));
     }
 
     private static Item barley() {

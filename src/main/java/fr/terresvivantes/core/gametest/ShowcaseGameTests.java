@@ -5,6 +5,11 @@ import fr.terresvivantes.compost.CompostBinBlock;
 import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.core.debug.ShowcaseBuilder;
 import fr.terresvivantes.crop.CropModule;
+import fr.terresvivantes.dairy.DairyModule;
+import fr.terresvivantes.kitchen.KitchenModule;
+import fr.terresvivantes.milling.MillingModule;
+import fr.terresvivantes.preserving.PreservingModule;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import fr.terresvivantes.apiculture.ApiaryBlockEntity;
 import fr.terresvivantes.apiculture.ApicultureModule;
 import fr.terresvivantes.apiculture.logic.ApiaryLogic;
@@ -162,6 +167,21 @@ public final class ShowcaseGameTests {
                 "deux canards attendus dans l'enclos, dont un mâle");
         helper.assertTrue(fauna.stream().allMatch(Mob::isPersistenceRequired),
                 "les animaux et insectes de la vitrine doivent être persistants");
+
+        // Rangée de transformation : une machine de chaque sorte, marmite sur feu de camp allumé.
+        helper.assertTrue(level.getBlockState(at(origin, 0, 1, 17)).is(MillingModule.MILLSTONE.get())
+                        && level.getBlockState(at(origin, 2, 1, 17)).is(MillingModule.FRUIT_PRESS.get())
+                        && level.getBlockState(at(origin, 4, 1, 17)).is(DairyModule.CHURN.get())
+                        && level.getBlockState(at(origin, 6, 1, 17)).is(DairyModule.CHEESE_VAT.get())
+                        && level.getBlockState(at(origin, 8, 1, 17)).is(DairyModule.AGING_SHELF.get())
+                        && level.getBlockState(at(origin, 10, 1, 17)).is(PreservingModule.FERMENTATION_BARREL.get())
+                        && level.getBlockState(at(origin, 12, 1, 17)).is(PreservingModule.DRYING_RACK.get())
+                        && level.getBlockState(at(origin, 14, 1, 17)).is(PreservingModule.SMOKEHOUSE.get()),
+                "une machine de transformation de chaque sorte attendue sur la rangée z 17");
+        helper.assertTrue(level.getBlockState(at(origin, 2, 1, 20)).is(KitchenModule.COOKING_POT.get())
+                        && level.getBlockState(at(origin, 2, 0, 20)).is(Blocks.CAMPFIRE)
+                        && level.getBlockState(at(origin, 2, 0, 20)).getValue(BlockStateProperties.LIT),
+                "marmite attendue sur un feu de camp allumé (z 20)");
 
         // Air au-dessus de la plateforme.
         helper.assertTrue(level.getBlockState(at(origin, 0, ShowcaseBuilder.HEIGHT, 0)).isAir(),

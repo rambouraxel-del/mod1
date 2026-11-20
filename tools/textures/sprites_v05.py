@@ -802,6 +802,22 @@ _BLOCKS = [
     ("cooking_pot_top_stew", COOKING_POT_TOP_STEW),
 ]
 
+# --- Jus de pomme et jus de pêche (même gabarit que le jus d'orange, teintes du fruit) ---------
+_ITEM_APPLE_JUICE = [
+    _r(0, ""), _r(3, "V" * 10), _r(3, "V" + "U" * 8 + "V"), _r(4, "VmUUUUUV"),
+    _r(4, "VkkkkkV"), _r(4, "VkkkkkV"), _r(4, "VkmmkkV"), _r(4, "VkkkllV"),
+    _r(4, "VkkkkkV"), _r(4, "VkkkkkV"), _r(4, "VjjjjjjV"), _r(4, "V" * 8),
+    _r(0, ""), _r(0, ""), _r(0, ""), _r(0, ""),
+]
+_ITEM_PEACH_JUICE = [
+    _r(0, ""), _r(3, "V" * 10), _r(3, "V" + "U" * 8 + "V"), _r(4, "VqUUUUUV"),
+    _r(4, "VpppppV"), _r(4, "VpppppV"), _r(4, "VpqqppV"), _r(4, "VpppqqV"),
+    _r(4, "VpppppV"), _r(4, "VpppppV"), _r(4, "VaaaaaaV"), _r(4, "V" * 8),
+    _r(0, ""), _r(0, ""), _r(0, ""), _r(0, ""),
+]
+_ITEMS += [("apple_juice", _ITEM_APPLE_JUICE), ("peach_juice", _ITEM_PEACH_JUICE)]
+
+
 def _center(rows):
     """Centre verticalement une liste de lignes d'item sur 16 lignes."""
     top = (16 - len(rows)) // 2

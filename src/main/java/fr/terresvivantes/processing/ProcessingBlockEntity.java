@@ -155,9 +155,11 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
         setActive(level, pos, true);
         craftingTick(level, pos);
         if (ProcessingLogic.isComplete(progress, totalTime)) {
-            ItemStack made = current.craft(input, level.registryAccess());
+            List<ItemStack> leftovers = new ArrayList<>();
+            ItemStack made = current.craft(input, level.registryAccess(), leftovers);
             cleanInputs();
             addOutput(made);
+            placeLeftovers(level, pos, leftovers);
             progress = 0;
             craftFinished(level, pos, current);
             setChanged();
@@ -214,6 +216,31 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
             if (!stack.isEmpty() && stack.getCount() <= 0) {
                 inventory.setStackInSlot(slot, ItemStack.EMPTY);
             }
+        }
+    }
+
+    /**
+     * Rend les restes des ingrédients consommés (seau vide, etc.) : dans le slot conteneur si libre, sinon dans la
+     * sortie si elle accepte le reste, sinon éjectés au-dessus de la machine.
+     */
+    private void placeLeftovers(ServerLevel level, BlockPos pos, List<ItemStack> leftovers) {
+        for (ItemStack leftover : leftovers) {
+            ItemStack rest = leftover.copy();
+            if (machine.container() && inventory.getStackInSlot(machine.containerSlot()).isEmpty()) {
+                inventory.setStackInSlot(machine.containerSlot(), rest);
+                continue;
+            }
+            ItemStack output = inventory.getStackInSlot(machine.outputSlot());
+            if (output.isEmpty()) {
+                inventory.setStackInSlot(machine.outputSlot(), rest);
+                continue;
+            }
+            if (ItemStack.isSameItemSameComponents(output, rest)
+                    && output.getCount() + rest.getCount() <= output.getMaxStackSize()) {
+                output.grow(rest.getCount());
+                continue;
+            }
+            Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, rest);
         }
     }
 

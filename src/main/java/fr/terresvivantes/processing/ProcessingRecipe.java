@@ -5,7 +5,6 @@ import fr.terresvivantes.core.quality.logic.QualityLogic;
 import fr.terresvivantes.processing.logic.ProcessingLogic;
 import fr.terresvivantes.processing.logic.QualityMode;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -18,7 +17,8 @@ import java.util.Optional;
 /**
  * Recette de transformation (type {@code terresvivantes:processing}, données dans {@code data/terresvivantes/recipe/}).
  * Une recette appartient à une machine ({@link MachineType#id()}), consomme des ingrédients et, si elle en a un, un
- * item de conteneur (1 unité). La qualité de la sortie suit son {@link QualityMode}.
+ * conteneur (1 unité, item ou tag). Un ingrédient qui laisse un reste (seau de lait vers seau vide) rend ce reste, voir
+ * {@link #craft}. La qualité de la sortie suit son {@link QualityMode}.
  */
 public final class ProcessingRecipe implements Recipe<ProcessingRecipeInput> {
 
@@ -28,12 +28,12 @@ public final class ProcessingRecipe implements Recipe<ProcessingRecipeInput> {
 
     private final String machine;
     private final List<IngredientEntry> ingredients;
-    private final Optional<Item> container;
+    private final Optional<Ingredient> container;
     private final ItemStack result;
     private final int time;
     private final QualityMode quality;
 
-    public ProcessingRecipe(String machine, List<IngredientEntry> ingredients, Optional<Item> container,
+    public ProcessingRecipe(String machine, List<IngredientEntry> ingredients, Optional<Ingredient> container,
                             ItemStack result, int time, QualityMode quality) {
         this.machine = machine;
         this.ingredients = List.copyOf(ingredients);
@@ -51,7 +51,7 @@ public final class ProcessingRecipe implements Recipe<ProcessingRecipeInput> {
         return ingredients;
     }
 
-    public Optional<Item> container() {
+    public Optional<Ingredient> container() {
         return container;
     }
 
@@ -78,7 +78,7 @@ public final class ProcessingRecipe implements Recipe<ProcessingRecipeInput> {
         }
         if (container.isPresent()) {
             ItemStack stack = input.container();
-            if (stack.isEmpty() || !stack.is(container.get())) {
+            if (stack.isEmpty() || !container.get().test(stack)) {
                 return null;
             }
         }
@@ -126,19 +126,34 @@ public final class ProcessingRecipe implements Recipe<ProcessingRecipeInput> {
 
     /**
      * Fait la recette : renvoie la sortie et retire les ingrédients (et le conteneur) de l'entrée. Les stacks retirés
-     * sont réduits en place; l'appelant nettoie les stacks vides. Vide si la recette ne s'applique pas.
+     * sont réduits en place; l'appelant nettoie les stacks vides. Le reste de chaque ingrédient consommé (par exemple
+     * le seau vide d'un seau de lait) est ajouté à {@code leftovers}, à l'appelant de le placer. Vide si la recette ne
+     * s'applique pas.
      */
-    public ItemStack craft(ProcessingRecipeInput input, HolderLookup.Provider registries) {
+    public ItemStack craft(ProcessingRecipeInput input, HolderLookup.Provider registries, List<ItemStack> leftovers) {
         int[] slots = plan(input);
         if (slots == null) {
             return ItemStack.EMPTY;
         }
         ItemStack out = assemble(input, registries);
         for (int i = 0; i < slots.length; i++) {
-            input.inputs().get(slots[i]).shrink(ingredients.get(i).count());
+            ItemStack source = input.inputs().get(slots[i]);
+            int count = ingredients.get(i).count();
+            ItemStack remainder = source.getCraftingRemainingItem();
+            if (!remainder.isEmpty()) {
+                for (int n = 0; n < count; n++) {
+                    leftovers.add(remainder.copy());
+                }
+            }
+            source.shrink(count);
         }
         if (container.isPresent()) {
-            input.container().shrink(1);
+            ItemStack used = input.container();
+            ItemStack remainder = used.getCraftingRemainingItem();
+            if (!remainder.isEmpty()) {
+                leftovers.add(remainder.copy());
+            }
+            used.shrink(1);
         }
         return out;
     }
