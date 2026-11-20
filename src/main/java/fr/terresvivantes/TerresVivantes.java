@@ -7,6 +7,7 @@ import fr.terresvivantes.core.command.TVCommands;
 import fr.terresvivantes.core.debug.DebugModule;
 import fr.terresvivantes.core.quality.QualityModule;
 import fr.terresvivantes.processing.ProcessingModule;
+import fr.terresvivantes.storage.StorageModule;
 import fr.terresvivantes.milling.MillingModule;
 import fr.terresvivantes.dairy.DairyModule;
 import fr.terresvivantes.preserving.PreservingModule;
@@ -88,6 +89,7 @@ public final class TerresVivantes {
             new DairyModule(),
             new PreservingModule(),
             new KitchenModule(),
+            new StorageModule(),
             new DebugModule()
     );
 
