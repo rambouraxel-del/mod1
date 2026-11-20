@@ -25,6 +25,20 @@ public final class GrowthModel {
     }
 
     /**
+     * Produit des modifiers de croissance enregistrés (contrat v0.2). Une valeur négative est ramenée à 0.
+     * Sans modifier, le produit vaut 1.0.
+     *
+     * @param modifiers facteurs de chaque modifier
+     */
+    public static float combineModifiers(float... modifiers) {
+        float product = 1.0f;
+        for (float modifier : modifiers) {
+            product *= Math.max(0.0f, modifier);
+        }
+        return product;
+    }
+
+    /**
      * Facteur climatique : 1.0 dans la plage, 0.3 à moins de 8 °C hors plage, 0 au-delà.
      *
      * @param temp température courante en °C

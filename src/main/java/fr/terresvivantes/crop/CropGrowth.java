@@ -20,30 +20,32 @@ final class CropGrowth {
     private CropGrowth() {
     }
 
-    /** Facteur total d'une culture du mod à sa position. */
-    static float tvFactor(Level level, BlockPos cropPos, CropDefinition def) {
+    /** Facteur total d'une culture du mod à sa position, modifiers de {@link CropGrowthHooks} inclus. */
+    static float tvFactor(ServerLevel level, BlockPos cropPos, BlockState state, CropDefinition def) {
         BlockPos soil = cropPos.below();
-        return GrowthModel.totalFactor(
-                SeasonApi.seasonGrowthMultiplier(level),
+        float base = GrowthModel.totalFactor(
+                SeasonApi.seasonGrowthMultiplier(level, cropPos),
                 def.affinityFor(SeasonApi.getSeason(level)).getMultiplier(),
                 GrowthModel.climateFactor(ClimateApi.temperatureAt(level, cropPos), def.tempMin(), def.tempMax()),
                 SoilApi.nutrientFactor(level, soil),
                 moisture(level, soil));
+        return base * CropGrowthHooks.growthModifierProduct(level, cropPos, state, def);
     }
 
     /**
      * Facteur total d'une culture vanilla : affinité possible (1.0) et plage 5 à 30 °C. Sol et humidité
      * ne s'appliquent que si la culture est sur une terre labourée.
      */
-    static float vanillaFactor(Level level, BlockPos pos) {
+    static float vanillaFactor(ServerLevel level, BlockPos pos, BlockState state) {
         BlockPos soil = pos.below();
         boolean farmland = level.getBlockState(soil).is(Blocks.FARMLAND);
-        return GrowthModel.totalFactor(
-                SeasonApi.seasonGrowthMultiplier(level),
+        float base = GrowthModel.totalFactor(
+                SeasonApi.seasonGrowthMultiplier(level, pos),
                 Affinity.POSSIBLE.getMultiplier(),
                 GrowthModel.climateFactor(ClimateApi.temperatureAt(level, pos), CropLogic.VANILLA_TEMP_MIN, CropLogic.VANILLA_TEMP_MAX),
                 farmland ? SoilApi.nutrientFactor(level, soil) : 1.0f,
                 farmland ? moisture(level, soil) : 1.0f);
+        return base * CropGrowthHooks.growthModifierProduct(level, pos, state, null);
     }
 
     /** Consommation N/P/K d'un stade gagné. Une légumineuse fixe de l'azote au lieu d'en consommer. */

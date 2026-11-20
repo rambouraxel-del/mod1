@@ -100,11 +100,47 @@ Chaque provider appelle le hook correspondant de chaque module. Pour ajouter une
 
 Un module n'appelle un autre que par sa façade statique `<Nom>Api`. Les implémentations marquées STUB sont provisoires.
 
-- `season.SeasonApi` : saison courante, jour dans la saison, jours par saison, multiplicateur saisonnier (STUB, module season)
-- `climate.ClimateApi` : `temperatureAt(Level, BlockPos)` en °C (STUB, module climate)
-- `soil.SoilApi` : lecture, consommation, engrais, facteur de Liebig, effacement des données de sol (STUB, module soil)
+- `season.SeasonApi` : saison courante, jour dans la saison, jours par saison, multiplicateur saisonnier, `seasonGrowthMultiplier(Level, BlockPos)` positionnel avec serre (v0.2)
+- `climate.ClimateApi` : `temperatureAt(Level, BlockPos)` en °C, `isSheltered(Level, BlockPos)` (serre, v0.2)
+- `soil.SoilApi` : lecture, consommation, engrais, facteur de Liebig, effacement des données de sol, dernière culture et répétitions (v0.2)
 - `crop.CropApi` : culture mûre, récolte et replantation, cultures optimales par saison, et par saison + température locale (`optimalCropIdsFor(Season, float)`) (STUB, module crop)
 - `season.logic.Season` : enum des saisons (`next()`, `langKey()`), logique pure
 - `crop.logic.GrowthModel` : facteur total, facteur climatique et décision de croissance, logique pure réelle
 - `crop.logic.Affinity` : affinité saisonnière d'une culture (multiplicateur 1.25 / 1.0 / 0.4 / 0)
 - `soil.logic.SoilData` : record N/P/K/organique bornés à 0-100
+
+## Contrats v0.2
+
+### Points d'extension de croissance (`crop.CropGrowthHooks`)
+
+Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `CropDefinition def` vaut `null` pour une culture vanilla.
+
+| Contrat | Enregistrement | Effet |
+|---|---|---|
+| `GrowthModifier { float modify(ServerLevel, BlockPos, BlockState, def); }` | `registerModifier` | Facteur total = produit de `GrowthModel.totalFactor` et de tous les modifiers (`GrowthModel.combineModifiers`, négatif ramené à 0). TV et vanilla. |
+| `GrowthListener { onGrowthAttempt(ServerLevel, BlockPos, BlockState, def, GrowthDecision, float factor); }` | `registerListener` | Appelé après chaque décision. TV : une fois par tentative. Vanilla : une fois à `CropGrowEvent.Pre` et une fois à `Post`. |
+| `YieldModifier { float modify(ServerLevel, BlockPos, BlockState, def); }` | `registerYieldModifier` | Multiplie le nombre de produits (`YieldModel.scaledCount`, arrondi probabiliste). TV : dans `TVCropBlock.getDrops`, donc récolte et casse. Vanilla : dans `CropApi.harvestAndReplant` seulement, à tous les drops. |
+| `PlantListener { onPlanted(ServerLevel, BlockPos, BlockState); }` | `registerPlantListener` | Plantation et replantation. TV : `setPlacedBy` et replantation. Vanilla : `BlockEvent.EntityPlaceEvent` et replantation. |
+
+### Serres (module climate, season)
+
+- `ClimateApi.isSheltered` : en remontant jusqu'à 12 blocs, le premier bloc non-air est dans `c:glass_blocks` ou `c:glass_panes`, et la face supérieure de ce verre voit le ciel (le verre lui-même est dans la heightmap et ne voit jamais le ciel).
+- `ClimateApi.temperatureAt` : +8 °C (`ClimateModel.GREENHOUSE_BONUS`) si abrité.
+- `SeasonApi.seasonGrowthMultiplier(Level, BlockPos)` : en hiver sous serre, `SeasonConfig.greenhouseWinterMultiplier` (défaut 0.6). Les cultures TV et vanilla utilisent cette version.
+- Limite : `Affinity` vaut `IMPOSSIBLE` en hiver pour toute culture du mod (aucune n'a l'hiver dans ses saisons), donc la serre n'a aucun effet sur les cultures du mod tant que leurs affinités ne changent pas.
+
+### Rotation (module soil)
+
+- `SoilApi.getLastCrop`, `setLastCrop`, `getRepeatCount`. La dernière culture et son compteur sont stockés dans l'attachment de chunk (`SoilChunkData`, champ `last_crops` optionnel). Le format v0.1 reste lisible.
+- `setLastCrop` est appelé à la récolte (`CropApi.harvestAndReplant`) et à la casse d'une culture mûre (`CropEvents`). Répétition : +1 si la même culture, 0 sinon.
+- `SoilRotation` (modifier interne) applique `RotationModel.factor` : monoculture (répétition ≥ 2 et culture actuelle = dernière culture) ×0.8 ; précédent légumineux et culture actuelle non légumineuse ×1.15.
+- La sonde de sol affiche la dernière culture, sa répétition et l'effet de rotation.
+
+### Modules vides
+
+`orchard.OrchardModule`, `water.WaterModule`, `health.HealthModule` : enregistrés dans `TerresVivantes.MODULES`, sans contenu.
+
+### Dépendances entre packages
+
+`crop` ↔ `soil` et `season` ↔ `climate` forment un cycle (facades statiques). Il est accepté en v0.2 : aucune de ces classes ne dépend d'un état initialisé à l'import.
+

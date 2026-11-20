@@ -20,6 +20,7 @@ public final class SeasonConfig {
     private static final ModConfigSpec.DoubleValue SUMMER_MULTIPLIER;
     private static final ModConfigSpec.DoubleValue AUTUMN_MULTIPLIER;
     private static final ModConfigSpec.DoubleValue WINTER_MULTIPLIER;
+    private static final ModConfigSpec.DoubleValue GREENHOUSE_WINTER_MULTIPLIER;
     private static final ModConfigSpec.BooleanValue HUD_ENABLED;
 
     static {
@@ -36,6 +37,10 @@ public final class SeasonConfig {
         AUTUMN_MULTIPLIER = builder.defineInRange("autumn", 0.8, 0.0, 10.0);
         WINTER_MULTIPLIER = builder.defineInRange("winter", 0.0, 0.0, 10.0);
         builder.pop();
+
+        GREENHOUSE_WINTER_MULTIPLIER = builder
+                .comment("Multiplicateur d'hiver pour une culture abritée sous verre (serre).")
+                .defineInRange("greenhouseWinterMultiplier", 0.6, 0.0, 10.0);
 
         builder.push("hud");
         HUD_ENABLED = builder.comment("Affiche la saison en haut a gauche (cote client).")
@@ -70,6 +75,11 @@ public final class SeasonConfig {
             case WINTER -> WINTER_MULTIPLIER.get();
         };
         return (float) value;
+    }
+
+    /** Multiplicateur d'hiver sous verre (defaut 0.6 tant que la config n'est pas chargee). */
+    public static float greenhouseWinterMultiplier() {
+        return SPEC.isLoaded() ? GREENHOUSE_WINTER_MULTIPLIER.get().floatValue() : 0.6f;
     }
 
     /** Affichage du HUD saison (defaut vrai tant que la config n'est pas chargee). */

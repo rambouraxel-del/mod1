@@ -8,12 +8,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.LootParams;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -40,6 +49,39 @@ public final class TVCropBlock extends CropBlock {
         return seeds.get();
     }
 
+    /**
+     * Rendement : le nombre de produits est multiplié par les {@link CropGrowthHooks.YieldModifier} (arrondi
+     * probabiliste). Couvre la récolte par clic droit et la casse d'une culture mûre, qui passent toutes deux ici.
+     */
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        List<ItemStack> drops = super.getDrops(state, params);
+        ServerLevel level = params.getLevel();
+        BlockPos pos = BlockPos.containing(params.getParameter(LootContextParams.ORIGIN));
+        Item product = CropModule.productItem(definition.id());
+        List<ItemStack> scaled = new ArrayList<>(drops.size());
+        for (ItemStack stack : drops) {
+            if (!stack.is(product)) {
+                scaled.add(stack);
+                continue;
+            }
+            int count = CropGrowthHooks.scaleYield(level, pos, state, definition, stack.getCount());
+            if (count > 0) {
+                scaled.add(stack.copyWithCount(count));
+            }
+        }
+        return scaled;
+    }
+
+    /** Plantation par un joueur ou une entité : notifie les {@link CropGrowthHooks.PlantListener}. */
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (level instanceof ServerLevel server) {
+            CropGrowthHooks.notifyPlanted(server, pos, state);
+        }
+    }
+
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (!level.isAreaLoaded(pos, 1)) {
@@ -55,8 +97,9 @@ public final class TVCropBlock extends CropBlock {
         if (random.nextDouble() >= CropLogic.attemptChance(definition.growthDays())) {
             return;
         }
-        float factor = CropGrowth.tvFactor(level, pos, definition);
+        float factor = CropGrowth.tvFactor(level, pos, state, definition);
         GrowthDecision decision = GrowthModel.decide(factor, random.nextDouble(), random.nextDouble());
+        CropGrowthHooks.notifyGrowthAttempt(level, pos, state, definition, decision, factor);
         if (decision == GrowthDecision.DENY) {
             return;
         }

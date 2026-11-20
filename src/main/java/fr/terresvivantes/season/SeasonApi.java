@@ -1,8 +1,10 @@
 package fr.terresvivantes.season;
 
+import fr.terresvivantes.climate.ClimateApi;
 import fr.terresvivantes.season.client.ClientSeasonState;
 import fr.terresvivantes.season.logic.Season;
 import fr.terresvivantes.season.logic.SeasonLogic;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
@@ -40,6 +42,18 @@ public final class SeasonApi {
     /** Multiplicateur de croissance saisonnier (defauts 1.0 / 1.2 / 0.8 / 0.0, configurables). */
     public static float seasonGrowthMultiplier(Level level) {
         return SeasonConfig.multiplier(getSeason(level));
+    }
+
+    /**
+     * Multiplicateur de croissance saisonnier à une position. En hiver, une position abritée par une serre
+     * ({@link ClimateApi#isSheltered}) prend {@code greenhouseWinterMultiplier} au lieu du multiplicateur d'hiver.
+     */
+    public static float seasonGrowthMultiplier(Level level, BlockPos pos) {
+        Season season = getSeason(level);
+        if (season == Season.WINTER && ClimateApi.isSheltered(level, pos)) {
+            return SeasonConfig.greenhouseWinterMultiplier();
+        }
+        return SeasonConfig.multiplier(season);
     }
 
     /**

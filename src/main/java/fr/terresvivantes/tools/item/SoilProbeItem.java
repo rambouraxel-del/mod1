@@ -1,11 +1,16 @@
 package fr.terresvivantes.tools.item;
 
+import fr.terresvivantes.crop.logic.CropDefinition;
+import fr.terresvivantes.crop.logic.CropDefinitions;
 import fr.terresvivantes.soil.SoilApi;
+import fr.terresvivantes.soil.logic.RotationModel;
 import fr.terresvivantes.soil.logic.SoilData;
 import fr.terresvivantes.tools.logic.ToolsLogic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -45,7 +50,43 @@ public final class SoilProbeItem extends Item {
         player.sendSystemMessage(Component.translatable("message.terresvivantes.soil_probe.moisture",
                 colored(String.valueOf(moisture), ToolsLogic.moistureTier(moisture)),
                 String.valueOf(ToolsLogic.MAX_MOISTURE)));
+        sendRotation(player, level, pos);
         return InteractionResult.SUCCESS;
+    }
+
+    /** Dernière culture récoltée sur la terre, son nombre de répétitions, et l'effet de rotation attendu. */
+    private static void sendRotation(Player player, Level level, BlockPos pos) {
+        String last = SoilApi.getLastCrop(level, pos);
+        if (last == null) {
+            player.sendSystemMessage(Component.translatable("message.terresvivantes.soil_probe.last_crop_none"));
+            return;
+        }
+        int repeat = SoilApi.getRepeatCount(level, pos);
+        player.sendSystemMessage(Component.translatable("message.terresvivantes.soil_probe.last_crop",
+                cropName(last), String.valueOf(repeat)));
+        boolean legume = CropDefinitions.byId(last).map(CropDefinition::legume).orElse(false);
+        boolean any = false;
+        if (repeat >= RotationModel.MONOCULTURE_REPEAT) {
+            player.sendSystemMessage(Component.translatable("message.terresvivantes.soil_probe.rotation_monoculture"));
+            any = true;
+        }
+        if (legume) {
+            player.sendSystemMessage(Component.translatable("message.terresvivantes.soil_probe.rotation_legume"));
+            any = true;
+        }
+        if (!any) {
+            player.sendSystemMessage(Component.translatable("message.terresvivantes.soil_probe.rotation_none"));
+        }
+    }
+
+    /** Nom affiché d'une culture : culture du mod par son id, culture vanilla par son identifiant de bloc. */
+    private static Component cropName(String cropId) {
+        if (cropId.contains(":")) {
+            return BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(cropId))
+                    .map(block -> (Component) block.getName())
+                    .orElse(Component.literal(cropId));
+        }
+        return Component.translatable("block.terresvivantes." + cropId + "_crop");
     }
 
     private static void send(Player player, String key, int value) {

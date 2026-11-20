@@ -17,6 +17,26 @@ class GrowthModelTest {
     }
 
     @Test
+    void combineModifiersMultipliesAllModifiers() {
+        assertEquals(0.6f, GrowthModel.combineModifiers(1.2f, 0.5f), DELTA);
+        assertEquals(0.8f * 1.15f, GrowthModel.combineModifiers(0.8f, 1.15f), DELTA);
+        assertEquals(1.0f, GrowthModel.combineModifiers(), DELTA);
+    }
+
+    @Test
+    void combineModifiersZeroAndNegativeGiveZero() {
+        assertEquals(0.0f, GrowthModel.combineModifiers(1.5f, 0.0f, 2.0f), DELTA);
+        assertEquals(0.0f, GrowthModel.combineModifiers(-1.0f, 2.0f), DELTA);
+    }
+
+    @Test
+    void combinedModifiersFeedTheTotalFactorAsOneProduct() {
+        float modifiers = GrowthModel.combineModifiers(0.8f, 1.15f);
+        float withModifiers = GrowthModel.totalFactor(1.2f, 1.25f, 1.0f, 1.0f, 1.0f) * modifiers;
+        assertEquals(1.2f * 1.25f * 0.8f * 1.15f, withModifiers, DELTA);
+    }
+
+    @Test
     void climateFactorInsideRangeIsOne() {
         assertEquals(1.0f, GrowthModel.climateFactor(20.0f, 12.0f, 32.0f), DELTA);
         assertEquals(1.0f, GrowthModel.climateFactor(12.0f, 12.0f, 32.0f), DELTA);

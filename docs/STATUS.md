@@ -1,5 +1,13 @@
 # Statut
 
+## v0.2 : contrats et serres (vérifiée le 2026-11-20)
+
+- `./gradlew build` : OK, **77 tests JUnit** (dont combinaison des modifiers, rendement, rotation).
+- `./gradlew runData` : OK (lang de la sonde de sol ajoutée).
+- `./gradlew runGameTestServer` : OK, **18 GameTests** (5 nouveaux : abri sous verre, blé sous verre en hiver qui pousse, blé sans verre qui ne pousse pas, 3 récoltes → répétition 2, graine → PlantListener TV et vanilla).
+- Contrats détaillés : `docs/ARCHITECTURE.md`, section « Contrats v0.2 ».
+- Limites connues : la serre n'agit pas sur les cultures du mod (affinité hiver = impossible); la sonde de sol et la lecture d'une sauvegarde v0.1 (`last_crops` absent) n'ont pas été vérifiées en jeu; le rendement vanilla n'est pas appliqué à la casse.
+
 ## Terminé et vérifié : v0.1
 
 Vérifié le 2026-11-20 sur la branche `claude/terres-vivantes-minecraft-g4o0hy` :

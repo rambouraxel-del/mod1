@@ -15,6 +15,8 @@ public final class ClimateModel {
     public static final int ALTITUDE_REFERENCE_Y = 64;
     /** Degres perdus par bloc au-dessus de la reference (-0.6 °C par tranche de 10 blocs). */
     public static final float ALTITUDE_PER_BLOCK = -0.06f;
+    /** Bonus de température d'un abri sous verre, en degrés. */
+    public static final float GREENHOUSE_BONUS = 8.0f;
     /** Ecart de nuit, en degres. */
     public static final float NIGHT_OFFSET = -4.0f;
 

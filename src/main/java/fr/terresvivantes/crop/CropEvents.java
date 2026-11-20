@@ -2,17 +2,20 @@ package fr.terresvivantes.crop;
 
 import fr.terresvivantes.crop.logic.GrowthDecision;
 import fr.terresvivantes.crop.logic.GrowthModel;
+import fr.terresvivantes.soil.SoilApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
 
@@ -32,6 +35,27 @@ final class CropEvents {
         NeoForge.EVENT_BUS.addListener(CropEvents::onCropGrowPre);
         NeoForge.EVENT_BUS.addListener(CropEvents::onCropGrowPost);
         NeoForge.EVENT_BUS.addListener(CropEvents::onWandererTrades);
+        NeoForge.EVENT_BUS.addListener(CropEvents::onCropBreak);
+        NeoForge.EVENT_BUS.addListener(CropEvents::onVanillaCropPlaced);
+    }
+
+    /** Casse d'une culture mûre : la terre garde cette culture comme dernière culture (rotation). */
+    private static void onCropBreak(BlockEvent.BreakEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || !CropApi.isMatureCrop(event.getState())) {
+            return;
+        }
+        SoilApi.setLastCrop(level, event.getPos().below(), CropApi.cropIdOf(event.getState()));
+    }
+
+    /** Culture vanilla posée par une entité (graines). Les cultures du mod sont notifiées par TVCropBlock. */
+    private static void onVanillaCropPlaced(BlockEvent.EntityPlaceEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        BlockState placed = event.getPlacedBlock();
+        if (placed.getBlock() instanceof CropBlock && !(placed.getBlock() instanceof TVCropBlock)) {
+            CropGrowthHooks.notifyPlanted(level, event.getPos(), placed);
+        }
     }
 
     /** Clic droit à main vide sur une culture mûre : récolte et replantation, drops au sol. */
@@ -62,8 +86,11 @@ final class CropEvents {
         if (!(event.getLevel() instanceof ServerLevel level) || event.getState().getBlock() instanceof TVCropBlock) {
             return;
         }
-        float factor = CropGrowth.vanillaFactor(level, event.getPos());
-        if (GrowthModel.decide(factor, level.getRandom().nextDouble(), 0.0) == GrowthDecision.DENY) {
+        BlockPos pos = event.getPos();
+        float factor = CropGrowth.vanillaFactor(level, pos, event.getState());
+        GrowthDecision decision = GrowthModel.decide(factor, level.getRandom().nextDouble(), 0.0);
+        CropGrowthHooks.notifyGrowthAttempt(level, pos, event.getState(), null, decision, factor);
+        if (decision == GrowthDecision.DENY) {
             event.setResult(CropGrowEvent.Pre.Result.DO_NOT_GROW);
         }
     }
@@ -80,8 +107,10 @@ final class CropEvents {
         if (!grown.hasProperty(BlockStateProperties.AGE_7) || grown.getValue(BlockStateProperties.AGE_7) >= 7) {
             return;
         }
-        float factor = CropGrowth.vanillaFactor(level, event.getPos());
-        if (GrowthModel.decide(factor, 0.0, level.getRandom().nextDouble()) == GrowthDecision.EXTRA_STAGE) {
+        float factor = CropGrowth.vanillaFactor(level, event.getPos(), grown);
+        GrowthDecision decision = GrowthModel.decide(factor, 0.0, level.getRandom().nextDouble());
+        CropGrowthHooks.notifyGrowthAttempt(level, event.getPos(), grown, null, decision, factor);
+        if (decision == GrowthDecision.EXTRA_STAGE) {
             level.setBlock(event.getPos(),
                     grown.setValue(BlockStateProperties.AGE_7, grown.getValue(BlockStateProperties.AGE_7) + 1),
                     Block.UPDATE_CLIENTS);

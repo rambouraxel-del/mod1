@@ -2,6 +2,8 @@ package fr.terresvivantes.soil;
 
 import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.core.TVModule;
+import fr.terresvivantes.crop.CropGrowthHooks;
+import fr.terresvivantes.datagen.LangSink;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -25,6 +27,23 @@ public final class SoilModule implements TVModule {
     public void register(IEventBus modBus) {
         ATTACHMENTS.register(modBus);
         NeoForge.EVENT_BUS.addListener(SoilModule::onBlockBreak);
+        CropGrowthHooks.registerModifier(new SoilRotation());
+    }
+
+    @Override
+    public void registerLang(LangSink sink) {
+        sink.add("message.terresvivantes.soil_probe.last_crop",
+                "Last crop: %s (repeats: %s)", "Dernière culture : %s (répétitions : %s)");
+        sink.add("message.terresvivantes.soil_probe.rotation_monoculture",
+                "Monoculture: growth penalty if the same crop is planted again",
+                "Monoculture : malus de croissance si la même culture est replantée");
+        sink.add("message.terresvivantes.soil_probe.rotation_legume",
+                "Previous legume: +15% growth for a non-legume crop",
+                "Précédent légumineuse : +15 % de croissance pour une culture non légumineuse");
+        sink.add("message.terresvivantes.soil_probe.last_crop_none",
+                "Last crop: none", "Dernière culture : aucune");
+        sink.add("message.terresvivantes.soil_probe.rotation_none",
+                "No rotation effect", "Pas d'effet de rotation");
     }
 
     /** Efface la fertilite quand une terre labouree est cassee. Le reste est gere par la verification paresseuse. */

@@ -2,6 +2,7 @@ package fr.terresvivantes.soil;
 
 import fr.terresvivantes.soil.logic.SoilData;
 import fr.terresvivantes.soil.logic.SoilModel;
+import fr.terresvivantes.soil.SoilChunkData.LastCrop;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.BiomeTags;
@@ -64,9 +65,43 @@ public final class SoilApi {
         return SoilModel.nutrientFactor(get(level, farmland));
     }
 
-    /** Supprime les donnees de sol d'une position. */
+    /**
+     * Dernière culture récoltée sur cette terre (id de {@code CropApi.cropIdOf}), ou {@code null} si aucune.
+     */
+    public static String getLastCrop(Level level, BlockPos farmland) {
+        LastCrop last = lastCrops(level, farmland).get(farmland.asLong());
+        return last == null ? null : last.cropId();
+    }
+
+    /**
+     * Nombre de récoltes consécutives de la même culture sur cette terre : 0 à la première récolte,
+     * +1 à chaque récolte de la même culture, remis à 0 quand la culture change.
+     */
+    public static int getRepeatCount(Level level, BlockPos farmland) {
+        LastCrop last = lastCrops(level, farmland).get(farmland.asLong());
+        return last == null ? 0 : last.repeat();
+    }
+
+    /**
+     * Enregistre la culture récoltée sur une terre labourée. Si c'est la même culture que la précédente,
+     * le compteur de répétition augmente de 1; sinon il repart à 0. Sans effet si ce n'est pas de la terre labourée.
+     */
+    public static void setLastCrop(Level level, BlockPos farmland, String cropId) {
+        if (!isFarmland(level, farmland)) {
+            return;
+        }
+        Map<Long, LastCrop> crops = lastCrops(level, farmland);
+        LastCrop previous = crops.get(farmland.asLong());
+        int repeat = previous != null && previous.cropId().equals(cropId) ? previous.repeat() + 1 : 0;
+        crops.put(farmland.asLong(), new LastCrop(cropId, repeat));
+        markUnsaved(level, farmland);
+    }
+
+    /** Supprime les donnees de sol (fertilite et dernieres cultures) d'une position. */
     public static void clear(Level level, BlockPos farmland) {
-        if (entries(level, farmland).remove(farmland.asLong()) != null) {
+        boolean removed = entries(level, farmland).remove(farmland.asLong()) != null;
+        removed |= lastCrops(level, farmland).remove(farmland.asLong()) != null;
+        if (removed) {
             markUnsaved(level, farmland);
         }
     }
@@ -87,6 +122,10 @@ public final class SoilApi {
 
     private static Map<Long, SoilData> entries(Level level, BlockPos pos) {
         return chunkData(level, pos).entries;
+    }
+
+    private static Map<Long, LastCrop> lastCrops(Level level, BlockPos pos) {
+        return chunkData(level, pos).lastCrops;
     }
 
     private static SoilChunkData chunkData(Level level, BlockPos pos) {

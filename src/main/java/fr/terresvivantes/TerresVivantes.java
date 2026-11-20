@@ -11,11 +11,14 @@ import fr.terresvivantes.crop.CropConfig;
 import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.datagen.TVDataGen;
 import fr.terresvivantes.food.FoodModule;
+import fr.terresvivantes.health.HealthModule;
+import fr.terresvivantes.orchard.OrchardModule;
 import fr.terresvivantes.season.SeasonConfig;
 import fr.terresvivantes.season.SeasonModule;
 import fr.terresvivantes.soil.SoilConfig;
 import fr.terresvivantes.soil.SoilModule;
 import fr.terresvivantes.tools.ToolsModule;
+import fr.terresvivantes.water.WaterModule;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -38,7 +41,10 @@ public final class TerresVivantes {
             new CropModule(),
             new CompostModule(),
             new FoodModule(),
-            new ToolsModule()
+            new ToolsModule(),
+            new OrchardModule(),
+            new WaterModule(),
+            new HealthModule()
     );
 
     public TerresVivantes(IEventBus modBus, ModContainer container) {
