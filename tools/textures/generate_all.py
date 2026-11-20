@@ -27,6 +27,7 @@ sys.path.insert(0, str(HERE))
 from sprites import SPRITES, SEED_TEMPLATE, SEED_COLORS  # noqa: E402
 from sprites_ext import SPRITES_EXT  # noqa: E402
 from sprites_v03 import SPRITES_V03  # noqa: E402
+from sprites_v04 import SPRITES_V04, build_duck_entities  # noqa: E402
 import insects_textures  # noqa: E402
 
 ROOT = HERE.parents[1]
@@ -110,7 +111,7 @@ def render(rows, overrides=None):
 def build_all():
     """Retourne une liste (dossier, nom, image) pour toutes les textures."""
     out = []
-    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03:
+    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03 + SPRITES_V04:
         out.append((folder, name, render(rows)))
     # Sachets de graines: meme gabarit, couleurs propres a chaque culture.
     for crop, (seed_col, band_col) in SEED_COLORS.items():
@@ -140,11 +141,23 @@ def write_entity_textures():
     return written
 
 
+def write_duck_entities():
+    """Entites canard (64x32, atlas UV dans sprites_v04.py), dans textures/entity."""
+    written = []
+    for name, img in build_duck_entities(PALETTE):
+        path = TEX_ROOT / "entity" / f"{name}.png"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        img.save(path, format="PNG", optimize=False)
+        written.append((path, img))
+    return written
+
+
 def verify_entity(written):
     errors = []
     for path, img in written:
-        if img.size != (ENTITY_SIZE, ENTITY_SIZE):
-            errors.append(f"taille {img.size} au lieu de 32x32: {path}")
+        expected = (64, 32) if path.name.startswith("duck") else (ENTITY_SIZE, ENTITY_SIZE)
+        if img.size != expected:
+            errors.append(f"taille {img.size} au lieu de {expected}: {path}")
         if not path.is_file():
             errors.append(f"manquant: {path}")
     return errors
@@ -200,7 +213,7 @@ def main():
     entries = build_all()
     written = write_textures(entries)
     errors = verify(entries)
-    entity = write_entity_textures()
+    entity = write_entity_textures() + write_duck_entities()
     errors += verify_entity(entity)
     if errors:
         for e in errors:
@@ -208,7 +221,7 @@ def main():
         sys.exit(1)
     build_preview(entries)
     print(f"{len(written)} textures ecrites dans {TEX_ROOT}")
-    print(f"{len(entity)} textures d'entites (32x32) ecrites dans {insects_textures.OUT}")
+    print(f"{len(entity)} textures d'entites (insectes 32x32, canards 64x32) ecrites dans {TEX_ROOT / 'entity'}")
     print(f"preview: {PREVIEW_PATH}")
 
 
