@@ -9,16 +9,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 /**
- * Écran générique des machines : fond {@code textures/gui/processing.png} (176 x 166) et barre de progression
- * dessinée par-dessus la flèche (couleur pleine, 24 pixels au maximum).
+ * Écran générique des machines. La feuille {@code textures/gui/processing.png} fait 256 x 256 : le panneau
+ * (176 x 166) est en haut à gauche et contient la flèche vide ; la flèche pleine est en (176, 0) et est révélée
+ * en largeur selon la progression.
  */
 public final class ProcessingScreen extends AbstractContainerScreen<ProcessingMenu> {
 
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, "textures/gui/processing.png");
+    private static final int SHEET_SIZE = 256;
     private static final int TEXTURE_WIDTH = 176;
     private static final int TEXTURE_HEIGHT = 166;
-    private static final int PROGRESS_COLOR = 0xFFE0A030;
+    /** Source de la flèche pleine dans la feuille. */
+    private static final int ARROW_SRC_U = 176;
+    private static final int ARROW_SRC_V = 0;
 
     public ProcessingScreen(ProcessingMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -37,10 +41,11 @@ public final class ProcessingScreen extends AbstractContainerScreen<ProcessingMe
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int x = leftPos;
         int y = topPos;
-        graphics.blit(TEXTURE, x, y, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        graphics.blit(TEXTURE, x, y, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, SHEET_SIZE, SHEET_SIZE);
         int width = menu.progressScaled(ProcessingMenu.ARROW_WIDTH);
         if (width > 0) {
-            graphics.fill(x + 79, y + 40, x + 79 + width, y + 46, PROGRESS_COLOR);
+            graphics.blit(TEXTURE, x + ProcessingMenu.ARROW_X, y + ProcessingMenu.ARROW_Y,
+                    ARROW_SRC_U, ARROW_SRC_V, width, ProcessingMenu.ARROW_HEIGHT, SHEET_SIZE, SHEET_SIZE);
         }
     }
 }

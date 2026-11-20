@@ -14,19 +14,36 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
- * Menu générique des machines de transformation. Disposition (coordonnées du coin supérieur gauche des slots) :
- * entrées sur une rangée à y = 17 centrée, conteneur à (26, 35), flèche de progression à (79, 35), sortie à (134, 35),
- * inventaire joueur à partir de y = 84 et barre rapide à y = 142.
+ * Menu générique des machines de transformation. Disposition (coordonnées du coin supérieur gauche des slots,
+ * alignées sur {@code textures/gui/processing.png}) : entrées en grille 2 x 2 à partir de (34, 17), conteneur à
+ * (43, 62), flèche de progression à (79, 34), sortie à (116, 35), inventaire joueur à partir de y = 84 et barre
+ * rapide à y = 142.
  */
 public final class ProcessingMenu extends AbstractContainerMenu {
 
     /** Coordonnées des slots de la machine. */
-    public static final int CONTAINER_X = 26;
-    public static final int OUTPUT_X = 134;
-    public static final int SLOT_Y = 35;
+    public static final int INPUT_X = 34;
     public static final int INPUT_Y = 17;
-    /** Longueur de la flèche de progression, en pixels. */
-    public static final int ARROW_WIDTH = 24;
+    /** Pas entre deux entrées de la grille 2 x 2. */
+    public static final int INPUT_STEP = 18;
+    public static final int CONTAINER_X = 43;
+    public static final int CONTAINER_Y = 62;
+    public static final int OUTPUT_X = 116;
+    public static final int OUTPUT_Y = 35;
+    /** Flèche de progression : position et taille, en pixels. */
+    public static final int ARROW_X = 79;
+    public static final int ARROW_Y = 34;
+    public static final int ARROW_WIDTH = 22;
+    public static final int ARROW_HEIGHT = 15;
+
+    /** Position du slot d'entrée {@code i} : grille 2 x 2 remplie ligne par ligne, 1 à 3 entrées reprennent les premières. */
+    public static int inputX(int i) {
+        return INPUT_X + INPUT_STEP * (i % 2);
+    }
+
+    public static int inputY(int i) {
+        return INPUT_Y + INPUT_STEP * (i / 2);
+    }
 
     private final MachineType machine;
     private final Level level;
@@ -56,14 +73,13 @@ public final class ProcessingMenu extends AbstractContainerMenu {
 
         var handler = machineEntity.inventory();
         int inputs = machine.inputSlots();
-        int start = 88 - 9 * inputs;
         for (int i = 0; i < inputs; i++) {
-            addSlot(new SlotItemHandler(handler, i, start + 18 * i, INPUT_Y));
+            addSlot(new SlotItemHandler(handler, i, inputX(i), inputY(i)));
         }
         if (machine.container()) {
-            addSlot(new SlotItemHandler(handler, machine.containerSlot(), CONTAINER_X, SLOT_Y));
+            addSlot(new SlotItemHandler(handler, machine.containerSlot(), CONTAINER_X, CONTAINER_Y));
         }
-        addSlot(new SlotItemHandler(handler, machine.outputSlot(), OUTPUT_X, SLOT_Y));
+        addSlot(new SlotItemHandler(handler, machine.outputSlot(), OUTPUT_X, OUTPUT_Y));
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
