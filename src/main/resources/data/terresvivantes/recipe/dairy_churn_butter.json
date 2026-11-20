@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "churn",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:cream"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:butter",
+    "count": 1
+  },
+  "time": 200,
+  "quality": "inherit_min"
+}

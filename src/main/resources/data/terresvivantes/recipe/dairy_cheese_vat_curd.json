@@ -1,0 +1,22 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cheese_vat",
+  "ingredients": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": "minecraft:milk_bucket",
+        "components": {
+          "terresvivantes:milk_source": "cow"
+        }
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:cheese_curd",
+    "count": 2
+  },
+  "time": 400,
+  "quality": "inherit_min"
+}

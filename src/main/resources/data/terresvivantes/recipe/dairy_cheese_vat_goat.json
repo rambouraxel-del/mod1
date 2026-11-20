@@ -1,0 +1,22 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cheese_vat",
+  "ingredients": [
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": "minecraft:milk_bucket",
+        "components": {
+          "terresvivantes:milk_source": "goat"
+        }
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:goat_cheese",
+    "count": 1
+  },
+  "time": 400,
+  "quality": "inherit_min"
+}

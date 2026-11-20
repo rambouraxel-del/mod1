@@ -1,6 +1,8 @@
 package fr.terresvivantes.duck;
 
 import fr.terresvivantes.core.quality.QualityModule;
+import fr.terresvivantes.dairy.DairyModule;
+import fr.terresvivantes.dairy.logic.MilkSource;
 import fr.terresvivantes.duck.logic.ProductionLogic;
 import fr.terresvivantes.livestock.LivestockApi;
 import net.minecraft.core.BlockPos;
@@ -73,6 +75,8 @@ final class DuckEvents {
             int quality = ProductionLogic.milkQuality(LivestockApi.productionMultiplier(animal));
             ItemStack milk = new ItemStack(Items.MILK_BUCKET);
             QualityModule.setQuality(milk, quality);
+            // Espèce du lait (module dairy) : les recettes de la laiterie distinguent vache et chèvre.
+            milk.set(DairyModule.MILK_SOURCE.get(), animal instanceof Goat ? MilkSource.GOAT : MilkSource.COW);
             player.playSound(SoundEvents.COW_MILK, 1.0F, 1.0F);
             player.setItemInHand(event.getHand(), ItemUtils.createFilledResult(stack, player, milk));
         }
