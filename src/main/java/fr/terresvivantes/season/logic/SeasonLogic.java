@@ -5,11 +5,6 @@ package fr.terresvivantes.season.logic;
  */
 public final class SeasonLogic {
 
-    /** Saisons dans l'ordre du calendrier. */
-    public enum Season {
-        SPRING, SUMMER, AUTUMN, WINTER
-    }
-
     private SeasonLogic() {
     }
 

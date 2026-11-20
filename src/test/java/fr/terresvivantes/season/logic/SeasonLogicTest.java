@@ -1,6 +1,6 @@
 package fr.terresvivantes.season.logic;
 
-import fr.terresvivantes.season.logic.SeasonLogic.Season;
+import fr.terresvivantes.season.logic.Season;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

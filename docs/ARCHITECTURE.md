@@ -86,3 +86,16 @@ Les classes `Module` ne contiennent que l'enregistrement et les hooks; la règle
 - `TVRecipeProvider`, `LootTableProvider` (`TVBlockLoot`), `TVBlockTagsProvider` (côté serveur).
 
 Chaque provider appelle le hook correspondant de chaque module. Pour ajouter une ressource, le module implémente le hook; aucun fichier partagé n'est modifié.
+
+## Contrats inter-modules
+
+Un module n'appelle un autre que par sa façade statique `<Nom>Api`. Les implémentations marquées STUB sont provisoires.
+
+- `season.SeasonApi` : saison courante, jour dans la saison, jours par saison, multiplicateur saisonnier (STUB, module season)
+- `climate.ClimateApi` : `temperatureAt(Level, BlockPos)` en °C (STUB, module climate)
+- `soil.SoilApi` : lecture, consommation, engrais, facteur de Liebig, effacement des données de sol (STUB, module soil)
+- `crop.CropApi` : culture mûre, récolte et replantation, cultures optimales par saison (STUB, module crop)
+- `season.logic.Season` : enum des saisons (`next()`, `langKey()`), logique pure
+- `crop.logic.GrowthModel` : facteur total, facteur climatique et décision de croissance, logique pure réelle
+- `crop.logic.Affinity` : affinité saisonnière d'une culture (multiplicateur 1.25 / 1.0 / 0.4 / 0)
+- `soil.logic.SoilData` : record N/P/K/organique bornés à 0-100
