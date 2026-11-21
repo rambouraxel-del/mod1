@@ -166,6 +166,7 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
         if (ProcessingLogic.isComplete(progress, totalTime)) {
             List<ItemStack> leftovers = new ArrayList<>();
             ItemStack made = applyGuildBonus(level, current.craft(input, level.registryAccess(), leftovers));
+            ProcessingApi.notifyCrafted(level, pos, current, made);
             cleanInputs();
             addOutput(made);
             placeLeftovers(level, pos, leftovers);

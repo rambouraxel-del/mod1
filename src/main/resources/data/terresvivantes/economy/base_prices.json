@@ -90,5 +90,11 @@
   "manure": 2,
   "wood_ash": 2,
   "silage": 4,
-  "feed_mix": 4
+  "feed_mix": 4,
+  "red_grapes": 3,
+  "white_grapes": 3,
+  "grape_juice": 8,
+  "young_wine": 14,
+  "red_wine": 30,
+  "white_wine": 22
 }

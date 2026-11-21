@@ -57,6 +57,14 @@ public final class SeasonApi {
     }
 
     /**
+     * Année de l'overworld, à partir de 1 : jour total / (4 x jours par saison) + 1. Appelé uniquement côté serveur.
+     */
+    public static int getYear(Level level) {
+        long days = Math.max(0L, dayIndex(level));
+        return (int) (days / (4L * SeasonConfig.daysPerSeason())) + 1;
+    }
+
+    /**
      * Index absolu du jour de l'overworld. Appele uniquement cote serveur.
      */
     public static long dayIndex(Level level) {
