@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:smoking",
+  "category": "food",
+  "ingredient": { "item": "terresvivantes:rice" },
+  "result": { "id": "terresvivantes:rice_cake", "count": 1 },
+  "experience": 0.1,
+  "cookingtime": 100
+}

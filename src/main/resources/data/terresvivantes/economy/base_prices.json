@@ -90,5 +90,10 @@
   "manure": 2,
   "wood_ash": 2,
   "silage": 4,
-  "feed_mix": 4
+  "feed_mix": 4,
+  "rice_panicle": 3,
+  "rice": 2,
+  "rice_bowl": 9,
+  "risotto": 24,
+  "rice_cake": 5
 }
