@@ -20,6 +20,8 @@ public final class ContractGenerator {
     public static final int MIN_DAYS = 2;
     public static final int MAX_DAYS = 5;
 
+    /** Récompense d'un contrat, en pourcentage du prix unitaire (130 = +30 % sur le prix; vente à l'étal : 90 %). */
+    public static final int REWARD_PERCENT = 130;
     /** Gain de réputation minimal et maximal à la livraison. */
     public static final int MIN_REPUTATION = 5;
     public static final int MAX_REPUTATION = 25;
@@ -83,8 +85,8 @@ public final class ContractGenerator {
         }
         long deadline = today + MIN_DAYS + rnd.nextInt(MAX_DAYS - MIN_DAYS + 1);
         int reputation = MIN_REPUTATION + rnd.nextInt(MAX_REPUTATION - MIN_REPUTATION + 1);
-        // Récompense = quantité x prix x 1.5, arrondie à l'entier le plus proche (demi vers le haut).
-        long reward = ((long) quantity * price * 3 + 1) / 2;
+        // Récompense = quantité x prix x 1.3, arrondie à l'entier le plus proche (demi vers le haut).
+        long reward = ((long) quantity * price * REWARD_PERCENT + 50) / 100;
         return new Generated(product, quantity, minQuality, deadline,
                 (int) Math.min(Integer.MAX_VALUE, reward), reputation);
     }

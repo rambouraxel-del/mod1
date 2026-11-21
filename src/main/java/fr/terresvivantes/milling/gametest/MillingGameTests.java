@@ -130,12 +130,12 @@ public final class MillingGameTests {
         });
     }
 
-    /** Quatre olives dans la presse, un flacon : une huile d'olive est prête en 200 ticks (vérifiée à 230). */
+    /** Deux olives dans la presse (v0.8, était quatre), un flacon : une huile est prête en 200 ticks (vérifiée à 230). */
     @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 300)
-    public static void fruitPressMakesOliveOilFromFourOlives(GameTestHelper helper) {
+    public static void fruitPressMakesOliveOilFromTwoOlives(GameTestHelper helper) {
         helper.setBlock(PRESS, MillingModule.FRUIT_PRESS.get());
         FruitPressBlockEntity press = helper.getBlockEntity(PRESS);
-        press.inventory().setStackInSlot(0, new ItemStack(olive(), 4));
+        press.inventory().setStackInSlot(0, new ItemStack(olive(), 2));
         press.inventory().setStackInSlot(MillingModule.FRUIT_PRESS_TYPE.containerSlot(),
                 new ItemStack(Items.GLASS_BOTTLE, 1));
         helper.runAfterDelay(OLIVE_OIL_CHECK_TICKS, () -> {

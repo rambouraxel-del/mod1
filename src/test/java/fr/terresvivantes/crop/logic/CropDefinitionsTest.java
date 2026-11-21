@@ -61,21 +61,23 @@ class CropDefinitionsTest {
         assertEquals(Affinity.UNFAVORABLE, tomato.affinityFor(Season.AUTUMN));
         assertEquals(12.0f, tomato.tempMin(), 1e-6f);
         assertEquals(32.0f, tomato.tempMax(), 1e-6f);
-        assertEquals(new CropDefinition.Nutrients(2, 1, 2), tomato.stageCost());
+        // v0.8 (équilibrage, docs/BALANCE.md) : la consommation se fait à la récolte, pas à chaque stade.
+        assertEquals(new CropDefinition.Nutrients(0, 0, 0), tomato.stageCost());
         assertEquals(new CropDefinition.Nutrients(3, 2, 3), tomato.harvestCost());
-        assertEquals(6.0f, tomato.growthDays(), 1e-6f);
+        assertEquals(1.55f, tomato.growthDays(), 1e-6f);
         assertEquals(2, tomato.yieldMin());
-        assertEquals(4, tomato.yieldMax());
+        assertEquals(3, tomato.yieldMax());
         assertFalse(tomato.legume());
     }
 
     @Test
-    void garlicIsAutumnOptimalAndSlowest() {
+    void garlicIsAutumnOptimalAndWithinOneToTwoDays() {
+        // v0.8 : l'ail n'est plus la plus lente (14 j en v0.7); toutes les cultures mûrissent en 1 à 2 j en saison.
         CropDefinition garlic = CropDefinitions.byId("garlic").orElseThrow();
         assertEquals(Affinity.OPTIMAL, garlic.affinityFor(Season.AUTUMN));
-        assertEquals(14.0f, garlic.growthDays(), 1e-6f);
+        assertEquals(1.7f, garlic.growthDays(), 1e-6f);
         for (CropDefinition def : CropDefinitions.all()) {
-            assertTrue(def.growthDays() <= garlic.growthDays(), def.id() + " plus lent que l'ail");
+            assertTrue(def.growthDays() >= 1.5f && def.growthDays() <= 1.8f, def.id() + " durée hors plage v0.8");
         }
     }
 

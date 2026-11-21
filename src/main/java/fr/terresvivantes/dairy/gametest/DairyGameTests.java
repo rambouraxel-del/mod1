@@ -70,8 +70,8 @@ public final class DairyGameTests {
         vat.inventory().setStackInSlot(0, cowMilk(3));
         helper.runAfterDelay(VAT_TICKS + MARGIN, () -> {
             ItemStack curd = vat.inventory().getStackInSlot(DairyModule.CHEESE_VAT_TYPE.outputSlot());
-            helper.assertTrue(curd.is(DairyModule.CHEESE_CURD.get()) && curd.getCount() == 2,
-                    "caillé attendu (2), obtenu " + curd);
+            helper.assertTrue(curd.is(DairyModule.CHEESE_CURD.get()) && curd.getCount() == 1,
+                    "caillé attendu (1, v0.8), obtenu " + curd);
             helper.assertTrue(QualityModule.qualityOf(curd) == 3,
                     "qualité attendue 3, obtenue " + QualityModule.qualityOf(curd));
             helper.succeed();
@@ -102,8 +102,8 @@ public final class DairyGameTests {
         vat.inventory().setStackInSlot(0, new ItemStack(Items.MILK_BUCKET));
         helper.runAfterDelay(VAT_TICKS + MARGIN, () -> {
             ItemStack curd = vat.inventory().getStackInSlot(DairyModule.CHEESE_VAT_TYPE.outputSlot());
-            helper.assertTrue(curd.is(DairyModule.CHEESE_CURD.get()) && curd.getCount() == 2,
-                    "un seau sans espèce doit donner du caillé (2) comme le lait de vache, obtenu " + curd);
+            helper.assertTrue(curd.is(DairyModule.CHEESE_CURD.get()) && curd.getCount() == 1,
+                    "un seau sans espèce doit donner du caillé (1) comme le lait de vache, obtenu " + curd);
             helper.succeed();
         });
     }

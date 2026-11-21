@@ -72,15 +72,17 @@ class MarketLogicTest {
     }
 
     @Test
-    void rewardIsQuantityTimesPriceTimesOneAndAHalf() {
-        // Prix unitaire fixe 10 : récompense exacte = quantité x 15.
+    void rewardIsQuantityTimesPriceTimesOnePointThree() {
+        // v0.8 : récompense x1.3 (était x1.5), soit +44 % sur la vente à l'étal (90 %), voir docs/BALANCE.md.
+        assertEquals(130, ContractGenerator.REWARD_PERCENT);
+        // Prix unitaire fixe 10 : récompense exacte = quantité x 13.
         ContractGenerator.Generated exact = ContractGenerator.generate(12345L, ReputationLogic.Tier.UNKNOWN, 0L,
                 List.of("terresvivantes:tomato"), List.of(), id -> 10);
-        assertEquals(exact.quantity() * 15, exact.reward(), "récompense = quantité x prix x 1.5");
-        // Prix 7 : 1.5 x 7 = 10.5 par unité; arrondi à l'entier le plus proche, demi vers le haut.
+        assertEquals(exact.quantity() * 13, exact.reward(), "récompense = quantité x prix x 1.3");
+        // Prix 7 : 1.3 x 7 = 9.1 par unité; arrondi à l'entier le plus proche, demi vers le haut.
         ContractGenerator.Generated odd = ContractGenerator.generate(12345L, ReputationLogic.Tier.UNKNOWN, 0L,
                 List.of("terresvivantes:tomato"), List.of(), id -> 7);
-        assertEquals((odd.quantity() * 21 + 1) / 2, odd.reward(), "arrondi demi vers le haut");
+        assertEquals((odd.quantity() * 91 + 5) / 10, odd.reward(), "arrondi demi vers le haut");
     }
 
     @Test
