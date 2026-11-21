@@ -1,0 +1,19 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fermentation_barrel",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:white_grapes"
+      },
+      "count": 4
+    }
+  ],
+  "container": "minecraft:glass_bottle",
+  "result": {
+    "id": "terresvivantes:white_wine",
+    "count": 1
+  },
+  "time": 72000,
+  "quality": "inherit_avg"
+}

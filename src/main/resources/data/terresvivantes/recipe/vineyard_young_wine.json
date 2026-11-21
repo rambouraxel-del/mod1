@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fermentation_barrel",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:grape_juice"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:young_wine",
+    "count": 1
+  },
+  "time": 48000,
+  "quality": "inherit_avg"
+}

@@ -57,6 +57,8 @@ import fr.terresvivantes.soil.SoilModule;
 import fr.terresvivantes.tools.ToolsModule;
 import fr.terresvivantes.water.WaterConfig;
 import fr.terresvivantes.water.WaterModule;
+import fr.terresvivantes.vineyard.VineyardConfig;
+import fr.terresvivantes.vineyard.VineyardModule;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.ModContainer;
@@ -106,6 +108,7 @@ public final class TerresVivantes {
             new MarketModule(),
             new GuildModule(),
             new GuideModule(),
+            new VineyardModule(),
             new DebugModule()
     );
 
@@ -127,6 +130,7 @@ public final class TerresVivantes {
         container.registerConfig(ModConfig.Type.COMMON, DuckConfig.SPEC, DuckConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, AutomationConfig.SPEC, AutomationConfig.FILE_NAME);
         container.registerConfig(ModConfig.Type.COMMON, PestsConfig.SPEC, PestsConfig.FILE_NAME);
+        container.registerConfig(ModConfig.Type.COMMON, VineyardConfig.SPEC, VineyardConfig.FILE_NAME);
         TVCreativeTab.register(modBus);
         TVNetwork.register(modBus);
         NeoForge.EVENT_BUS.addListener(TVCommands::onRegisterCommands);
