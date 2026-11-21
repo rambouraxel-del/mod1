@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    {
+      "item": "terresvivantes:aged_cheese"
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:cheese_slice",
+    "count": 4
+  }
+}

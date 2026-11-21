@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "minecraft:carrot"},
+    {"item": "minecraft:potato"},
+    {"item": "terresvivantes:cabbage"},
+    {"item": "terresvivantes:onion"},
+    {"item": "minecraft:bowl"}
+  ],
+  "result": {"id": "terresvivantes:vegetable_stew", "count": 1}
+}

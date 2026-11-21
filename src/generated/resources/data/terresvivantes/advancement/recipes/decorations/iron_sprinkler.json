@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_copper_sprinkler": {
+      "conditions": {
+        "items": [
+          {
+            "items": "terresvivantes:copper_sprinkler"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "terresvivantes:iron_sprinkler"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_copper_sprinkler"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "terresvivantes:iron_sprinkler"
+    ]
+  }
+}

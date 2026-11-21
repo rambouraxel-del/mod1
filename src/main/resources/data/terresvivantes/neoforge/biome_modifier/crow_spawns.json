@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#terresvivantes:crow_habitat",
+  "spawners": [
+    {
+      "type": "terresvivantes:crow",
+      "weight": 5,
+      "minCount": 2,
+      "maxCount": 4
+    }
+  ]
+}

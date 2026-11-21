@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "active=false,facing=east,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf",
+      "y": 90
+    },
+    "active=false,facing=east,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese",
+      "y": 90
+    },
+    "active=false,facing=north,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf"
+    },
+    "active=false,facing=north,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese"
+    },
+    "active=false,facing=south,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf",
+      "y": 180
+    },
+    "active=false,facing=south,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese",
+      "y": 180
+    },
+    "active=false,facing=west,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf",
+      "y": 270
+    },
+    "active=false,facing=west,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese",
+      "y": 270
+    },
+    "active=true,facing=east,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf",
+      "y": 90
+    },
+    "active=true,facing=east,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese",
+      "y": 90
+    },
+    "active=true,facing=north,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf"
+    },
+    "active=true,facing=north,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese"
+    },
+    "active=true,facing=south,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf",
+      "y": 180
+    },
+    "active=true,facing=south,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese",
+      "y": 180
+    },
+    "active=true,facing=west,has_cheese=false": {
+      "model": "terresvivantes:block/aging_shelf",
+      "y": 270
+    },
+    "active=true,facing=west,has_cheese=true": {
+      "model": "terresvivantes:block/aging_shelf_cheese",
+      "y": 270
+    }
+  }
+}

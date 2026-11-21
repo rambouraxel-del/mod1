@@ -1,0 +1,12 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "minecraft:egg" }, "count": 2 },
+    { "ingredient": { "item": "terresvivantes:cheese_slice" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:butter" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:cheese_omelette", "count": 1 },
+  "time": 160,
+  "quality": "inherit_avg"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#terresvivantes:borage_habitat",
+  "features": "terresvivantes:borage_patch",
+  "step": "vegetal_decoration"
+}

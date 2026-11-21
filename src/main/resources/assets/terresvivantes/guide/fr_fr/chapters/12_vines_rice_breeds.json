@@ -1,0 +1,31 @@
+{
+  "id": "vines_rice_breeds",
+  "title": "Vignes, riz et races",
+  "pages": [
+    {
+      "title": "Vigne sur treillis",
+      "text": "Posez un treillis sur une terre labourée, de l'herbe ou de la terre. Une bouture rouge ou blanche, utilisée sur le treillis, fait une vigne au stade 0. Elle pousse en saison et ne meurt jamais. Au stade 3, clic droit à main vide : 2 à 4 grappes.",
+      "icon": "terresvivantes:trellis"
+    },
+    {
+      "title": "Du raisin au vin",
+      "text": "Pressoir : 2 raisins rouges et une bouteille donnent un jus (6 secondes). Tonneau : jus et bouteille donnent un vin jeune (2 jours MC). Étagère d'affinage : le vin jeune devient vin rouge en 6 jours, et gagne une étoile. Vin blanc : 4 raisins blancs et une bouteille, au tonneau, en 3 jours.",
+      "icon": "terresvivantes:red_wine"
+    },
+    {
+      "title": "Prix et millésime",
+      "text": "Prix de base : vin rouge 30 pièces, vin blanc 22, vin jeune 14, jus 8. Un vin ★3 se vend une fois et demie son prix. Chaque vin rouge ou blanc porte l'année de sa vinification. La taille d'hiver ramène une vigne mûre au stade 1.",
+      "icon": "terresvivantes:white_wine"
+    },
+    {
+      "title": "Riz en rizière",
+      "text": "Clic droit avec un plant de riz sur une terre (terre, herbe, labour ou boue) qui a une eau d'un bloc de profondeur au-dessus. Le riz pousse dans l'eau, en été surtout, et casse si l'eau ou la terre disparaît. Une récolte donne 2 à 3 panicules.",
+      "icon": "terresvivantes:rice_panicle"
+    },
+    {
+      "title": "Races d'élevage",
+      "text": "Une race se tire à l'arrivée selon le climat. Holstein : production ×1,2. Charolais : production ×0,9, un morceau de viande de plus à l'abattage. Highland : en hiver, la faim est compensée. Les petits héritent la race d'un parent, 50/50, jumeaux compris.",
+      "icon": "terresvivantes:livestock_ledger"
+    }
+  ]
+}

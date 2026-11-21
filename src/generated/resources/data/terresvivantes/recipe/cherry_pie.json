@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terresvivantes:cherry"
+    },
+    {
+      "item": "terresvivantes:cherry"
+    },
+    {
+      "item": "terresvivantes:cherry"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:cherry_pie"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:book"
+    },
+    "G": {
+      "item": "terresvivantes:gold_coin"
+    },
+    "P": {
+      "item": "minecraft:dark_oak_planks"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "PBP",
+    "PGP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:guild_desk"
+  }
+}

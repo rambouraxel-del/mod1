@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "terresvivantes:block/market_stall",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "terresvivantes:block/market_stall"
+    },
+    "facing=south": {
+      "model": "terresvivantes:block/market_stall",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "terresvivantes:block/market_stall",
+      "y": 270
+    }
+  }
+}

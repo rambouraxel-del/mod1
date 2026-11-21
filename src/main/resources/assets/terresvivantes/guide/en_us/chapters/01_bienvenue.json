@@ -1,0 +1,24 @@
+{
+  "id": "welcome",
+  "title": "Welcome and Seasons",
+  "pages": [
+    {
+      "title": "Welcome, farmer",
+      "text": "Terres Vivantes runs a farm through the seasons. The soil wears out, the climate shifts, and animals have needs. This manual explains each system in the order you will meet them.",
+      "icon": "terresvivantes:almanac"
+    },
+    {
+      "title": "The four seasons",
+      "text": "A year has four seasons: spring, summer, autumn and winter. Each lasts 7 days by default (configurable). The HUD, at the top left, shows the current season and day."
+    },
+    {
+      "title": "Climate and temperature",
+      "text": "Local temperature depends on biome, season, altitude and night. In winter, outdoor crops slow down a lot. A greenhouse shields them from the cold (+8 °C) and limits that slowdown."
+    },
+    {
+      "title": "The almanac",
+      "text": "The almanac (a book and wheat) shows the season, the day, the local temperature and the crops to plant now: those whose season is optimal and whose temperature suits them. Right-click to open it.",
+      "icon": "terresvivantes:almanac"
+    }
+  ]
+}

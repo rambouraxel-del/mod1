@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:corn_meal" }, "count": 1 },
+    {
+      "ingredient": {
+        "type": "neoforge:components",
+        "items": "minecraft:potion",
+        "components": { "minecraft:potion_contents": { "potion": "minecraft:water" } }
+      },
+      "count": 1
+    }
+  ],
+  "result": { "id": "terresvivantes:corn_tortilla", "count": 3 },
+  "time": 120,
+  "quality": "inherit_avg"
+}

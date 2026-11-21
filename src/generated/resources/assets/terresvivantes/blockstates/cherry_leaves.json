@@ -1,0 +1,340 @@
+{
+  "variants": {
+    "distance=1,persistent=false,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=1,persistent=false,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=1,persistent=false,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=1,persistent=false,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=1,persistent=false,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=1,persistent=false,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=1,persistent=false,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=1,persistent=false,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=1,persistent=true,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=1,persistent=true,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=1,persistent=true,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=1,persistent=true,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=1,persistent=true,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=1,persistent=true,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=1,persistent=true,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=1,persistent=true,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=2,persistent=false,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=2,persistent=false,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=2,persistent=false,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=2,persistent=false,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=2,persistent=false,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=2,persistent=false,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=2,persistent=false,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=2,persistent=false,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=2,persistent=true,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=2,persistent=true,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=2,persistent=true,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=2,persistent=true,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=2,persistent=true,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=2,persistent=true,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=2,persistent=true,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=2,persistent=true,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=3,persistent=false,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=3,persistent=false,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=3,persistent=false,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=3,persistent=false,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=3,persistent=false,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=3,persistent=false,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=3,persistent=false,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=3,persistent=false,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=3,persistent=true,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=3,persistent=true,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=3,persistent=true,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=3,persistent=true,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=3,persistent=true,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=3,persistent=true,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=3,persistent=true,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=3,persistent=true,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=4,persistent=false,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=4,persistent=false,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=4,persistent=false,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=4,persistent=false,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=4,persistent=false,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=4,persistent=false,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=4,persistent=false,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=4,persistent=false,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=4,persistent=true,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=4,persistent=true,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=4,persistent=true,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=4,persistent=true,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=4,persistent=true,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=4,persistent=true,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=4,persistent=true,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=4,persistent=true,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=5,persistent=false,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=5,persistent=false,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=5,persistent=false,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=5,persistent=false,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=5,persistent=false,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=5,persistent=false,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=5,persistent=false,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=5,persistent=false,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=5,persistent=true,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=5,persistent=true,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=5,persistent=true,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=5,persistent=true,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=5,persistent=true,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=5,persistent=true,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=5,persistent=true,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=5,persistent=true,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=6,persistent=false,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=6,persistent=false,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=6,persistent=false,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=6,persistent=false,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=6,persistent=false,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=6,persistent=false,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=6,persistent=false,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=6,persistent=false,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=6,persistent=true,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=6,persistent=true,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=6,persistent=true,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=6,persistent=true,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=6,persistent=true,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=6,persistent=true,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=6,persistent=true,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=6,persistent=true,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=7,persistent=false,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=7,persistent=false,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=7,persistent=false,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=7,persistent=false,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=7,persistent=false,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=7,persistent=false,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=7,persistent=false,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=7,persistent=false,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=7,persistent=true,stage=0,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=7,persistent=true,stage=0,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage0"
+    },
+    "distance=7,persistent=true,stage=1,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=7,persistent=true,stage=1,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage1"
+    },
+    "distance=7,persistent=true,stage=2,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=7,persistent=true,stage=2,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage2"
+    },
+    "distance=7,persistent=true,stage=3,waterlogged=false": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    },
+    "distance=7,persistent=true,stage=3,waterlogged=true": {
+      "model": "terresvivantes:block/cherry_leaves_stage3"
+    }
+  }
+}

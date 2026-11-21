@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terresvivantes:silver_coin"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "terresvivantes:copper_coin"
+  }
+}

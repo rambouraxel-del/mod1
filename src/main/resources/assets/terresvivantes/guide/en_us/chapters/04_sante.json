@@ -1,0 +1,29 @@
+{
+  "id": "health",
+  "title": "Crop Health",
+  "pages": [
+    {
+      "title": "Stress and withering",
+      "text": "A crop in impossible conditions builds up stress. Each successful growth reduces it. At 4 stress, it withers: it no longer grows and must be replaced.",
+      "icon": "terresvivantes:soil_probe"
+    },
+    {
+      "title": "Mildew and rust",
+      "text": "Mildew (grey-white) hits tomato, cucumber, strawberry, lettuce, bell pepper, eggplant and potato. Rust (orange) hits barley, corn, soybean and wheat. Saturated soil, heat, rain, monoculture and crowded crops favor disease."
+    },
+    {
+      "title": "Effects of disease",
+      "text": "A sick crop grows at 30 % of normal speed and yields half. It spreads to identical neighbors with a 10 % chance per attempt. After six attempts while sick, it withers."
+    },
+    {
+      "title": "Fungicide and sprayer",
+      "text": "Fungicide (2 units): copper, a water bottle and bone meal. Right-click the crop: it is cured and immune until the end of the season. The sprayer treats a 3x3 area over 16 charges.",
+      "icon": "terresvivantes:fungicide"
+    },
+    {
+      "title": "Aphids",
+      "text": "Aphids halve a crop's growth and cut its yield to 80 %. They never appear on their own. Ladybugs clean them off within 2 blocks, and the scarecrow reduces how often they appear.",
+      "icon": "terresvivantes:sprayer"
+    }
+  ]
+}

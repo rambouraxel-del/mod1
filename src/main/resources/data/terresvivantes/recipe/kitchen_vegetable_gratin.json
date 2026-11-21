@@ -1,0 +1,13 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "minecraft:potato" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:cream" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:cheese_slice" }, "count": 1 },
+    { "ingredient": { "item": "terresvivantes:onion" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:vegetable_gratin", "count": 1 },
+  "time": 300,
+  "quality": "inherit_avg"
+}

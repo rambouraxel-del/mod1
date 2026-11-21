@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    },
+    {
+      "item": "terresvivantes:silver_coin"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:gold_coin"
+  }
+}

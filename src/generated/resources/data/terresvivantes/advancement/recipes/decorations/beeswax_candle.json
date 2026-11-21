@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_beeswax": {
+      "conditions": {
+        "items": [
+          {
+            "items": "terresvivantes:beeswax"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "terresvivantes:beeswax_candle"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_beeswax"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "terresvivantes:beeswax_candle"
+    ]
+  }
+}

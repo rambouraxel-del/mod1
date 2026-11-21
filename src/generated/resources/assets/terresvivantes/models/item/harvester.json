@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "terresvivantes:block/harvester_front",
+    "side": "terresvivantes:block/harvester_side",
+    "top": "terresvivantes:block/harvester_top"
+  }
+}

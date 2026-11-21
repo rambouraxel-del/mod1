@@ -1,0 +1,30 @@
+{
+  "id": "biodiversity",
+  "title": "Biodiversité et abeilles",
+  "pages": [
+    {
+      "title": "Pollinisation",
+      "text": "Un score de 0 à 1 mesure les pollinisateurs autour d'une culture : abeilles, ruches, fleurs variées, apiaires. Concombre, fraise, aubergine et poivron en ont besoin : sans pollinisateur, leur rendement tombe à 60 %.",
+      "icon": "terresvivantes:honey_extractor"
+    },
+    {
+      "title": "Indice de biodiversité",
+      "text": "Fleurs, feuillage fruitier, abeilles et haies augmentent l'indice, de 0 à 1. Plus il est élevé, moins les maladies s'installent. Un champ entouré de fleurs se défend mieux."
+    },
+    {
+      "title": "Fleurs et haie",
+      "text": "Trèfle, lavande, camomille et bourrache poussent en pot ou à l'état sauvage. Teintures : trèfle blanc, lavande violette, camomille jaune, bourrache bleu clair. L'aubépine forme une haie d'habitat : 6 feuilles et un bâton.",
+      "icon": "terresvivantes:hawthorn_hedge"
+    },
+    {
+      "title": "Insectes",
+      "text": "Un filet à papillons se fabrique avec de la ficelle. Papillons, coccinelles et lucioles (la nuit) peuplent les haies et les fleurs. Les bocaux à papillons et à coccinelles les gardent.",
+      "icon": "terresvivantes:butterfly_net"
+    },
+    {
+      "title": "Apiculture",
+      "text": "L'apiaire contient 4 cadres et une population de 0 à 100 abeilles. Les cadres vides se font avec 8 bâtons et une ficelle. Extracteur (fer et seau) et enfumoir (fer, cuir, silex) complètent le matériel. Le miel prend le nom de la fleur dominante.",
+      "icon": "terresvivantes:apiary"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "smokehouse",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:porkchop"
+      },
+      "count": 1
+    }
+  ],
+  "container": {
+    "tag": "terresvivantes:smoker_fuel"
+  },
+  "result": {
+    "id": "terresvivantes:smoked_ham",
+    "count": 1
+  },
+  "time": 600,
+  "quality": "inherit_min"
+}

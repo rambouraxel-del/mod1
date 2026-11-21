@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#terresvivantes:duck_habitat",
+  "spawners": [
+    {
+      "type": "terresvivantes:duck",
+      "weight": 10,
+      "minCount": 2,
+      "maxCount": 4
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "aging_shelf",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:young_cheese"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "terresvivantes:aged_cheese",
+    "count": 1
+  },
+  "time": 144000,
+  "quality": "age"
+}

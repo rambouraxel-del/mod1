@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "terresvivantes:wheat_flour" },
+    { "item": "terresvivantes:wheat_flour" },
+    { "item": "terresvivantes:wheat_flour" },
+    {
+      "type": "neoforge:components",
+      "items": "minecraft:potion",
+      "components": { "minecraft:potion_contents": { "potion": "minecraft:water" } }
+    }
+  ],
+  "result": { "id": "terresvivantes:dough", "count": 3 }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "soil",
+  "title": "Le sol",
+  "pages": [
+    {
+      "title": "Azote, phosphore, potasse",
+      "text": "Chaque terre labourée a trois nutriments, N (azote), P (phosphore) et K (potassium), et une matière organique. Chacune va de 0 à 100. Les cultures les consomment à chaque stade, et davantage à la récolte.",
+      "icon": "terresvivantes:soil_probe"
+    },
+    {
+      "title": "La sonde",
+      "text": "Clic droit sur une terre labourée avec la sonde : N, P, K, matière organique et humidité s'affichent dans le chat. Sur une culture, la sonde montre aussi le stress, la maladie et l'immunité.",
+      "icon": "terresvivantes:soil_probe"
+    },
+    {
+      "title": "Le facteur limitant",
+      "text": "La fertilité suit le nutriment le plus faible. Sous 20, la croissance tombe à 25 %; de 20 à 39, elle est à 60 %. Une matière organique supérieure à 60 ajoute 10 %. Équilibrez les trois nutriments."
+    },
+    {
+      "title": "Engrais et bac à compost",
+      "text": "Clic droit sur la terre pour y mettre un engrais, qui n'agit que sur ce bloc. Compost : +15 N, P et K, +20 de matière organique. Fumier : +25 N, +10 de matière organique. Os : +15 P. Cendre de bois : +20 K.",
+      "icon": "terresvivantes:compost_bin"
+    },
+    {
+      "title": "Arrosoir et grelinette",
+      "text": "Une terre sèche fait pousser deux fois moins vite. L'arrosoir (3 lingots de fer et un seau) règle l'humidité à fond sur 3x3. La grelinette aère le sol : +5 de matière organique, une fois par jour et par bloc.",
+      "icon": "terresvivantes:watering_can"
+    },
+    {
+      "title": "Rotation des cultures",
+      "text": "Une même culture récoltée deux fois de suite fait baisser la croissance (x0,8). Une légumineuse, comme le soja, cultivée juste avant une autre culture la fait monter (x1,15). Alternez les familles."
+    }
+  ]
+}

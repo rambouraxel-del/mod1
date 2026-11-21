@@ -1,0 +1,19 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "fruit_press",
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "terresvivantes:olive"
+      },
+      "count": 2
+    }
+  ],
+  "container": "minecraft:glass_bottle",
+  "result": {
+    "id": "terresvivantes:olive_oil",
+    "count": 1
+  },
+  "time": 200,
+  "quality": "inherit_min"
+}

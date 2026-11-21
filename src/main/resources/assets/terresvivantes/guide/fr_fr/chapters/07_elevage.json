@@ -1,0 +1,36 @@
+{
+  "id": "livestock",
+  "title": "Élevage",
+  "pages": [
+    {
+      "title": "Le génome",
+      "text": "Chaque animal d'élevage a quatre gènes de 0 à 10 : productivité, taille, résistance et fertilité. Les petits héritent la moyenne des parents, avec parfois une mutation de plus ou moins 1. Le registre d'élevage affiche les gènes au clic droit.",
+      "icon": "terresvivantes:livestock_ledger"
+    },
+    {
+      "title": "Besoins quotidiens",
+      "text": "La satiété et la santé baissent à chaque cycle (20 par jour MC). À satiété nulle, la santé perd 1 par cycle : 5 jours MC avant la mort à pleine santé. Un animal broutard se nourrit sur l'herbe hors hiver. Une auge pleine nourrit les animaux proches.",
+      "icon": "terresvivantes:feeding_trough"
+    },
+    {
+      "title": "Aliments",
+      "text": "Aliment composé : orge, maïs et soja donnent 3 unités. Ensilage : un bloc de foin et du maïs donnent 4 unités. Une auge bien remplie évite les maladies de sous-alimentation.",
+      "icon": "terresvivantes:feed_mix"
+    },
+    {
+      "title": "Reproduction et nichoir",
+      "text": "On élève au printemps et en été, avec une satiété d'au moins 40. Le nichoir (8 places, en planches et blé) reçoit les œufs des poules et des canards. Il ne pond pas à votre place : placez-le près des animaux.",
+      "icon": "terresvivantes:nesting_box"
+    },
+    {
+      "title": "Santé",
+      "text": "La surpopulation et la sous-alimentation rendent malade; l'humidité prolongée donne des parasites. La trousse vétérinaire soigne un animal. Le bloc de sel, à proximité, redonne 1 point de santé à chaque cycle.",
+      "icon": "terresvivantes:veterinary_kit"
+    },
+    {
+      "title": "Le canard",
+      "text": "Le canard, mâle ou femelle, nage et pond. Ses œufs, sa viande crue ou cuite, et ses productions dépendent de son génome et de son alimentation.",
+      "icon": "terresvivantes:cooked_duck"
+    }
+  ]
+}

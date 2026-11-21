@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "fill=empty": {
+      "model": "terresvivantes:block/feeding_trough_empty"
+    },
+    "fill=grain": {
+      "model": "terresvivantes:block/feeding_trough_grain"
+    },
+    "fill=hay": {
+      "model": "terresvivantes:block/feeding_trough_hay"
+    },
+    "fill=silage": {
+      "model": "terresvivantes:block/feeding_trough_silage"
+    }
+  }
+}

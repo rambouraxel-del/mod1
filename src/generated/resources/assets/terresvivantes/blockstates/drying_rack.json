@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=east": {
+      "model": "terresvivantes:block/drying_rack",
+      "y": 90
+    },
+    "active=false,facing=north": {
+      "model": "terresvivantes:block/drying_rack"
+    },
+    "active=false,facing=south": {
+      "model": "terresvivantes:block/drying_rack",
+      "y": 180
+    },
+    "active=false,facing=west": {
+      "model": "terresvivantes:block/drying_rack",
+      "y": 270
+    },
+    "active=true,facing=east": {
+      "model": "terresvivantes:block/drying_rack_full",
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "terresvivantes:block/drying_rack_full"
+    },
+    "active=true,facing=south": {
+      "model": "terresvivantes:block/drying_rack_full",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "terresvivantes:block/drying_rack_full",
+      "y": 270
+    }
+  }
+}

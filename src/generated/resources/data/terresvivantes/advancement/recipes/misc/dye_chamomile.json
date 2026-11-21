@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_chamomile": {
+      "conditions": {
+        "items": [
+          {
+            "items": "terresvivantes:chamomile"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "terresvivantes:dye_chamomile"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_chamomile"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "terresvivantes:dye_chamomile"
+    ]
+  }
+}

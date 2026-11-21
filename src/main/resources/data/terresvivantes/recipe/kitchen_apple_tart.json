@@ -1,0 +1,12 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:dough" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:apple" }, "count": 2 },
+    { "ingredient": { "item": "minecraft:sugar" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:apple_tart", "count": 1 },
+  "time": 240,
+  "quality": "inherit_avg"
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "bottom": "terresvivantes:block/honey_extractor_top",
+    "side": "terresvivantes:block/honey_extractor_side",
+    "top": "terresvivantes:block/honey_extractor_top"
+  }
+}

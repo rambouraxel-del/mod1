@@ -1,0 +1,31 @@
+{
+  "id": "vines_rice_breeds",
+  "title": "Vines, rice and breeds",
+  "pages": [
+    {
+      "title": "Vine on a trellis",
+      "text": "Place a trellis on tilled soil, grass or dirt. A red or white cutting, used on the trellis, makes a vine at stage 0. It grows in season and never dies. At stage 3, right-click with an empty hand: 2 to 4 bunches.",
+      "icon": "terresvivantes:trellis"
+    },
+    {
+      "title": "From grapes to wine",
+      "text": "Press: 2 red grapes and a bottle make juice (6 seconds). Barrel: juice and a bottle make young wine (2 game days). Ageing shelf: young wine becomes red wine in 6 days, and gains one star. White wine: 4 white grapes and a bottle, in the barrel, in 3 days.",
+      "icon": "terresvivantes:red_wine"
+    },
+    {
+      "title": "Prices and vintage",
+      "text": "Base prices: red wine 30 coins, white wine 22, young wine 14, juice 8. A ★3 wine sells for one and a half times its price. Each red or white wine carries the year it was made. Winter pruning brings a ripe vine back to stage 1.",
+      "icon": "terresvivantes:white_wine"
+    },
+    {
+      "title": "Rice paddy",
+      "text": "Right-click with a rice seedling on soil (dirt, grass, tilled soil or mud) that has one block of water above it. Rice grows in water, mostly in summer, and breaks if the water or the soil goes. A harvest gives 2 to 3 panicles.",
+      "icon": "terresvivantes:rice_panicle"
+    },
+    {
+      "title": "Farm breeds",
+      "text": "A breed is drawn on arrival, from the climate. Holstein: production ×1.2. Charolais: production ×0.9, one extra piece of meat at slaughter. Highland: in winter, hunger is offset. Offspring inherit one parent's breed, 50/50, twins included.",
+      "icon": "terresvivantes:livestock_ledger"
+    }
+  ]
+}

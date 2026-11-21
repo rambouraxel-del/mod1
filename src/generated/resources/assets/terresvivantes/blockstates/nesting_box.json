@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "egg=false,facing=east": {
+      "model": "terresvivantes:block/nesting_box",
+      "y": 90
+    },
+    "egg=false,facing=north": {
+      "model": "terresvivantes:block/nesting_box"
+    },
+    "egg=false,facing=south": {
+      "model": "terresvivantes:block/nesting_box",
+      "y": 180
+    },
+    "egg=false,facing=west": {
+      "model": "terresvivantes:block/nesting_box",
+      "y": 270
+    },
+    "egg=true,facing=east": {
+      "model": "terresvivantes:block/nesting_box_eggs",
+      "y": 90
+    },
+    "egg=true,facing=north": {
+      "model": "terresvivantes:block/nesting_box_eggs"
+    },
+    "egg=true,facing=south": {
+      "model": "terresvivantes:block/nesting_box_eggs",
+      "y": 180
+    },
+    "egg=true,facing=west": {
+      "model": "terresvivantes:block/nesting_box_eggs",
+      "y": 270
+    }
+  }
+}

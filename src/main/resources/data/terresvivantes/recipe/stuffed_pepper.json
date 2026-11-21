@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "terresvivantes:bell_pepper"},
+    {"item": "terresvivantes:barley"},
+    {"item": "terresvivantes:onion"}
+  ],
+  "result": {"id": "terresvivantes:stuffed_pepper", "count": 1}
+}

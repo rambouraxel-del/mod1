@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "terresvivantes:block/market_stall_bottom",
+    "east": "terresvivantes:block/market_stall_side",
+    "north": "terresvivantes:block/market_stall_front",
+    "particle": "terresvivantes:block/market_stall_side",
+    "south": "terresvivantes:block/market_stall_side",
+    "up": "terresvivantes:block/market_stall_top",
+    "west": "terresvivantes:block/market_stall_side"
+  }
+}

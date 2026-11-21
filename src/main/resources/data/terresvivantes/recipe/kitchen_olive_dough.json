@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "terresvivantes:dough" },
+    { "item": "terresvivantes:olive" },
+    { "item": "terresvivantes:olive" },
+    { "item": "terresvivantes:olive_oil" }
+  ],
+  "result": { "id": "terresvivantes:olive_dough", "count": 1 }
+}

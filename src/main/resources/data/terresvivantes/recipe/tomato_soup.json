@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "terresvivantes:tomato"},
+    {"item": "terresvivantes:tomato"},
+    {"item": "minecraft:bowl"}
+  ],
+  "result": {"id": "terresvivantes:tomato_soup", "count": 1}
+}

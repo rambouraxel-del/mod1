@@ -1,0 +1,16 @@
+{
+  "values": [
+    "terresvivantes:tomato_crop",
+    "terresvivantes:corn_crop",
+    "terresvivantes:soybean_crop",
+    "terresvivantes:lettuce_crop",
+    "terresvivantes:onion_crop",
+    "terresvivantes:garlic_crop",
+    "terresvivantes:bell_pepper_crop",
+    "terresvivantes:eggplant_crop",
+    "terresvivantes:strawberry_crop",
+    "terresvivantes:barley_crop",
+    "terresvivantes:cabbage_crop",
+    "terresvivantes:cucumber_crop"
+  ]
+}

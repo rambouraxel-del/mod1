@@ -1,0 +1,36 @@
+{
+  "id": "livestock",
+  "title": "Livestock",
+  "pages": [
+    {
+      "title": "The genome",
+      "text": "Each farm animal has four genes from 0 to 10: productivity, size, resistance and fertility. Offspring inherit the average of their parents, sometimes with a mutation of plus or minus 1. The livestock ledger shows the genes on right-click.",
+      "icon": "terresvivantes:livestock_ledger"
+    },
+    {
+      "title": "Daily needs",
+      "text": "Satiety and health drop each cycle (20 per MC day). At zero satiety, health loses 1 per cycle: 5 MC days before death from full health. A grazing animal feeds on grass outside winter. A full trough feeds nearby animals.",
+      "icon": "terresvivantes:feeding_trough"
+    },
+    {
+      "title": "Feed",
+      "text": "Feed mix: barley, corn and soybean give 3 units. Silage: a hay bale and corn give 4 units. A well-stocked trough prevents underfeeding.",
+      "icon": "terresvivantes:feed_mix"
+    },
+    {
+      "title": "Breeding and the nesting box",
+      "text": "Breed in spring and summer, with a satiety of at least 40. The nesting box (8 slots, made of planks and wheat) receives eggs from hens and ducks. Place it near your animals.",
+      "icon": "terresvivantes:nesting_box"
+    },
+    {
+      "title": "Health",
+      "text": "Overcrowding and underfeeding cause illness; prolonged dampness brings parasites. The veterinary kit treats an animal. A salt lick nearby restores 1 health point each cycle.",
+      "icon": "terresvivantes:veterinary_kit"
+    },
+    {
+      "title": "The duck",
+      "text": "The duck, male or female, swims and lays eggs. Its eggs, raw or cooked meat, and other products depend on its genome and feeding.",
+      "icon": "terresvivantes:cooked_duck"
+    }
+  ]
+}
