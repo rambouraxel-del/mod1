@@ -26,7 +26,7 @@ src/main/java/fr/terresvivantes/
   livestock/ husbandry/ vet/ duck/           (v0.4)
   core.quality/ processing/ milling/ dairy/ preserving/ kitchen/   (v0.5)
   implement/ automation/ storage/ pests/     (v0.6)
-  economy/ market/ guild/                    (v0.7; market et guild vides)
+  economy/ market/ guild/                    (v0.7)
     <Nom>Module.java           implémente TVModule, ses DeferredRegister
     logic/<Nom>Logic.java      logique pure, sans import net.minecraft
 src/main/templates/META-INF/neoforge.mods.toml   métadonnées (placeholders gradle.properties)
@@ -296,7 +296,17 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - Garde-fou de rendu : `core.gametest.RenderShapeGameTests` vérifie que tout bloc `terresvivantes:*` a
   `RenderShape.MODEL` (aucune exception déclarée).
 
-## Contrats v0.7 (économie)
+## Contrats v0.7 (économie, marché, guilde)
+
+### Monnaie (module economy)
+
+- Trois pièces : `copper_coin`, `silver_coin`, `gold_coin`. Ratio **9:1** : 9 cuivre = 1 argent, 9 argent = 1 or
+  (`economy.logic.CoinLogic`, `COPPER_PER_SILVER` = `SILVER_PER_GOLD` = 9).
+- Conversions dans les deux sens, en recettes sans forme : 1 argent donne 9 cuivre et 9 cuivre donnent 1 argent (idem
+  or et argent). Fichiers `recipe/copper_from_silver`, `silver_from_copper`, `gold_from_silver`, `silver_from_gold`.
+- `EconomyApi.coinsToCopper(copper, silver, gold)` et `copperToCoins(int)` (or, argent, cuivre; piles de 64).
+
+### Économie (module economy)
 
 - `economy.EconomyApi` (façade) :
   - `int priceOf(ServerLevel, ItemStack)` : cuivre par unité = base x qualité x saison x saturation; 0 si non vendable.
@@ -304,14 +314,69 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
   - `int saturationPercent(ServerLevel, ItemStack)` : part du prix de base laissée par le marché (100 à 40).
   - `int reputation(ServerPlayer)`, `void addReputation(ServerPlayer, int)` (jamais négative), `String reputationTier(ServerPlayer)`
     (libellé français de référence), `ReputationLogic.Tier reputationTierOf(ServerPlayer)` (clé de traduction `langKey()`).
-  - `static long coinsToCopper(long copper, long silver, long gold)`; `ItemStack[] copperToCoins(int copper)` (or, argent, cuivre; piles de 64).
-- `economy.EconomyModule.REPUTATION` : `Supplier<AttachmentType<Integer>>`, `copyOnDeath()`. Pièces : `COPPER_COIN`, `SILVER_COIN`, `GOLD_COIN`.
+- `economy.EconomyModule.REPUTATION` : `Supplier<AttachmentType<Integer>>`, `copyOnDeath()`.
 - `economy.MarketData` : SavedData par dimension (`get(ServerLevel)`, `pointsAt(id, day)`, `sell(id, day)`).
-- Logique pure, sans `net.minecraft` : `economy.logic.PriceModel`, `MarketLogic` (record : saturation et jour MC, décroissance
+- Logique pure, sans `net.minecraft` : `economy.logic.PriceModel`, `MarketLogic` (saturation et jour MC, décroissance
   0.9 par jour), `CoinLogic`, `ReputationLogic` (`Tier`), `BasePrices` (lecture du JSON plat par expression régulière).
 - Table de prix : `src/main/resources/data/terresvivantes/economy/base_prices.json`, chargée une fois par `EconomyApi`.
-- Dépendances : `economy` lit `season.SeasonApi`, `core.quality.QualityModule`, `crop.logic.CropDefinitions`,
-  `orchard.logic.FruitTreeDefinitions`. Aucun module n'appelle `economy` sauf pour vendre (market et guild, à venir).
-- Commandes : `/tv price` et `/tv reputation` (`economy.EconomyCommands`, branchées par `core.command.TVCommands`).
-  La racine `/tv` n'exige plus le niveau 2 : `season` et `showcase` le demandent chacun.
-- Modules `market` et `guild` : vides, enregistrés dans `TerresVivantes.MODULES`.
+- Commandes : `/tv price`, `/tv reputation` (`economy.EconomyCommands`).
+
+### Marché (module market)
+
+- `market.MarketModule` : blocs `market_board` (tableau d'annonces, `MarketBoardBlock`, orienté) et `market_stall`
+  (`MarketStallBlock` + `MarketStallBlockEntity`, `STALL_BE`, `STALL_MENU`); objets `contract` (`ContractItem`) et
+  `market_ledger` (`LedgerItem`, grand livre des prix). Composant `terresvivantes:contract_data` (`ContractData`).
+- `market.ContractBoard` (logique d'état, statique) : `onLevelTick(ServerLevel)` renouvelle le tableau au premier tick d'un
+  nouveau jour MC (`MarketLogic.dayOf`), `openBoard`, `accept`, `deliverHeld`, `deliverMatching`, `deliver`, `onPlayerLogin`.
+  Données par niveau : `ContractBoardData` (SavedData `terresvivantes_contracts`; `add`, `replace`, `remove`, `nextId`,
+  `markRefreshed`, `addPenalty`).
+- Contrats : `market.logic.ContractGenerator` (70 % de produits de saison, durée 2 à 5 jours, quantité selon le palier,
+  réputation de 5 à 25; récompense = 1,5 x quantité x prix de base, arrondie); `ContractLogic.TARGET_OPEN` = 3 contrats ouverts, `EXPIRY_PENALTY` = 10 de
+  réputation si un contrat accepté expire. Une livraison exige la qualité minimale (`ContractLogic.meetsQuality`).
+- Étal : `StallLogic.SALE_INTERVAL_TICKS` = 2400; l'étal vend un item de ses 9 cases de vente à un villageois à 16 blocs au plus
+  (`VILLAGER_RANGE`), de jour seulement; le paiement est `PAYMENT_PERCENT` = 90 % du prix, versé dans la caisse (case 9,
+  `TillLogic` en or, argent et cuivre).
+- Réseau : `market.MarketNetwork` (écran du tableau et de l'étal).
+- Logique pure : `market.logic.Contract`, `ContractGenerator`, `ContractLogic`, `LedgerLogic` (`LINES` = 10), `StallLogic`,
+  `TillLogic`.
+
+### Guilde (module guild)
+
+- `guild.GuildApi` (façade) :
+  - `boolean isGuildMerchant(Villager)` : profession `GUILD_MERCHANT` (POI `guild_desk`).
+  - `boolean applyTierLock(MerchantOffer, Tier)`, `void refreshOffers(ServerPlayer, Villager)` : une offre au-dessus du palier
+    est mise en rupture (`setToOutOfStock`); elle se réapprovisionne avec le villageois.
+  - `float qualityBonusChance(Player, String filiere)` : 0 sans titre, sinon `SpecializationLogic.QUALITY_BONUS_CHANCE` (0.05).
+  - `float machineQualityBonusChance(Player, String machineId)` : la même chose, pour une machine de transformation
+    (filière lue dans `SpecializationLogic.filiereOfMachine`). Appelée par le module processing (voir ci-dessous).
+  - `units`, `hasTitle`, `recordSale`, `titleKey`.
+- `guild.GuildTrades` : table des échanges par niveau 1 à 5 (`listingsAt(level)` pour `VillagerTradesEvent`, `levelOf(offer)`).
+  Niveau 5 (vente) : exige en plus le sceau de la guilde (`guild_seal`). Chaque item n'apparaît que dans une offre.
+- `guild.GuildEvents` : trades (`onVillagerTrades`), interaction (`onEntityInteract`), achat (`onTradeWithVillager`) : un achat
+  donne +1 de réputation; le produit donné au marchand (coût A de l'offre) compte dans sa filière (`GuildApi.recordSale`).
+- `guild.GuildModule.SPECIALIZATION` : `AttachmentType<Map<String, Integer>>` (unités vendues par filière, par joueur).
+- Logique pure : `guild.logic.GuildLogic` (niveau n exige le palier d'index n-1 : `requiredTierIndex`, `isLocked`),
+  `SpecializationLogic` (filières : maraicher, arboriculteur, eleveur, fromager, apiculteur; seuil `THRESHOLD` = 256 unités;
+  `filiereOf(itemId)`, `filiereOfMachine(machineId)`, `add`, `reachedThreshold`, `hasTitle`).
+- Commande `/tv titles` : `guild.GuildCommands.titles()` (permission 0), branchée dans la racine unique de `core.command.TVCommands`.
+
+### Bonus de guilde dans le framework processing
+
+- `ProcessingBlockEntity.rememberUser(Player)` : mémorise le dernier joueur qui a ouvert la machine (clic droit; UUID
+  dans la BE, champ `LastUser`, sauvegardé).
+- À la fin d'une recette (`serverTick`), `applyGuildBonus` : si le joueur est en ligne, que la machine a une filière et que
+  la sortie est de qualité 1 ou 2, la qualité passe à +1 avec la probabilité `GuildApi.machineQualityBonusChance`
+  (plafonnée à 3). Une sortie sans qualité n'est pas modifiée.
+- Mapping machine vers filière : `cheese_vat` et `aging_shelf` vers fromager; `fruit_press` vers arboriculteur;
+  `millstone` vers maraicher; `churn` vers eleveur. `honey_extractor` (apiculture, pas processing) et les autres machines n'ont pas de bonus.
+  Test JUnit pur : `SpecializationLogicTest.machinesMapToTheirFiliere`.
+
+### Dépendances et configuration
+
+- `economy` lit `season.SeasonApi`, `core.quality.QualityModule`, `crop.logic.CropDefinitions`, `orchard.logic.FruitTreeDefinitions`.
+  `market` et `guild` appellent `economy` (prix, réputation, saturation). `processing` appelle `guild` pour le bonus.
+- Racine de commandes : `core.command.TVCommands` (`season`, `showcase`, `price`, `reputation`, `titles`); `season` et `showcase`
+  demandent le niveau 2, les autres sont en permission 0.
+- Aucune config nouvelle en v0.7 : market et guild n'ont pas de `XxxConfig` (rien à enregistrer dans `TerresVivantes`).
+- Vitrine `/tv showcase` : section économie en z 34 à 39 (`ShowcaseBuilder.DEPTH` = 40), tableau (x2), étal (x6), bureau
+  de la guilde (x12) et un villageois marchand persistant (x12, z33).

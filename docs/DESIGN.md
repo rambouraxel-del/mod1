@@ -725,54 +725,83 @@ commune (`processing`).
   dans sa couche supérieure, et la vitrine avec sa section équipements).
 - Non vérifié : rendu client des machines, caisse et silo (voir `docs/STATUS.md`, problèmes connus).
 
-## 21. Économie (v0.7 : `economy`, `market`, `guild`)
+## 21. Économie (v0.7 : `economy`, `market`, `guild`) : livré
 
-### 21.1 Monnaie (livré : `economy`)
+Tout ce qui suit est livré et couvert par des tests (JUnit pur et GameTests). Les écarts avec la première spécification
+sont signalés par « Écart ». Contrats d'implémentation : `docs/ARCHITECTURE.md`, « Contrats v0.7 ».
 
-- Trois pièces : `copper_coin`, `silver_coin`, `gold_coin`. 9 cuivre = 1 argent, 9 argent = 1 or = 81 cuivre.
-- Conversion dans les deux sens (recettes sans forme, `EconomyModule`) : 1 argent donne 9 cuivre, 9 cuivre donnent 1 argent
-  (la grille entière, 9 ingrédients), et de même pour l'or et l'argent.
+### 21.1 Monnaie (`economy`)
 
-### 21.2 Modèle de prix (livré : `economy.logic.PriceModel`, `BasePrices`)
+- Trois pièces : `copper_coin`, `silver_coin`, `gold_coin`. Ratio **9:1** : 9 cuivre = 1 argent, 9 argent = 1 or = 81 cuivre.
+- Conversion dans les deux sens, en recettes sans forme : 1 argent donne 9 cuivre, 9 cuivre donnent 1 argent (grille de
+  9 ingrédients), et de même pour l'or et l'argent.
+- Écart : la première version prévoyait une seule recette de conversion; les deux sens sont livrés (GameTest
+  `nineCoinsMakeOneInTheNextTier`).
+
+### 21.2 Modèle de prix (`economy.logic.PriceModel`, `BasePrices`)
 
 - Prix par unité en cuivre : `base x qualité x saison x saturation`, arrondi, au moins 1 pour un item vendable.
-- Base : `data/terresvivantes/economy/base_prices.json` (id vers prix en cuivre, qualité 1). Les items du mod sont sans espace
-  de noms; le vanilla est complet (`minecraft:wheat`). Un transformé vaut plus que son brut (vérifié par test JUnit).
-- Qualité (composant `terresvivantes:quality`, v0.5) : x1, x1.25, x1.5 pour les qualités 1, 2, 3. Absente : x1.
-- Saison : produit hors de sa saison optimale x1.3; en pleine saison x0.85. Saison optimale : `CropDefinition.optimal` pour
-  les cultures, `FruitTreeDefinition.ripeSeasons` pour les fruits. Produit transformé ou sans saison : x1.
-- Offre et demande : `MarketData` (SavedData par dimension). Chaque vente ajoute 1 point de saturation; la saturation
-  décroît de 10 % par jour MC. Prix x max(0.4, 1 - 0.02 x points).
+- Base : `data/terresvivantes/economy/base_prices.json` (id vers prix en cuivre). Les items du mod sont sans espace de noms;
+  le vanilla est complet (`minecraft:wheat`). Un transformé vaut plus que son brut (test JUnit).
+- Qualité (composant `terresvivantes:quality`) : x1, x1,25, x1,5 pour les qualités 1, 2, 3. Absente : x1.
+- Saison : hors de sa saison optimale x1,3; en pleine saison x0,85. Produit transformé ou sans saison : x1.
+- Saturation : `MarketData` par dimension. Chaque vente ajoute 1 point; les points décroissent de 10 % par jour MC.
+  Facteur x max(0,4; 1 - 0,02 x points).
 
-### 21.3 Réputation (livré : `economy`)
+### 21.3 Réputation (`economy`)
 
-- Data attachment `terresvivantes:reputation` sur le joueur : entier persistant, copié à la mort (`copyOnDeath`).
+- Data attachment `terresvivantes:reputation` sur le joueur : entier, copié à la mort (`copyOnDeath`).
 - Paliers : Inconnu 0, Habitué 50, Fournisseur 200, Producteur réputé 500, Maître fermier 1200.
+- Gains : +1 par échange avec le marchand de la guilde; contrat livré : valeur de la réputation du contrat (5 à 25).
+  Contrat accepté et expiré : -10.
 
-### 21.4 Commandes (livré)
+### 21.4 Commandes
 
 - `/tv price` : prix actuel de l'item tenu en main (permission 0).
 - `/tv reputation` : réputation et palier du joueur (permission 0).
-- `/tv season` et `/tv showcase` restent réservés aux opérateurs (niveau 2), filtrage au niveau de chaque sous-arbre.
+- `/tv titles` : progression des titres de spécialisation (permission 0).
+- `/tv season` et `/tv showcase` restent réservés aux opérateurs (niveau 2). Racine unique : `core.command.TVCommands`.
 
-### 21.5 Market (spec, non livré : module vide `market`)
+### 21.5 Marché (`market`)
 
-- `market_board` (tableau d'annonces) : 3 contrats de livraison générés chaque jour MC selon la saison et la réputation.
-  Exemple : « Livrer 32 tomates qualité ≥ 2 avant 3 jours : 60 cuivre + 10 réputation ». Livraison en déposant les produits
-  dans le tableau. Expiration : pénalité de réputation.
-- `market_stall` (étal) : le joueur y dépose des produits. Toutes les 2400 ticks, un acheteur PNJ (villageois à 16 blocs au plus)
-  achète 1 item au prix `EconomyApi.priceOf`; les pièces vont dans le stock de l'étal.
+- `market_board` (tableau d'annonces) : au premier tick de chaque jour MC (aube), les contrats expirés sont retirés et le
+  tableau revient à 3 contrats ouverts. Un contrat porte un produit (70 % de produits de saison), une quantité selon le
+  palier de réputation, une qualité minimale, une échéance de 2 à 5 jours, une récompense (1,5 x quantité x prix de base) et
+  une réputation (5 à 25).
+- Acceptation puis livraison : le joueur tient l'item, ou livre tous les items du bon type de son inventaire. Une qualité
+  insuffisante est refusée. Expiration d'un contrat accepté : pénalité de réputation de 10.
+- `market_stall` (étal) : 9 cases de vente et une caisse. Toutes les 2400 ticks, de jour, un villageois à 16 blocs au plus
+  achète 1 item (choisi parmi les cases) au prix `EconomyApi.priceOf`, payé à 90 % dans la caisse (pièces, en or, argent
+  et cuivre). La vente compte dans la saturation du marché.
+- `market_ledger` (grand livre) : les lignes des prix les plus élevés (10 lignes).
+- Écart : la spécification prévoyait un achat « à la livraison » par le joueur seul; la livraison au tableau est livrée
+  comme décrit ci-dessus, et l'étal vend ses propres cases au villageois.
 
-### 21.6 Guilde (spec, non livré : module vide `guild`)
+### 21.6 Guilde (`guild`)
 
-- Profession de villageois « marchand de la guilde » (POI `guild_desk`). Vend graines rares, saplings et machines; achète les
-  produits en pièces.
-- Offres débloquées selon le palier de réputation (`ReputationLogic.Tier`).
-- Titres de spécialisation (Maraîcher, Arboriculteur, Éleveur, Fromager, Apiculteur) selon les volumes livrés, avec +5 % de
-  chance de qualité supérieure dans leur filière. Reporté, à faire si le temps le permet.
+- Profession de villageois « marchand de la guilde » (POI `guild_desk`, bureau de la guilde).
+- Échanges par niveau 1 à 5 (`GuildTrades`) : niveau 1 légumes et graines courantes; niveau 2 tomates, maïs, graines
+  et saplings de base; niveau 3 fromages frais, miel floral, graines rares; niveau 4 fromage affiné, huile, outils;
+  niveau 5 miels rares et machines, les ventes exigent en plus le sceau de la guilde.
+- Verrou : une offre de niveau n est en rupture si le palier de réputation est sous le palier d'index n-1 (`GuildLogic`).
+- Titres de spécialisation : maraîcher, arboriculteur, éleveur, fromager, apiculteur. Un titre s'obtient à 256 unités vendues
+  au marchand dans la filière (`SpecializationLogic.THRESHOLD`); le titre donne le sceau de la guilde et une notification.
+- Bonus de qualité : une machine de transformation de la filière relève la qualité de sa sortie de +1 (plafonnée à 3)
+  avec 5 % de chance, pour le dernier joueur ayant ouvert la machine, s'il a le titre. Mapping : cuve à fromage et étagère
+  d'affinage vers fromager; presse à fruits vers arboriculteur; meule vers maraîcher; baratte vers éleveur.
+- Écart : la spécification ne prévoyait que « +5 % de chance » sans lien avec la machine; le lien par dernier utilisateur
+  est livré. La presse à miel (`honey_extractor`) n'est pas une machine de transformation : pas de bonus pour l'apiculteur.
+  Le titre apiculteur existe (ventes de miel) mais n'a pas de bonus de machine.
 
-### 21.7 Critères de validation (v0.7)
+### 21.7 Vitrine et validation
 
-- Tests JUnit purs : conversions, qualité, saison, saturation (50 ventes puis 5 jours : le prix remonte), paliers, table de prix.
-- GameTests : tomate hors saison plus chère qu'en saison; 50 ventes font baisser le prix; la réputation survit à la sauvegarde NBT.
-- Non vérifié : achat PNJ, contrats, réputation après mort (pas de test de mort en GameTest).
+- `/tv showcase` : section économie (z 34 à 39) : tableau d'annonces, étal avec tomates, laitues et pommes, bureau de la
+  guilde et un villageois marchand persistant.
+- Tests JUnit purs (345 au total pour la v0.7) : conversions, qualité, saison, saturation, paliers, table de prix, verrou
+  de la guilde, titres, mapping machine vers filière.
+- GameTests économie et marché (11, dont `tomatoOutOfSeasonCostsMoreThanInSeason`, `fiftySalesReachTheMarketFloor`,
+  `reputationPersists`, `deliveryPaysCoinsAndReputation`, `lowQualityIsRefused`, `stallSellsToNearbyVillager`,
+  `dawnRefillsThreeOpenContracts`, `guildDeskIsTheGuildMerchantJobSite`, `levelThreeOfferIsBlockedUnderSupplierTier`,
+  `tomatoSalesGrantMarketGardenerTitle`) : vérifiés en trois passages.
+- Non vérifié : bonus de qualité des machines en jeu (seul le mapping est testé); réputation après mort (pas de GameTest);
+  rendu client des blocs, de l'étal et du tableau; écrans (GUI) en jeu.

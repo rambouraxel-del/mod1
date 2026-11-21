@@ -1,5 +1,87 @@
 # Statut
 
+## Tableau des versions (vérifié)
+
+Chiffres vérifiés avec `./gradlew build` (JUnit) et `./gradlew runGameTestServer` (GameTests, serveur). Pour les versions
+antérieures, le build et le GameTest ont été rejoués sur le commit de livraison de la version (export `git archive`),
+le 2026-11-21. Aucune erreur de parsing de recette ni de tag dans les logs.
+
+| Version | Thème | `mod_version` | Commit de livraison | JUnit | GameTests |
+|---|---|---|---|---|---|
+| v0.1 | Saison, climat, sol, cultures, compost, plats, outils | 0.1.0 | `a7e9c2c` | 65 | 13 |
+| v0.2 | Serres, rotation, vergers, eau, santé, `/tv showcase` | 0.2.0 | `d9399ae` | 120 | 28 |
+| v0.3 | Biodiversité : flore, insectes, apiculture | 0.3.0 | `6c706b8` | 180 | 40 |
+| v0.4 | Élevage : livestock, husbandry, vet, duck | 0.4.0 | `b60b543` | 232 | 54 |
+| v0.5 | Transformation : processing, meule, laiterie, conservation, cuisine | 0.5.0 | `fb9bc39` | 263 | 75 |
+| v0.6 | Équipements et automatisation : implement, automation, storage, pests | 0.6.0 | `6e5905c` | 309 | 93 |
+| v0.7 | Économie : economy, market, guild, bonus de qualité | 0.7.0 | `01f68d4` (code), commit de docs ensuite | 345 | 104 |
+
+v0.7 : `./gradlew build` OK (345 tests JUnit, dont `GeneratedResourcesTest` et les tests du mapping de filière),
+`./gradlew runData` OK, `./gradlew runGameTestServer` 104/104 à trois passages consécutifs.
+
+## Liste des modules (32, `TerresVivantes.MODULES`)
+
+| Module | Version | Rôle |
+|---|---|---|
+| `core.quality` | v0.5 | Composant de qualité générique (1 à 3 étoiles) sur tout item |
+| `core.debug` | v0.2 | `/tv showcase` (vitrine de démonstration, toutes sections) |
+| `season` | v0.1 | Calendrier des saisons, `/tv season`, HUD |
+| `climate` | v0.1 | Température locale; serres (v0.2) |
+| `soil` | v0.1 | Terre labourée, N/P/K, matière organique, rotation (v0.2), aération (v0.6) |
+| `crop` | v0.1 | 12 cultures du mod, graines, récolte, intégration vanilla |
+| `compost` | v0.1 | Bac à compost, compost, fumier, cendre de bois |
+| `food` | v0.1 | 10 plats (recettes, nutrition, effets) |
+| `tools` | v0.1 | Faucille, arrosoir, sonde de sol, almanach |
+| `orchard` | v0.2 | Six espèces fruitières, feuillages à quatre stades, marchand ambulant |
+| `water` | v0.2 | Arroseurs, tonneau de pluie, sécheresse estivale |
+| `health` | v0.2 | Stress, maladies, flétrissement, fongicide, pulvérisateur |
+| `pollination` | v0.3 | Score de pollinisation et indice de biodiversité |
+| `flora` | v0.3 | Fleurs sauvages, pots, teintures, haie d'aubépine |
+| `insects` | v0.3 | Papillons, coccinelles, pucerons, lucioles, filet, bocal |
+| `apiculture` | v0.3 | Apiaire, extracteur, enfumoir, miels, cire |
+| `livestock` | v0.4 | Génome, besoins, reproduction, registre d'élevage |
+| `husbandry` | v0.4 | Auge, nichoir, ensilage, aliment composé |
+| `vet` | v0.4 | Maladies, parasites, trousse vétérinaire, bloc de sel |
+| `duck` | v0.4 | Canard (mâle et femelle), œufs, viande, productions |
+| `processing` | v0.5 | Infrastructure des machines de transformation; bonus de guilde (v0.7) |
+| `milling` | v0.5 | Meule, pressoir, farines, jus, huile d'olive |
+| `dairy` | v0.5 | Baratte, cuve à fromage, étagère d'affinage |
+| `preserving` | v0.5 | Tonneau de fermentation, séchoir, fumoir |
+| `kitchen` | v0.5 | Marmite sur source de chaleur, 12 plats |
+| `implement` | v0.6 | Grelinette, semoir, faucille en diamant |
+| `automation` | v0.6 | Récolteuse, planteuse |
+| `storage` | v0.6 | Caisse, silo |
+| `pests` | v0.6 | Corbeau, épouvantail |
+| `economy` | v0.7 | Monnaie 9:1, modèle de prix, réputation, `/tv price`, `/tv reputation` |
+| `market` | v0.7 | Tableau d'annonces, contrats, étal, grand livre |
+| `guild` | v0.7 | Bureau de la guilde, marchand, échanges par niveau, titres, `/tv titles` |
+
+Racine de commandes unique : `core.command.TVCommands` (`season`, `showcase`, `price`, `reputation`, `titles`).
+
+## v0.7 « Économie » : livrée et vérifiée (`mod_version=0.7.0`)
+
+- Monnaie : cuivre, argent, or; ratio 9:1 avec conversions dans les deux sens (recettes sans forme).
+- Prix : `base x qualité x saison x saturation`; prix de référence dans `economy/base_prices.json`.
+- Réputation : data attachment par joueur, paliers 0 à 1200, copiée à la mort.
+- Marché : tableau d'annonces (3 contrats ouverts, renouvelés à l'aube), étal qui vend à un villageois proche de jour,
+  caisse en pièces, grand livre des prix.
+- Guilde : profession de marchand (POI `guild_desk`), échanges par niveau 1 à 5 (verrou par palier de réputation),
+  titres de spécialisation à 256 unités vendues par filière, sceau de la guilde (niveau 5 et titres).
+- Bonus de guilde : machine de transformation de la filière (fromager, arboriculteur, maraîcher, éleveur), +1 de qualité
+  avec 5 % de chance pour le dernier joueur ayant ouvert la machine, s'il a le titre.
+- Vitrine : section économie (tableau, étal, bureau, marchand persistant).
+- Textures : `tools/textures/sprites_v07.py` (appelée depuis `generate_all.py`).
+
+Problèmes connus :
+
+- Bonus de qualité des machines : seul le mapping machine vers filière est testé (JUnit); pas de GameTest de bout en bout.
+- Réputation après mort : pas de test.
+- Rendu client non vérifié pour le tableau, l'étal, le bureau et le marchand (procédure QA ci-dessous).
+- Machines invisibles en client (rapportées en v0.5 et v0.6) : toujours non confirmé (voir v0.6).
+
+Prochaines étapes : voir `docs/REPRISE.md`, section « Prochaines étapes ».
+
+
 ## v0.6 « Équipements & automatisation » : livrée et vérifiée (`mod_version=0.6.0`)
 
 - `./gradlew build` : OK, **309 tests JUnit** (dont `GeneratedResourcesTest`).
