@@ -70,6 +70,16 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.ArrayList;
 import java.util.List;
+import fr.terresvivantes.breeds.BreedsApi;
+import fr.terresvivantes.breeds.logic.Breed;
+import fr.terresvivantes.rice.RiceCropBlock;
+import fr.terresvivantes.rice.RiceModule;
+import fr.terresvivantes.rice.logic.RiceLogic;
+import fr.terresvivantes.vineyard.GrapeVariety;
+import fr.terresvivantes.vineyard.GrapevineBlock;
+import fr.terresvivantes.vineyard.VineyardModule;
+import fr.terresvivantes.vineyard.logic.VineyardLogic;
+import net.minecraft.world.entity.animal.Animal;
 
 /**
  * Plateforme de démonstration (/tv showcase) : une colonne par culture (4 terres humides, âges 0, 2, 5, 7),
@@ -95,6 +105,8 @@ import java.util.List;
  *   z 17     transformation: meule (x0), pressoir (x2), baratte (x4), cuve (x6), étagère (x8), tonneau (x10),
  *            séchoir (x12), fumoir (x14)
  *   z 20     marmite (x2, y1) sur feu de camp allumé (x2, y0)
+ *   z 42..46 vignes mûres sur treillis (x1 rouge, x3 blanche, z42); rizière mûre 5x5 (x8..12, z42..46), riz 3x3 mûr au centre
+ *   x1..7, z48..54  enclos des races: 3 vaches (Holstein, Highland, Charolais), 3 poules (Marans, Leghorn, Sussex), persistantes
  *   z 23..31 équipements: coffre (x7, z23) derrière la récolteuse (x7, z24, face au sud), dont le champ 5x5
  *            (x5..9, z25..29) a une rangée de blé mûr en z 25; planteuse (x13, z24) face à un champ 5x5 vide
  *            (x11..15, z25..29) avec des graines de blé; caisse de tomates (x1, z24); silo de 3 blocs (x3, z27,
@@ -114,7 +126,7 @@ public final class ShowcaseBuilder {
             List.of(Blocks.WHEAT, Blocks.CARROTS, Blocks.POTATOES, Blocks.BEETROOTS);
     /** Rangée de visite devant la plateforme. */
     public static final int LEDGE = 4;
-    public static final int DEPTH = 40;
+    public static final int DEPTH = 56;
     public static final int HEIGHT = 6;
     static final int ROW_CROPS = 0;
     static final int ROW_BLOCKS = 5;
@@ -145,6 +157,16 @@ public final class ShowcaseBuilder {
     static final int PEN_MAX_X = 15;
     static final int PEN_MIN_Z = 9;
     static final int PEN_MAX_Z = 15;
+    /** Section v0.9 (z 42 à 54) : deux vignes mûres sur treillis (z 42), rizière mûre (x 8..12, z 42..46), enclos des races. */
+    public static final int ROW_V09 = 42;
+    public static final int X_VINE_RED = 1;
+    public static final int X_VINE_WHITE = 3;
+    public static final int X_PADDY = 8;
+    public static final int PADDY_SIZE = 5;
+    public static final int BREED_PEN_MIN_X = 1;
+    public static final int BREED_PEN_MAX_X = 7;
+    public static final int BREED_PEN_MIN_Z = 48;
+    public static final int BREED_PEN_MAX_Z = 54;
 
     private ShowcaseBuilder() {
     }
@@ -187,11 +209,13 @@ public final class ShowcaseBuilder {
         placeProcessing(placer);
         placeEquipment(placer, level, origin);
         placeEconomy(placer, level, origin);
+        placeV09(placer, level, origin);
         removeFauna(level, origin);
         spawnInsects(level, origin, fauna);
         spawnLivestock(level, origin, fauna);
         spawnCrows(level, origin, fauna);
         spawnGuildMerchant(level, origin, fauna);
+        spawnBreedPen(level, origin, fauna);
         return new Result(placer.count, List.copyOf(fauna));
     }
 
@@ -283,6 +307,78 @@ public final class ShowcaseBuilder {
         Villager merchant = spawnPersistent(level, EntityType.VILLAGER, origin.offset(X_DESK, 1, ROW_ECONOMY - 1), fauna);
         if (merchant != null) {
             merchant.setVillagerData(merchant.getVillagerData().setProfession(GuildModule.GUILD_MERCHANT.get()));
+        }
+    }
+
+    /**
+     * Section v0.9 : deux vignes mûres sur treillis (rouge, blanche), une rizière mûre (terre 5x5, riz 3x3 mûr dans
+     * l'eau) et l'enclos des races (clôture de chêne; les animaux sont posés par {@link #spawnBreedPen}).
+     */
+    private static void placeV09(Placer placer, ServerLevel level, BlockPos origin) {
+        placeRipeVine(placer, X_VINE_RED, GrapeVariety.RED);
+        placeRipeVine(placer, X_VINE_WHITE, GrapeVariety.WHITE);
+        for (int x = X_PADDY; x < X_PADDY + PADDY_SIZE; x++) {
+            for (int z = ROW_V09; z < ROW_V09 + PADDY_SIZE; z++) {
+                placer.set(x, 0, z, Blocks.DIRT.defaultBlockState());
+                boolean inner = x > X_PADDY && x < X_PADDY + PADDY_SIZE - 1 && z > ROW_V09 && z < ROW_V09 + PADDY_SIZE - 1;
+                if (inner) {
+                    placer.set(x, 1, z, RiceModule.RICE_CROP.get().defaultBlockState()
+                            .setValue(CropBlock.AGE, RiceLogic.MAX_AGE)
+                            .setValue(RiceCropBlock.WATERLOGGED, true));
+                }
+            }
+        }
+        for (int x = BREED_PEN_MIN_X; x <= BREED_PEN_MAX_X; x++) {
+            for (int z = BREED_PEN_MIN_Z; z <= BREED_PEN_MAX_Z; z++) {
+                if (!isBreedPenFence(x, z)) {
+                    continue;
+                }
+                placer.set(x, 1, z, Blocks.OAK_FENCE.defaultBlockState()
+                        .setValue(FenceBlock.NORTH, isBreedPenFence(x, z - 1))
+                        .setValue(FenceBlock.SOUTH, isBreedPenFence(x, z + 1))
+                        .setValue(FenceBlock.WEST, isBreedPenFence(x - 1, z))
+                        .setValue(FenceBlock.EAST, isBreedPenFence(x + 1, z)));
+            }
+        }
+    }
+
+    /** Vigne mûre (stade 3) sur une terre labourée, à la place du treillis, à la ligne {@link #ROW_V09}. */
+    private static void placeRipeVine(Placer placer, int x, GrapeVariety variety) {
+        placer.set(x, 0, ROW_V09, farmland());
+        placer.set(x, 1, ROW_V09, VineyardModule.GRAPEVINE.get().defaultBlockState()
+                .setValue(GrapevineBlock.VARIETY, variety)
+                .setValue(GrapevineBlock.STAGE, VineyardLogic.RIPE_STAGE));
+    }
+
+    /** Vrai si la case (x, z) fait partie de la clôture de l'enclos des races (v0.9). */
+    static boolean isBreedPenFence(int x, int z) {
+        boolean inX = x >= BREED_PEN_MIN_X && x <= BREED_PEN_MAX_X;
+        boolean inZ = z >= BREED_PEN_MIN_Z && z <= BREED_PEN_MAX_Z;
+        return inX && inZ && (x == BREED_PEN_MIN_X || x == BREED_PEN_MAX_X || z == BREED_PEN_MIN_Z || z == BREED_PEN_MAX_Z);
+    }
+
+    /**
+     * Enclos des races (v0.9) : trois vaches (Holstein, Highland, Charolais) et trois poules (Marans, Leghorn, Sussex),
+     * persistantes. La race est posée après l'apparition, qui en tire une au hasard.
+     */
+    private static void spawnBreedPen(ServerLevel level, BlockPos origin, List<Mob> fauna) {
+        Cow holstein = spawnPersistent(level, EntityType.COW, origin.offset(3, 1, 50), fauna);
+        Cow highland = spawnPersistent(level, EntityType.COW, origin.offset(5, 1, 50), fauna);
+        Cow charolais = spawnPersistent(level, EntityType.COW, origin.offset(4, 1, 52), fauna);
+        Chicken marans = spawnPersistent(level, EntityType.CHICKEN, origin.offset(2, 1, 53), fauna);
+        Chicken leghorn = spawnPersistent(level, EntityType.CHICKEN, origin.offset(4, 1, 53), fauna);
+        Chicken sussex = spawnPersistent(level, EntityType.CHICKEN, origin.offset(6, 1, 53), fauna);
+        setBreed(holstein, Breed.HOLSTEIN);
+        setBreed(highland, Breed.HIGHLAND);
+        setBreed(charolais, Breed.CHAROLAIS);
+        setBreed(marans, Breed.MARANS);
+        setBreed(leghorn, Breed.LEGHORN);
+        setBreed(sussex, Breed.SUSSEX);
+    }
+
+    private static void setBreed(Animal animal, Breed breed) {
+        if (animal != null) {
+            BreedsApi.setBreed(animal, breed);
         }
     }
 

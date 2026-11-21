@@ -20,7 +20,8 @@ public enum Disease {
     /** Maladie à laquelle une culture est sensible. Une culture non listée n'a aucune maladie. */
     public static Disease susceptibility(String cropId) {
         return switch (cropId) {
-            case "tomato", "cucumber", "strawberry", "lettuce", "bell_pepper", "eggplant", "minecraft:potatoes" -> MILDEW;
+            case "tomato", "cucumber", "strawberry", "lettuce", "bell_pepper", "eggplant", "minecraft:potatoes",
+                 "terresvivantes:rice_crop" -> MILDEW; // riz : pyriculariose, traitée comme une maladie fongique
             case "barley", "corn", "soybean", "minecraft:wheat" -> RUST;
             default -> NONE;
         };

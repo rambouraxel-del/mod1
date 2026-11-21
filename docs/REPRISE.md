@@ -6,26 +6,27 @@ Consignes pour les agents : `docs/AGENT_GUIDE.md`. Équilibrage : `docs/BALANCE.
 
 ## 1. État exact
 
-- Version : `mod_version=0.8.0` (NeoForge 21.1.267, Minecraft 1.21.1). v0.8 « Polish » livrée.
+- Version : `mod_version=0.9.0` (NeoForge 21.1.267, Minecraft 1.21.1). v0.9 « Vignoble, riz et races » livrée.
 - Branche : `claude/terres-vivantes-minecraft-g4o0hy`, poussée sur `origin`. Le commit de tête est celui de cette
   documentation (`git log -1`).
-- Intégration v0.8 : quatre fusions `--no-ff` dans la branche :
-  - `polish-sprites` : passe de qualité sur les sprites faibles;
-  - `worktree-agent-a25d7b83c04982174` : serveur dédié (`ServerClassIsolationTest`) et test de charge (`PerformanceGameTests`);
-  - `worktree-agent-a03641d90f0c6defe` : manuel du fermier (`guide`);
-  - `worktree-agent-adc93231179a0a342` : équilibrage et simulateur (`BalanceSimulationTest`).
-  Seul conflit : `tools/textures/preview.png` (binaire), régénéré par le script.
-- Corrections d'équilibrage et de vérification faites à l'intégration : prix du fromage de chèvre (16 -> 11, sous le fromage
-  affiné à 14), famine (perte de santé de 5 -> 1 par cycle), manuel du fermier réécrit pour les valeurs finales.
+- Intégration v0.9 : trois fusions `--no-ff` dans la branche (`git log --merges`) :
+  - `worktree-agent-a2dc450b0e8f6c9e1` : vignoble (`vineyard`);
+  - `worktree-agent-aade54efa10d82d74` : riz (`rice`). Conflit : `economy/base_prices.json` (union des entrées);
+  - `worktree-agent-a3136148f06b6b2e2` : races (`breeds`). Conflit : `TerresVivantes.MODULES` (vignoble et races gardés).
+  Les fichiers générés (`src/generated`) sont régénérés par `runData`, pas fusionnés.
+- Intégration v0.9 (corrections à l'intégration) : branchements sur les APIs publiques (`CropGrowthHooks`,
+  `VetApi`, `LivestockApi`, `VineyardApi`), récolteuse qui récolte les vignes, tag `compostable` élargi, Highland en
+  écouteur de besoins, jumeaux qui héritent de la race, affinage du vin rouge (nouveau), vitrine v0.9, chapitre 12 du manuel.
 - Vérifications sur ce commit :
-  - `./gradlew build` : OK, 355 tests JUnit verts (dont `GeneratedResourcesTest`, `ServerClassIsolationTest`, `BalanceSimulationTest`).
+  - `./gradlew cleanTest build` : OK, 384 tests JUnit, 0 échec.
   - `./gradlew runData` : OK, `src/generated` régénéré.
-  - `./gradlew runGameTestServer` : 106/106 à trois passages consécutifs.
-  - `./gradlew runServer` : « Done (0.546s) », arrêt par SIGTERM sans erreur.
-- Arbre de travail propre. Branche `qa-v05` supprimée. Worktrees de `.claude/worktrees` et branches fusionnées supprimés.
-- Modules : 33, listés dans `docs/STATUS.md`. Configs COMMON : `terresvivantes-season`, `-soil`, `-compost`, `-crop`,
+  - `./gradlew runGameTestServer` : 127/127 à trois passages consécutifs.
+  - `./gradlew runServer` : « Done (0.396s) », arrêt par SIGTERM avec sauvegarde des mondes.
+- Modules : 36, listés dans `docs/STATUS.md`. Configs COMMON : `terresvivantes-season`, `-soil`, `-compost`, `-crop`,
   `-water`, `-health`, `-orchard`, `-flora`, `-insects`, `-apiculture`, `-livestock`, `-husbandry`, `-vet`, `-duck`,
-  `-automation`, `-pests`, `-guide` (manuel). Les autres modules n'ont pas de config.
+  `-automation`, `-pests`, `-guide` (manuel), `-vineyard`. Les autres modules n'ont pas de config.
+- Arbre de travail propre après le commit. Worktrees de `.claude/worktrees` et branches fusionnées supprimés.
+- Licence : fichier `LICENSE` présent (MIT, `mod_license` dans `gradle.properties`).
 
 ## 2. Fonctionnalités réalisées, par version
 
@@ -49,34 +50,53 @@ Consignes pour les agents : `docs/AGENT_GUIDE.md`. Équilibrage : `docs/BALANCE.
   famine ramenée à 5 jours MC; serveur dédié sans classe client (test de garde-fou); test de charge serveur
   (`docs/PERFORMANCE.md`, surcoût de 3,6 ms/tick pour 500 cultures et 50 animaux, seuil 15).
 
+- **v0.9 Vignoble, riz et races** : vigne sur treillis (4 stades, récolte à la main et par la récolteuse, taille d'hiver),
+  vinification (pressoir, tonneau, étagère d'affinage avec gain d'étoile pour le vin rouge, millésime); rizière (plant dans
+  l'eau, panicules, meule, bol de riz, risotto, galette); races des vaches et des poules (attribution par climat, hérédité
+  à moitié, jumeaux compris, effets sur la production, la viande, la ponte, la maladie et la faim d'hiver); vitrine v0.9;
+  chapitre 12 du manuel.
+
 ## 3. Travaux en cours
 
 Aucun. Pause propre : tout est commité et poussé, aucun travail partiellement écrit.
+La QA visuelle et de gameplay sur un vrai PC reste à faire par l'utilisateur (`docs/QA_CHECKLIST.md`).
 
 ## 4. Problèmes connus et dettes
 
+- **QA visuelle client à faire sur vraie GPU** : rendu logiciel (Xvfb) insuffisant. Liste complète : `docs/QA_CHECKLIST.md`.
 - **Machines invisibles en jeu (client)** : non confirmé. Analyse statique OK : `getRenderShape` des blocs du mod est
-  `MODEL` (garde-fou `RenderShapeGameTests`), blockstates et modèles présents. Probablement un artefact du rendu logiciel
-  Xvfb (`LIBGL_ALWAYS_SOFTWARE=1`). À vérifier sur une vraie carte graphique avant de chercher une cause dans le code.
-- **QA visuelle client incomplète** : caisse, étal, tableau d'annonces, bureau de la guilde, silo, écrans (machines,
-  apiaire, silo), canard, corbeau, livre du manuel du fermier. Procédure : section 6.
+  `MODEL` (garde-fou `RenderShapeGameTests`), blockstates et modèles présents. À vérifier sur une vraie carte graphique avant
+  de chercher une cause dans le code. Si confirmé, pistes : rendu des `BlockEntity` sans BlockEntityRenderer, textures à
+  l'exécution, couche de rendu.
+- **Rendu des races non vérifié** : superposition `BreedLayer` (Holstein, Highland, Charolais, Marans, Leghorn, Sussex).
 - **Tonte et traite approximées** : NeoForge 21.1 n'expose pas d'événement dédié; la laine et le lait sont calculés à
   partir du multiplicateur.
 - **Auge sans bord creux** : le modèle n'a pas de rebord évidé.
 - **Bonus de lapins de l'épouvantail** : non fait (prévu au design).
-- **Équilibrage, limites connues** (détail dans `docs/BALANCE.md`) :
-  - la famine dure 5 jours MC à satiété nulle : une perte de 1,25 par cycle donnerait 4 jours exacts, mais la santé est un entier;
+- **Vignoble, hypothèses non testées en jeu** :
+  - qualité de départ ★2 des raisins (`VineyardLogic.GRAPE_QUALITY`, choix d'équilibrage);
+  - gain d'affinage du vin rouge (+1 étoile par 6 jours MC, nouveau mécanisme) : pas de GameTest de vieillissement;
+  - cycle annuel de la vigne (une récolte par an, taille d'hiver) : pas de test de bout en bout.
+- **Riz** : la règle « pas de sécheresse sous l'eau » (`WaterGrowth`) est en code, sans GameTest dédié. La pollinisation
+  ne s'applique pas au riz (choix documenté, `DESIGN.md` §22.2).
+- **Highland** : la compensation d'hiver arrive après le cycle de santé; à satiété nulle en hiver elle perd encore un point
+  de santé ce cycle-là.
+- **Équilibrage** (`docs/BALANCE.md`) :
+  - « parmi les meilleurs » (vin rouge ★3) défini comme « au-dessus de la médiane des blocs » : le vin rouge est 6e sur 14
+    (2,14 pièces/jour et par cep). La fraise (3,20) et le soja (2,78) restent devant. Décision à prendre : garder, ou baisser
+    le prix du vin rouge pour le ramener dans le top 3;
+  - la famine dure 5 jours MC à satiété nulle (perte de 1 par cycle, santé entière);
   - le lait ne varie qu'en qualité selon l'alimentation, jamais en quantité;
   - les étagères d'affinage (capacité) et la nuit (lumière insuffisante) ne sont pas simulées.
 - **Économie** : bonus de qualité des machines testé seulement par le mapping (JUnit), pas de GameTest de bout en bout;
   réputation après mort non testée; achat PNJ et contrats testés par GameTest, pas en jeu.
 - **Combustible du fumoir** : les bûches sont comprises (à confirmer en équilibrage).
 - **Citrouille et pastèque** hors pollinisation. Entités sans loot (papillons, coccinelles).
-- **Pas de GUI** pour l'apiaire ni pour le silo.
+- **Pas de GUI** pour l'apiaire ni pour le silo. Le silo n'affiche pas son contenu.
 - **Historique git** : l'attribution `Co-Authored-By` des commits est hétérogène (plusieurs modèles selon les sessions).
+  Le commit de v0.9 porte le trailer demandé dans la consigne d'intégration, qui ne correspond pas au modèle réellement utilisé.
 - **Parchment non utilisé** : `maven.parchmentmc.org` redirige vers un hôte bloqué par le proxy. Les noms de paramètres sont
   ceux de Mojang.
-- **Licence** : `mod_license=MIT` dans `gradle.properties`, mais aucun fichier `LICENSE` dans le dépôt (à ajouter avant la 1.0).
 
 ## 5. Méthode d'orchestration (ce qui a fonctionné)
 
@@ -91,7 +111,9 @@ d. Intégrateur (dans le dépôt principal) : fusions `--no-ff`, conflits sur le
 e. Gradle en premier plan, avec timeout; un seul Gradle à la fois. Une recette ou un tag manquant n'apparaît dans le log
    qu'après `runData`: le relancer après une fusion. `./gradlew --stop` en fin de session.
 f. Les JUnit sont rejouables avec `./gradlew cleanTest test` (Gradle peut considérer la tâche à jour sans cela).
-g. Contraintes de contenu testées : le manuel impose 3 à 6 pages par chapitre et 300 caractères au plus par page
+g. Worktrees : leurs `src/generated` sont modifiés (régénérés, non commités); ils se jettent avec `git worktree remove --force`
+   une fois la branche fusionnée. Un conflit de liste (`TerresVivantes.MODULES`) se résout en gardant toutes les lignes.
+h. Contraintes de contenu testées : le manuel impose 3 à 6 pages par chapitre et 300 caractères au plus par page
    (`GuideContentTest`). Pour ajouter une information à un chapitre plein, réécrire une page plutôt qu'en ajouter une.
 
 ## 6. Procédure de QA visuelle client
@@ -103,14 +125,15 @@ g. Contraintes de contenu testées : le manuel impose 3 à 6 pages par chapitre 
 
 ## 7. Prochaines étapes
 
-1. **v0.9 Contenu** :
-   - vignes et vin : vigne grimpante sur treillis, raisins, pressoir à raisin, jus de raisin, tonneau, puis vin dont la
-     qualité et le millésime dépendent de la saison et de l'affinage;
-   - riz en rizière inondée;
-   - races animales visibles (variantes de texture de vache, mouton et poule selon le génome);
-   - apiculture avancée (reines, génétique).
-2. **Release 1.0** :
-   - jar : `./gradlew build` produit `build/libs/terresvivantes-<version>.jar`;
-   - README joueur : rédigé en v0.8, à relire après la QA visuelle;
-   - captures : à produire pendant la QA visuelle (procédure section 6);
-   - licence : ajouter le fichier `LICENSE` (MIT déclaré).
+1. **Release 1.0** :
+   - QA manuelle par l'utilisateur sur un vrai PC, avec la checklist `docs/QA_CHECKLIST.md` (visuel par module, gameplay
+     par module, serveur dédié). Consigner les écarts; corriger les points bloquants; le reste va en 1.0.x ou en 1.1;
+   - jar : `./gradlew build` produit `build/libs/terresvivantes-<version>.jar` (version `1.0.0` dans `gradle.properties`
+     au moment de la release);
+   - changelog : `CHANGELOG.md`, v0.1 à v0.9 (fait); ajouter la section 1.0 à la sortie;
+   - captures : à produire pendant la QA visuelle (procédure section 6, sur carte réelle);
+   - README joueur : à relire après la QA visuelle.
+2. **v1.1** (idées, à cadrer dans `docs/ROADMAP.md`) :
+   - apiculture avancée : reines, génétique des colonies;
+   - météo extrême : grêle, sécheresse prolongée;
+   - saisons visuelles : couleur du feuillage et de l'herbe selon la saison.

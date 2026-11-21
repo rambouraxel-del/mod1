@@ -13,6 +13,8 @@ import fr.terresvivantes.economy.logic.MarketLogic;
 import fr.terresvivantes.economy.logic.PriceModel;
 import fr.terresvivantes.economy.logic.ReputationLogic;
 import fr.terresvivantes.health.logic.Disease;
+import fr.terresvivantes.rice.logic.RiceLogic;
+import fr.terresvivantes.vineyard.logic.VineyardLogic;
 import fr.terresvivantes.husbandry.logic.FeedLogic;
 import fr.terresvivantes.husbandry.logic.FeedType;
 import fr.terresvivantes.husbandry.logic.Species;
@@ -205,6 +207,38 @@ final class BalanceSimulationTest {
         int starvation = starvationCycles();
         target("Famine : survie à satiété 0 (santé pleine)", ">= 4 j MC", String.format("%.1f j MC", starvation / 20.0),
                 starvation >= 80);
+
+        section("(f) Vignoble et riz : revenu par bloc et par jour MC (vente à l'étal, 90 %)");
+        out.append("Un bloc = une case de culture (un plant de riz, un cep de vigne) ; les cultures du champ sont ramenées à la case.\n\n");
+        out.append("| Bloc | Cycle (jours MC) | Pièces de cuivre / jour / bloc |\n|---|---|---|\n");
+        Map<String, Double> perBlock = new LinkedHashMap<>();
+        for (CropDefinition def : CropDefinitions.all()) {
+            perBlock.put(def.id(), revenue.get(def.id()) / FIELD_PLOTS);
+        }
+        double riceCycle = riceMatureDays();
+        double ricePerCycle = riceValuePerCycle(prices);
+        perBlock.put("rice", ricePerCycle / riceCycle);
+        double[] vine = vineValue(prices);
+        perBlock.put("red_wine_vine", vine[1]);
+        for (Map.Entry<String, Double> e : perBlock.entrySet()) {
+            String days = switch (e.getKey()) {
+                case "rice" -> days(riceCycle) + " (été)";
+                case "red_wine_vine" -> "1 an de vigne ; chaîne " + days(vine[2]);
+                default -> days(growth.get(e.getKey()).optimal());
+            };
+            out.append(String.format("| %s | %s | %.2f |%n", e.getKey(), days, e.getValue()));
+        }
+        // « Parmi les meilleurs » = au-dessus de la médiane des blocs (cultures, riz et vigne compris).
+        double blockMedian = median(perBlock.values());
+        long vineRank = 1 + perBlock.values().stream().filter(v -> v > perBlock.get("red_wine_vine")).count();
+        target("Vin rouge ★3 (vigne) : revenu par bloc parmi les meilleurs", "au-dessus de la médiane des blocs",
+                String.format("rang %d sur %d, %.2f pièces/j (médiane %.2f)", vineRank, perBlock.size(),
+                        perBlock.get("red_wine_vine"), blockMedian),
+                perBlock.get("red_wine_vine") > blockMedian);
+        target("Vin rouge : lent (chaîne après récolte, cycle annuel)", ">= 6 j de chaîne, 1 récolte par an",
+                String.format("%.1f j de chaîne, 1 récolte par an", vine[2]), vine[2] >= 6.0);
+        target("Riz : revenu par bloc (rizière)", "au-dessus de 0 (informatif)", String.format("%.2f pièces/j", perBlock.get("rice")),
+                perBlock.get("rice") > 0);
 
         section("Bilan des cibles");
         out.append("| Cible | Attendu | Obtenu | Atteinte |\n|---|---|---|---|\n");
@@ -566,6 +600,68 @@ final class BalanceSimulationTest {
         return (total / samples) / StallLogic.payment(price);
     }
 
+    // ------------------------------------------------------------------ (f) vignoble et riz
+
+    /** Jours MC de culture du riz en été (champ à {@link #FIELD_TEMP}), par tirages de randomTicks réels. */
+    private static double riceMatureDays() {
+        Random rnd = new Random(SEED ^ 0x51CE_0009L);
+        double chance = RiceLogic.attemptChance();
+        float factor = RiceLogic.growthFactor(seasonMultiplier(Season.SUMMER), Season.SUMMER, FIELD_TEMP);
+        long maxTicks = (long) (MAX_DAYS * RTPD);
+        double sum = 0;
+        int matured = 0;
+        for (int i = 0; i < PLANTS; i++) {
+            int stage = 0;
+            long ticks = 0;
+            while (stage < RiceLogic.MAX_AGE && ticks < maxTicks) {
+                ticks++;
+                if (rnd.nextDouble() >= chance) {
+                    continue;
+                }
+                GrowthDecision decision = GrowthModel.decide(factor, rnd.nextDouble(), rnd.nextDouble());
+                if (decision != GrowthDecision.DENY) {
+                    stage = RiceLogic.clampAge(stage + (decision == GrowthDecision.EXTRA_STAGE ? 2 : 1));
+                }
+            }
+            if (stage >= RiceLogic.MAX_AGE) {
+                sum += ticks / RTPD;
+                matured++;
+            }
+        }
+        return matured == 0 ? Double.POSITIVE_INFINITY : sum / matured;
+    }
+
+    /**
+     * Pièces de cuivre par cycle de riz : panicules moyennes (2 à 3), meulées en riz (recette rice_millstone), riz à
+     * qualité ★1 vendu à l'étal.
+     */
+    private static double riceValuePerCycle(Map<String, Integer> prices) {
+        int[] millstone = recipe("rice_millstone");
+        double panicles = (RiceLogic.PANICLES_MIN + RiceLogic.PANICLES_MAX) / 2.0;
+        double rice = StallLogic.payment(PriceModel.price(BasePrices.basePrice(prices, "rice"), 1, 1.0f, 0));
+        return panicles * (double) millstone[1] / millstone[0] * rice;
+    }
+
+    /**
+     * Vigne rouge (un cep) : {@code [pièces par an, pièces par jour MC, délai de la chaîne en jours]}. Un cep donne
+     * {@code MIN_BUNCHES..MAX_BUNCHES} grappes une fois par an (récolte d'automne). Chaîne : 2 grappes -> 1 jus,
+     * jus -> vin jeune, vin jeune -> vin rouge affiné (qualité de la base + 1 étoile par 6 jours); vin rouge
+     * vendu à l'étal au prix de sa qualité.
+     */
+    private static double[] vineValue(Map<String, Integer> prices) {
+        int[] juice = recipe("vineyard_grape_juice");
+        int[] young = recipe("vineyard_young_wine");
+        int[] red = recipe("vineyard_red_wine");
+        double bunches = (VineyardLogic.MIN_BUNCHES + VineyardLogic.MAX_BUNCHES) / 2.0;
+        double winesPerGrape = (double) juice[1] / juice[0] * young[1] / young[0] * red[1] / red[0];
+        int quality = VineyardLogic.agedRedWine(VineyardLogic.GRAPE_QUALITY, red[2]);
+        double unit = StallLogic.payment(PriceModel.price(BasePrices.basePrice(prices, "red_wine"), quality, 1.0f, 0));
+        double perYear = bunches * winesPerGrape * unit;
+        double yearDays = 4.0 * DAYS_PER_SEASON;
+        double chainDays = (juice[2] + young[2] + red[2]) / TICKS_PER_DAY;
+        return new double[] {perYear, perYear / yearDays, chainDays};
+    }
+
     // ------------------------------------------------------------------ (e) élevage
 
     private void herd(String name, boolean wellFed, Map<String, Integer> prices) {
@@ -705,7 +801,7 @@ final class BalanceSimulationTest {
         }
     }
 
-    /** Écrit docs/BALANCE.md : les blocs « avant » et « changements » entre marqueurs sont conservés. */
+    /** Écrit docs/BALANCE.md : les blocs « avant » et « changements » entre marqueurs sont conservés (« avant » : la version précédente). */
     private void writeReport() throws IOException {
         String before = "_Aucun relevé avant enregistré._";
         String changes = "_Aucune justification enregistrée._";
@@ -714,11 +810,11 @@ final class BalanceSimulationTest {
             before = keptBlock(existing, AVANT_BEGIN, AVANT_END, before);
             changes = keptBlock(existing, CHANGES_BEGIN, CHANGES_END, changes);
         }
-        String report = "# Équilibrage v0.8\n\n"
+        String report = "# Équilibrage v0.9\n\n"
                 + "Généré par `src/test/java/fr/terresvivantes/balance/BalanceSimulationTest.java` (`./gradlew test`).\n"
                 + "Les tableaux « après » sont régénérés à chaque exécution; le bloc « avant » est conservé entre les marqueurs.\n\n"
-                + "## Avant (valeurs v0.7)\n\n" + AVANT_BEGIN + "\n" + before + "\n" + AVANT_END + "\n\n"
-                + "## Après (valeurs v0.8)\n" + out + "\n"
+                + "## Avant (valeurs v0.8)\n\n" + AVANT_BEGIN + "\n" + before + "\n" + AVANT_END + "\n\n"
+                + "## Après (valeurs v0.9)\n" + out + "\n"
                 + "## Changements et justifications\n\n" + CHANGES_BEGIN + "\n" + changes + "\n" + CHANGES_END + "\n";
         Files.createDirectories(BALANCE_DOC.toAbsolutePath().getParent());
         Files.writeString(BALANCE_DOC, report, StandardCharsets.UTF_8);

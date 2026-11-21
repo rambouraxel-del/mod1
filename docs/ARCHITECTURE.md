@@ -269,6 +269,59 @@ Enregistrés par les modules au démarrage (listes `CopyOnWriteArrayList`). `Cro
 - Pour une nouvelle machine : voir `docs/AGENT_GUIDE.md` (section « Créer une machine de transformation »).
 - Restes de contenants : `ProcessingRecipe.craft` les rend (seau vide); aucun module ne les éjecte lui-même.
 
+## Contrats v0.9 (vignoble, riz, races, APIs publiques)
+
+Nouvelles entrées publiques et branchements. Règles : `docs/DESIGN.md` §22.
+
+### Hooks de culture (`crop.CropGrowthHooks`)
+
+Rendus publics pour les cultures hors `TVCropBlock` (riz, et récoltes vanilla) :
+
+- `applyModifiers(level, pos, state, def)` : produit des `GrowthModifier` (1.0 sans modifier). `def` vaut `null` pour le riz et les cultures vanilla.
+- `yieldModifierProduct(...)` et `scaleYield(level, pos, state, def, count)` : rendement, arrondi probabiliste.
+- `notifyGrowthAttempt(level, pos, state, def, decision, factor)` : à appeler à chaque tentative de croissance. Un listener peut remplacer la culture; l'appelant doit vérifier son état après (comme `TVCropBlock`).
+- `notifyPlanted(level, pos, state)` : à appeler à chaque plantation.
+
+Le riz les utilise (`RiceCropBlock.randomTick`, `RiceApi.plant`). `WaterGrowth` ignore les cultures immergées (`WATERLOGGED`).
+
+### Vignoble (`vineyard.VineyardApi`)
+
+- `isRipe(BlockState)` : vrai pour une vigne au stade 3.
+- `harvest(ServerLevel, BlockPos)` : récolte une vigne mûre, retourne les grappes (qualité `VineyardLogic.GRAPE_QUALITY`), à déposer par l'appelant. Liste vide sinon.
+- Appelée par `GrapevineBlock` (clic droit) et par `HarvesterBlockEntity` (récolteuse).
+- Écouteur de sortie de `ProcessingApi` : affinage du vin rouge et millésime (`VineyardModule`).
+
+### Riz (`rice.RiceApi`)
+
+- `plant(ServerLevel, soilPos)` : plante sur l'eau au-dessus d'une terre admise; notifie les `PlantListener`.
+
+### Vet (`vet.VetApi`)
+
+- `registerDiseaseChanceModifier(DiseaseChanceModifier)` : `Animal → float`, multiplie la chance de maladie par cycle (`VetNeeds`). Enregistré au démarrage.
+- `diseaseChanceFactor(Animal)` : produit des modifiers (1.0 sans modifier).
+- Branchement : `breeds.BreedsApi.diseaseChanceFactor` (Sussex ×0,7).
+
+### Livestock (`livestock.LivestockApi`)
+
+- `TwinListener` : `onTwin(twin, parentA, parentB)`, enregistré par `registerTwinListener`.
+- `notifyTwin(twin, parentA, parentB)` : appelé par `LivestockEvents` pour chaque jumeau, après sa création et avant son ajout au monde. Le premier bébé passe toujours par `BabyEntitySpawnEvent`.
+- Branchement : `breeds.BreedEvents.onTwin` (héritage de race).
+
+### Races (`breeds`)
+
+- Écouteur du cycle de besoins `BreedEvents.winterCompensation` (Highland) : `registerNeedsListener`, et non `registerFeedSource` (le `lastFedDay` ne doit pas changer).
+- `BreedLogic.diseaseChanceFactor(Breed)` (Sussex ×0,7) : pur, testé en JUnit.
+
+### Compost (`compost.CompostModule`)
+
+- Le tag `terresvivantes:compostable` ajoute, directement dans `registerItemTags`, les raisins, les boutures de vigne, le riz, les panicules et les plants de riz (pas de hook).
+
+### Dépendances ajoutées
+
+- `automation` → `vineyard` (`VineyardApi`).
+- `breeds` → `vet` (`VetApi`) et → `livestock` (`LivestockApi`, déjà présent).
+- `rice` → `crop` (hooks), `vineyard` → `core.quality` (qualité des raisins et du vin).
+
 ## Dépendances entre packages
 
 `crop` ↔ `soil` et `season` ↔ `climate` forment un cycle (facades statiques). Il est accepté en v0.2 : aucune de ces classes ne dépend d'un état initialisé à l'import.

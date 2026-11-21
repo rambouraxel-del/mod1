@@ -1,110 +1,11 @@
-# Équilibrage v0.8
+# Équilibrage v0.9
 
 Généré par `src/test/java/fr/terresvivantes/balance/BalanceSimulationTest.java` (`./gradlew test`).
 Les tableaux « après » sont régénérés à chaque exécution; le bloc « avant » est conservé entre les marqueurs.
 
-## Avant (valeurs v0.7)
+## Avant (valeurs v0.8)
 
 <!-- AVANT:BEGIN -->
-## (a) Maturation (jours MC moyens, champ de jour)
-
-| Culture | Optimale | Possible | Hors saison (défavorable) | Serre hiver | Sol épuisé (optimale) |
-|---|---|---|---|---|---|
-| tomato | 4.1 j | 5.9 j | 18.7 j | 9.8 j | 16.0 j |
-| corn | 5.6 j | 8.0 j | 25.0 j | 13.5 j | 21.6 j |
-| soybean | 4.2 j | 6.0 j | 18.7 j | 10.1 j | 16.1 j |
-| lettuce | 2.5 j | 3.8 j | 6.2 j | 4.0 j | 9.5 j |
-| onion | 7.5 j | 11.3 j | 18.7 j | 12.1 j | 28.2 j |
-| garlic | 13.7 j | 13.7 j | 28.6 j | 23.1 j | 42.9 j |
-| bell_pepper | 4.9 j | 7.0 j | 21.6 j | 11.7 j | 18.6 j |
-| eggplant | 5.5 j | 7.9 j | 24.5 j | 13.3 j | 20.9 j |
-| strawberry | 4.1 j | 4.3 j | 15.7 j | 6.7 j | 16.1 j |
-| barley | 5.7 j | 5.9 j | 22.1 j | 9.4 j | 22.7 j |
-| cabbage | 8.0 j | 8.0 j | 16.7 j | 13.3 j | 31.1 j |
-| cucumber | 3.5 j | 5.0 j | 15.5 j | 8.2 j | 13.2 j |
-
-## (b) Récoltes avant épuisement du sol (sol neuf, sans engrais)
-
-| Régime | Récoltes avant épuisement (min(N,P,K) < 20) |
-|---|---|
-| Monoculture tomate | 2 |
-| Monoculture maïs | 2 |
-| Monoculture soja (légumineuse) | 4 |
-| Rotation soja / tomate | 3 |
-
-## (c) Pertes par maladie sur une saison (champ 9x9, été, comparé au même champ sans maladie)
-
-| Parcelle | Perte de rendement sur la saison |
-|---|---|
-| Monoculture tomate (oïdium) | 19 % |
-| Monoculture maïs (rouille) | 20 % |
-| Diversifiée (9 espèces) | 8 % |
-
-## (d) Revenu par jour MC (champ 9x9 vendu à l'étal, saturation incluse)
-
-| Culture | Jours par cycle | Rendement moyen | Valeur de base x rendement | Pièces de cuivre / jour |
-|---|---|---|---|---|
-| tomato | 4.1 j | 3.0 | 18.0 | 59 |
-| corn | 5.6 j | 2.0 | 12.0 | 29 |
-| soybean | 4.2 j | 3.0 | 15.0 | 58 |
-| lettuce | 2.5 j | 1.5 | 6.0 | 48 |
-| onion | 7.5 j | 2.0 | 10.0 | 22 |
-| garlic | 13.7 j | 1.5 | 9.0 | 9 |
-| bell_pepper | 4.9 j | 2.0 | 14.0 | 33 |
-| eggplant | 5.5 j | 1.5 | 10.5 | 22 |
-| strawberry | 4.1 j | 3.0 | 24.0 | 118 |
-| barley | 5.7 j | 3.0 | 12.0 | 42 |
-| cabbage | 8.0 j | 1.5 | 7.5 | 15 |
-| cucumber | 3.5 j | 3.0 | 18.0 | 70 |
-
-Médiane : 38. Meilleure culture / médiane = 3.14.
-
-## Chaînes transformées
-
-
-Lait de départ ★2 ; fromage affiné après 6 jours : ★3.
-
-| Chaîne | Valeur brute (1 unité) | Valeur transformée par unité brute | Ratio | Délai (jours MC) |
-|---|---|---|---|---|
-| Lait → crème | 8 | 22.0 | 2.75 × | 0.0 |
-| Lait → beurre | 8 | 13.0 | 1.63 × | 0.0 |
-| Lait → fromage affiné | 8 | 72.0 | 9.00 × | 7.0 |
-| Olive → huile d'olive | 9 | 3.5 | 0.39 × | 0.0 |
-| Pomme → cidre | 5 | 12.0 | 2.40 × | 2.0 |
-
-## Contrats contre vente directe
-
-Récompense d'un contrat par unité / vente à l'étal (90 %) : **+67 %**.
-
-## (e) Élevage : 10 vaches sur 28 jours MC (productivité 6)
-
-| Régime | Satiété moyenne (fin) | Santé moyenne (fin) | Vivantes à la fin | Lait ★1 / ★2 / ★3 | Valeur lait / jour (troupeau) | Repas de foin / vache |
-|---|---|---|---|---|---|---|
-| Bien nourries (pâturage, auge en hiver) | 85 / 100 | 100 / 100 | 10 / 10 | 0 / 0 / 280 | 90 | 111.0 |
-| Mal nourries (pâturage 1 cycle sur 3, rien en hiver) | 0 / 100 | 0 / 100 | 0 / 10 | 15 / 0 / 0 | 3 | 0.0 |
-
-### Bilan des cibles (v0.7)
-
-| Cible | Attendu | Obtenu | Atteinte |
-|---|---|---|---|
-| Maturation optimale (toutes cultures) | 1 à 2 j | 2.5 à 13.7 j | non |
-| Serre hiver (toutes cultures) | 2 à 3 j | 4.0 à 23.1 j | non |
-| Hors saison défavorable (toutes cultures) | 3 à 5 j | 6.2 à 28.6 j | non |
-| Sol neuf, monoculture tomate et maïs | 8 à 12 récoltes | 2 et 2 | non |
-| Rotation soja / tomate vs monoculture tomate | plus longue | 3 contre 2 | oui |
-| Perte en monoculture (tomate) | 15 à 30 % | 19 % | oui |
-| Perte en parcelle diversifiée | < 8 % | 8 % | non |
-| Aucune culture ne domine | meilleure / médiane < 2 | 3.14 | non |
-| Lait → crème (par unité brute) | 1,5 à 3 × | 2.75 × | oui |
-| Lait → beurre (par unité brute) | 1,5 à 3 × | 1.63 × | oui |
-| Olive → huile d'olive (par unité brute) | 1,5 à 3 × | 0.39 × | non |
-| Pomme → cidre (par unité brute) | 1,5 à 3 × | 2.40 × | oui |
-| Fromage affiné : meilleur revenu par vache | au-dessus de la crème, du beurre et du lait | 72 contre 22, 13, 8 | oui |
-| Contrat contre vente directe | +30 à 60 % | +67 % | non |
-<!-- AVANT:END -->
-
-## Après (valeurs v0.8)
-
 ## (a) Maturation (jours MC moyens, champ de jour)
 
 | Culture | Optimale | Possible | Hors saison (défavorable) | Serre hiver | Sol épuisé (optimale) |
@@ -202,10 +103,146 @@ Récompense d'un contrat par unité / vente à l'étal (90 %) : **+44 %**.
 | Fromage de chèvre (base) < fromage affiné (base) | < 14 pièces | 11 pièces | oui |
 | Contrat contre vente directe | +30 à 60 % | +44 % | oui |
 | Famine : survie à satiété 0 (santé pleine) | >= 4 j MC | 5.0 j MC | oui |
+<!-- AVANT:END -->
+
+## Après (valeurs v0.9)
+
+## (a) Maturation (jours MC moyens, champ de jour)
+
+| Culture | Optimale | Possible | Hors saison (défavorable) | Serre hiver | Sol épuisé (optimale) |
+|---|---|---|---|---|---|
+| tomato | 1.1 j | 1.6 j | 4.8 j | 2.6 j | 4.1 j |
+| corn | 1.1 j | 1.6 j | 4.9 j | 2.6 j | 4.2 j |
+| soybean | 1.1 j | 1.5 j | 4.9 j | 2.6 j | 4.2 j |
+| lettuce | 1.5 j | 2.3 j | 3.8 j | 2.4 j | 5.8 j |
+| onion | 1.5 j | 2.3 j | 3.8 j | 2.4 j | 5.7 j |
+| garlic | 1.7 j | 1.7 j | 3.6 j | 2.8 j | 6.8 j |
+| bell_pepper | 1.1 j | 1.6 j | 4.8 j | 2.6 j | 4.1 j |
+| eggplant | 1.1 j | 1.5 j | 4.8 j | 2.6 j | 4.2 j |
+| strawberry | 1.3 j | 1.3 j | 4.8 j | 2.1 j | 4.9 j |
+| barley | 1.3 j | 1.3 j | 4.8 j | 2.1 j | 4.9 j |
+| cabbage | 1.7 j | 1.7 j | 3.5 j | 2.8 j | 6.8 j |
+| cucumber | 1.1 j | 1.6 j | 4.9 j | 2.6 j | 4.2 j |
+
+## (b) Récoltes avant épuisement du sol (sol neuf, sans engrais)
+
+| Régime | Récoltes avant épuisement (min(N,P,K) < 20) |
+|---|---|
+| Monoculture tomate | 11 |
+| Monoculture maïs | 11 |
+| Monoculture soja (légumineuse) | 16 |
+| Rotation soja / tomate | 16 |
+
+## (c) Pertes par maladie sur une saison (champ 9x9, été, comparé au même champ sans maladie)
+
+| Parcelle | Perte de rendement sur la saison |
+|---|---|
+| Monoculture tomate (oïdium) | 18 % |
+| Monoculture maïs (rouille) | 18 % |
+| Diversifiée (9 espèces) | 7 % |
+
+## (d) Revenu par jour MC (champ 9x9 vendu à l'étal, saturation incluse)
+
+| Culture | Jours par cycle | Rendement moyen | Valeur de base x rendement | Pièces de cuivre / jour |
+|---|---|---|---|---|
+| tomato | 1.1 j | 2.5 | 15.0 | 188 |
+| corn | 1.1 j | 2.0 | 12.0 | 149 |
+| soybean | 1.1 j | 3.0 | 15.0 | 225 |
+| lettuce | 1.5 j | 2.5 | 10.0 | 136 |
+| onion | 1.5 j | 2.0 | 10.0 | 109 |
+| garlic | 1.7 j | 2.5 | 15.0 | 119 |
+| bell_pepper | 1.1 j | 2.0 | 14.0 | 148 |
+| eggplant | 1.1 j | 1.5 | 10.5 | 114 |
+| strawberry | 1.3 j | 2.0 | 16.0 | 259 |
+| barley | 1.3 j | 3.0 | 12.0 | 189 |
+| cabbage | 1.7 j | 2.5 | 12.5 | 120 |
+| cucumber | 1.1 j | 2.5 | 15.0 | 187 |
+
+Médiane : 149. Meilleure culture / médiane = 1.74.
+
+## Chaînes transformées
+
+
+Lait de départ ★2 ; fromage affiné après 6 jours : ★3.
+
+| Chaîne | Valeur brute (1 unité) | Valeur transformée par unité brute | Ratio | Délai (jours MC) |
+|---|---|---|---|---|
+| Lait → crème | 8 | 16.0 | 2.00 × | 0.0 |
+| Lait → beurre | 8 | 13.0 | 1.63 × | 0.0 |
+| Lait → fromage affiné | 8 | 21.0 | 2.63 × | 7.0 |
+| Olive → huile d'olive | 6 | 11.0 | 1.83 × | 0.0 |
+| Pomme → cidre | 5 | 12.0 | 2.40 × | 2.0 |
+
+## Contrats contre vente directe
+
+Récompense d'un contrat par unité / vente à l'étal (90 %) : **+44 %**.
+
+## (e) Élevage : 10 vaches sur 28 jours MC (productivité 6)
+
+| Régime | Satiété moyenne (fin) | Santé moyenne (fin) | Vivantes à la fin | Lait ★1 / ★2 / ★3 | Valeur lait / jour (troupeau) | Repas de foin / vache |
+|---|---|---|---|---|---|---|
+| Bien nourries (pâturage, auge en hiver) | 85 / 100 | 100 / 100 | 10 / 10 | 0 / 0 / 280 | 90 | 111.0 |
+| Mal nourries (pâturage 1 cycle sur 3, rien en hiver) | 0 / 100 | 0 / 100 | 0 / 10 | 76 / 0 / 0 | 16 | 0.0 |
+
+## (f) Vignoble et riz : revenu par bloc et par jour MC (vente à l'étal, 90 %)
+
+Un bloc = une case de culture (un plant de riz, un cep de vigne) ; les cultures du champ sont ramenées à la case.
+
+| Bloc | Cycle (jours MC) | Pièces de cuivre / jour / bloc |
+|---|---|---|
+| tomato | 1.1 j | 2.31 |
+| corn | 1.1 j | 1.84 |
+| soybean | 1.1 j | 2.78 |
+| lettuce | 1.5 j | 1.68 |
+| onion | 1.5 j | 1.35 |
+| garlic | 1.7 j | 1.47 |
+| bell_pepper | 1.1 j | 1.83 |
+| eggplant | 1.1 j | 1.40 |
+| strawberry | 1.3 j | 3.20 |
+| barley | 1.3 j | 2.33 |
+| cabbage | 1.7 j | 1.48 |
+| cucumber | 1.1 j | 2.31 |
+| rice | 14.0 j (été) | 0.36 |
+| red_wine_vine | 1 an de vigne ; chaîne 8.0 j | 2.14 |
+
+## Bilan des cibles
+
+| Cible | Attendu | Obtenu | Atteinte |
+|---|---|---|---|
+| Maturation optimale (toutes cultures) | 1 à 2 j | 1.1 à 1.7 j | oui |
+| Serre hiver (toutes cultures) | 2 à 3 j | 2.1 à 2.8 j | oui |
+| Hors saison défavorable (toutes cultures) | 3 à 5 j | 3.5 à 4.9 j | oui |
+| Sol neuf, monoculture tomate et maïs | 8 à 12 récoltes | 11 et 11 | oui |
+| Rotation soja / tomate vs monoculture tomate | plus longue | 16 contre 11 | oui |
+| Perte en monoculture (tomate) | 15 à 30 % | 18 % | oui |
+| Perte en parcelle diversifiée | < 8 % | 7 % | oui |
+| Aucune culture ne domine | meilleure / médiane < 2 | 1.74 | oui |
+| Lait → crème (par unité brute) | 1,5 à 3 × | 2.00 × | oui |
+| Lait → beurre (par unité brute) | 1,5 à 3 × | 1.63 × | oui |
+| Olive → huile d'olive (par unité brute) | 1,5 à 3 × | 1.83 × | oui |
+| Pomme → cidre (par unité brute) | 1,5 à 3 × | 2.40 × | oui |
+| Fromage affiné : meilleur revenu par vache | au-dessus de la crème, du beurre et du lait | 21 contre 16, 13, 8 | oui |
+| Fromage de chèvre (base) < fromage affiné (base) | < 14 pièces | 11 pièces | oui |
+| Contrat contre vente directe | +30 à 60 % | +44 % | oui |
+| Famine : survie à satiété 0 (santé pleine) | >= 4 j MC | 5.0 j MC | oui |
+| Vin rouge ★3 (vigne) : revenu par bloc parmi les meilleurs | au-dessus de la médiane des blocs | rang 6 sur 14, 2.14 pièces/j (médiane 1.84) | oui |
+| Vin rouge : lent (chaîne après récolte, cycle annuel) | >= 6 j de chaîne, 1 récolte par an | 8.0 j de chaîne, 1 récolte par an | oui |
+| Riz : revenu par bloc (rizière) | au-dessus de 0 (informatif) | 0.36 pièces/j | oui |
 
 ## Changements et justifications
 
 <!-- CHANGES:BEGIN -->
+**v0.9 : vignoble et riz (section f).**
+
+- Définition de « parmi les meilleurs » : au-dessus de la médiane des blocs (cultures, riz et vigne). Le vin rouge ★3 est au-dessus (2,14 pièces par jour et par cep, rang 6 sur 14, médiane 1,84). Il n'est pas dans les trois premiers : la fraise (3,20) et le soja (2,78) restent devant. Un seuil « rang 1 à 3 » a été écarté : les valeurs actuelles ne l'atteignent pas.
+- Lent : 8 jours MC de chaîne après la récolte (jus 120 ticks, vin jeune 2 jours, vin rouge 6 jours) et une seule récolte par an.
+- Hypothèses vigne : qualité de départ ★2 pour les raisins (`VineyardLogic.GRAPE_QUALITY`, comme le lait ★2 du simulateur), 3 grappes par an en moyenne (2 à 4), année de 28 jours MC (4 saisons de 7 jours).
+- Affinage du vin rouge : +1 étoile par 6 jours MC d'affinage (144000 ticks), ajouté à l'écouteur de sortie du module vineyard. Avant ce changement, le vin rouge gardait la qualité de son vin jeune (aucun gain). Une base ★2 donne ★3.
+- Riz : cycle de 14 jours MC en été, 2 à 3 panicules par cycle, chaque panicule meulée en 2 riz (recette `rice_millstone`), riz vendu à l'étal à qualité ★1. 0,36 pièces par jour et par case de rizière : le riz est une denrée de base (les plats à base de riz ne sont pas simulés).
+- Contenants : le vin jeune consomme une bouteille à la fermentation, comme le vin blanc, et la rend en buvant. Le vin rouge ne consomme pas de bouteille : l'étagère d'affinage n'a pas d'emplacement de contenant, et une recette avec contenant ne s'y lancerait jamais.
+
+**v0.8 (valeurs v0.7 -> v0.8).**
+
 Données et constantes (valeurs v0.7 -> v0.8) :
 
 1. **Consommation de stade supprimée** (`CropDefinitions`, toutes cultures : stade 0/0/0; la récolte garde sa dose).

@@ -58,9 +58,19 @@ public final class LivestockApi {
         void onNeedsTick(ServerLevel level, Animal animal, LivestockState state);
     }
 
+    /**
+     * Écouteur d'un jumeau (v0.9) : appelé après la création d'un second bébé, avec ses deux parents. Le premier bébé
+     * passe par l'événement d'arrivée des bébés (BabyEntitySpawnEvent), pas le jumeau, créé directement.
+     */
+    @FunctionalInterface
+    public interface TwinListener {
+        void onTwin(Animal twin, Animal parentA, Animal parentB);
+    }
+
     private static final List<ProductionModifier> PRODUCTION_MODIFIERS = new CopyOnWriteArrayList<>();
     private static final List<FeedSource> FEED_SOURCES = new CopyOnWriteArrayList<>();
     private static final List<NeedsListener> NEEDS_LISTENERS = new CopyOnWriteArrayList<>();
+    private static final List<TwinListener> TWIN_LISTENERS = new CopyOnWriteArrayList<>();
 
     private LivestockApi() {
     }
@@ -132,6 +142,18 @@ public final class LivestockApi {
     /** Enregistre un écouteur du cycle de besoins (appelé à l'initialisation). */
     public static void registerNeedsListener(NeedsListener listener) {
         NEEDS_LISTENERS.add(listener);
+    }
+
+    /** Enregistre un écouteur de jumeau (appelé à l'initialisation). */
+    public static void registerTwinListener(TwinListener listener) {
+        TWIN_LISTENERS.add(listener);
+    }
+
+    /** Prévient les écouteurs qu'un jumeau vient d'être créé (appelé par le module livestock). */
+    public static void notifyTwin(Animal twin, Animal parentA, Animal parentB) {
+        for (TwinListener listener : TWIN_LISTENERS) {
+            listener.onTwin(twin, parentA, parentB);
+        }
     }
 
     /**

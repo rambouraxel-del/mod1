@@ -94,23 +94,21 @@ public final class GrapevineBlock extends Block {
         return drops;
     }
 
-    /** Clic droit à main vide sur une vigne au stade 3 : grappes de la variété, retour au stade 2. */
+    /** Clic droit à main vide sur une vigne au stade 3 : grappes de la variété, retour au stade 2 ({@link VineyardApi#harvest}). */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
-        if (state.getValue(STAGE) != VineyardLogic.RIPE_STAGE || !player.getMainHandItem().isEmpty()) {
+        if (!VineyardApi.isRipe(state) || !player.getMainHandItem().isEmpty()) {
             return InteractionResult.PASS;
         }
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
-        int count = VineyardLogic.harvestCount(level.getRandom().nextDouble());
-        ItemStack grapes = new ItemStack(grapesOf(state.getValue(VARIETY)), count);
-        if (!player.getInventory().add(grapes)) {
-            player.drop(grapes, false);
+        for (ItemStack grapes : VineyardApi.harvest((ServerLevel) level, pos)) {
+            if (!player.getInventory().add(grapes)) {
+                player.drop(grapes, false);
+            }
         }
-        level.setBlock(pos, state.setValue(STAGE, VineyardLogic.MATURE_STAGE).setValue(HARVESTED, true),
-                Block.UPDATE_CLIENTS);
         return InteractionResult.SUCCESS;
     }
 

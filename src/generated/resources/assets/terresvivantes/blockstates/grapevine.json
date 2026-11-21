@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "harvested=false,stage=0,variety=red": {
+      "model": "terresvivantes:block/grapevine_stage0"
+    },
+    "harvested=false,stage=0,variety=white": {
+      "model": "terresvivantes:block/grapevine_stage0"
+    },
+    "harvested=false,stage=1,variety=red": {
+      "model": "terresvivantes:block/grapevine_stage1"
+    },
+    "harvested=false,stage=1,variety=white": {
+      "model": "terresvivantes:block/grapevine_stage1"
+    },
+    "harvested=false,stage=2,variety=red": {
+      "model": "terresvivantes:block/grapevine_stage2"
+    },
+    "harvested=false,stage=2,variety=white": {
+      "model": "terresvivantes:block/grapevine_stage2"
+    },
+    "harvested=false,stage=3,variety=red": {
+      "model": "terresvivantes:block/grapevine_red_stage3"
+    },
+    "harvested=false,stage=3,variety=white": {
+      "model": "terresvivantes:block/grapevine_white_stage3"
+    },
+    "harvested=true,stage=0,variety=red": {
+      "model": "terresvivantes:block/grapevine_stage0"
+    },
+    "harvested=true,stage=0,variety=white": {
+      "model": "terresvivantes:block/grapevine_stage0"
+    },
+    "harvested=true,stage=1,variety=red": {
+      "model": "terresvivantes:block/grapevine_stage1"
+    },
+    "harvested=true,stage=1,variety=white": {
+      "model": "terresvivantes:block/grapevine_stage1"
+    },
+    "harvested=true,stage=2,variety=red": {
+      "model": "terresvivantes:block/grapevine_stage2"
+    },
+    "harvested=true,stage=2,variety=white": {
+      "model": "terresvivantes:block/grapevine_stage2"
+    },
+    "harvested=true,stage=3,variety=red": {
+      "model": "terresvivantes:block/grapevine_red_stage3"
+    },
+    "harvested=true,stage=3,variety=white": {
+      "model": "terresvivantes:block/grapevine_white_stage3"
+    }
+  }
+}

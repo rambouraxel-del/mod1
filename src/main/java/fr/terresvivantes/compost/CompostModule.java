@@ -61,6 +61,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -244,7 +245,8 @@ public final class CompostModule implements TVModule {
 
     /**
      * Tag {@code terresvivantes:compostable} : feuilles, herbes, graines et légumes vanilla organiques,
-     * plus les 12 produits et les 12 graines du module crop, et les fruits du verger (pomme vanille comprise).
+     * plus les 12 produits et les 12 graines du module crop, les fruits du verger (pomme vanille comprise), et depuis v0.9
+     * les raisins, boutures, riz, panicules et plants.
      */
     @Override
     public void registerItemTags(Function<TagKey<Item>, TagsProvider.TagAppender<Item>> tags,
@@ -264,6 +266,12 @@ public final class CompostModule implements TVModule {
         for (FruitTreeDefinition def : FruitTreeDefinitions.all()) {
             // Fruits du verger (la pomme est vanille, identifiant porté par def.fruit()).
             compostable.add(ResourceKey.create(Registries.ITEM, ResourceLocation.parse(def.fruit())));
+        }
+        // v0.9 : raisins, boutures de vigne, riz (grain, panicule, plant).
+        for (String id : List.of("red_grapes", "white_grapes", "red_grapevine_cutting", "white_grapevine_cutting",
+                "rice", "rice_panicle", "rice_seedling")) {
+            compostable.add(ResourceKey.create(Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath(TerresVivantes.MODID, id)));
         }
     }
 

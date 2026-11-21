@@ -9,6 +9,7 @@
       "count": 1
     }
   ],
+  "container": "minecraft:glass_bottle",
   "result": {
     "id": "terresvivantes:young_wine",
     "count": 1

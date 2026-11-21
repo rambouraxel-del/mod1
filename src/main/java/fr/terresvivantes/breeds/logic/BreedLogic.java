@@ -97,6 +97,14 @@ public final class BreedLogic {
         };
     }
 
+    /** Multiplicateur de la chance de maladie des poules Sussex (rustiques). */
+    public static final float SUSSEX_DISEASE_FACTOR = 0.7F;
+
+    /** Multiplicateur de la chance de maladie de la race (1.0 sans race ou sans effet). */
+    public static float diseaseChanceFactor(Breed breed) {
+        return breed == Breed.SUSSEX ? SUSSEX_DISEASE_FACTOR : 1.0F;
+    }
+
     /** Morceaux de viande supplémentaires à l'abattage. */
     public static int extraMeat(Breed breed) {
         return breed == Breed.CHAROLAIS ? CHAROLAIS_EXTRA_MEAT : 0;

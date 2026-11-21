@@ -26,6 +26,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import fr.terresvivantes.vineyard.VineyardApi;
+import java.util.List;
 
 /**
  * Tests de jeu du vignoble. Gabarit {@code orchard_arena}. Les saisons se fixent par {@code /tv season set} et la
@@ -165,5 +167,29 @@ public final class VineyardGameTests {
         MinecraftServer server = helper.getLevel().getServer();
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "tv season set " + name + " 1");
         helper.assertTrue(SeasonApi.getSeason(helper.getLevel()) == expected, "la saison de test doit être " + name);
+    }
+
+    /** API publique de récolte : une vigne non mûre ne donne rien; une vigne mûre donne 2 à 4 grappes de son cépage. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 200)
+    public static void apiHarvestOnlyTakesRipeVines(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        helper.setBlock(SOIL, Blocks.DIRT);
+        helper.setBlock(PLANT, VineyardModule.GRAPEVINE.get().defaultBlockState()
+                .setValue(GrapevineBlock.VARIETY, GrapeVariety.WHITE)
+                .setValue(GrapevineBlock.STAGE, 2));
+        BlockPos abs = helper.absolutePos(PLANT);
+        helper.assertTrue(VineyardApi.harvest(level, abs).isEmpty(), "une vigne au stade 2 ne se récolte pas");
+
+        helper.setBlock(PLANT, VineyardModule.GRAPEVINE.get().defaultBlockState()
+                .setValue(GrapevineBlock.VARIETY, GrapeVariety.WHITE)
+                .setValue(GrapevineBlock.STAGE, 3));
+        List<ItemStack> drops = VineyardApi.harvest(level, abs);
+        helper.assertTrue(drops.size() == 1 && drops.get(0).is(VineyardModule.WHITE_GRAPES.get()),
+                "une grappe de raisins blancs attendue, reçu " + drops);
+        int count = drops.get(0).getCount();
+        helper.assertTrue(count >= 2 && count <= 4, "2 à 4 raisins attendus, obtenu " + count);
+        helper.assertTrue(level.getBlockState(abs).getValue(GrapevineBlock.STAGE) == 2,
+                "la vigne doit revenir au stade 2");
+        helper.succeed();
     }
 }

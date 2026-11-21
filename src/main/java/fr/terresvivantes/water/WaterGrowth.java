@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 /** Branchements du module water sur la croissance des cultures (contrats {@link CropGrowthHooks}). */
 final class WaterGrowth {
@@ -25,6 +26,10 @@ final class WaterGrowth {
      */
     static final CropGrowthHooks.GrowthListener DROUGHT = (level, cropPos, state, def, decision, factor) -> {
         if (!WaterConfig.droughtEnabled()) {
+            return;
+        }
+        // Culture immergée (riz en rizière) : l'eau est sous elle, la terre ne sèche pas.
+        if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
             return;
         }
         BlockPos soil = cropPos.below();

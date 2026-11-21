@@ -805,3 +805,89 @@ sont signalés par « Écart ». Contrats d'implémentation : `docs/ARCHITECTURE
   `tomatoSalesGrantMarketGardenerTitle`) : vérifiés en trois passages.
 - Non vérifié : bonus de qualité des machines en jeu (seul le mapping est testé); réputation après mort (pas de GameTest);
   rendu client des blocs, de l'étal et du tableau; écrans (GUI) en jeu.
+
+## 22. Vignoble, riz et races (v0.9 : `vineyard`, `rice`, `breeds`) : livré
+
+Tout ce qui suit est livré et couvert par des tests (JUnit pur et GameTests). Contrats d'implémentation :
+`docs/ARCHITECTURE.md`, « Contrats v0.9 ». Valeurs d'équilibrage : `docs/BALANCE.md`, section (f).
+
+### 22.1 Vignoble (`vineyard`)
+
+- **Treillis** (bloc `trellis`) posé sur une terre (terre, herbe, terre labourée). Une bouture rouge ou blanche, utilisée
+  sur le treillis, fait une vigne au stade 0. Le marchand ambulant vend les boutures (3 émeraudes).
+- **Vigne** (`grapevine`) : stades 0 à 3, cépage rouge ou blanc, indicateur « récoltée ». Croissance par randomTick,
+  pas de BlockEntity. Saison : la vigne mûrit tout l'automne et la seconde moitié de l'été (stade 3). Étape de
+  croissance : 4 jours MC à facteur 1 (`VineyardConfig.stepDays`, plage 0,5 à 60).
+- **Récolte** : clic droit à main vide au stade 3 donne 2 à 4 grappes de son cépage; la vigne revient au stade 2 et
+  est marquée récoltée. La récolteuse (automation) récolte les vignes au stade 3 par la même API
+  (`VineyardApi.harvest`). Casser une vigne mûre rend une bouture et le treillis.
+- **Taille d'hiver** : une vigne mûre ou récoltée retombe au stade 1; la récolte est à nouveau permise l'année suivante.
+- **Vinification** (recettes JSON `vineyard_*`) :
+  - pressoir à raisin : 2 raisins rouges et une bouteille donnent un jus de raisin (120 ticks);
+  - tonneau : jus et bouteille donnent un vin jeune (48000 ticks, qualité moyenne des entrées);
+  - tonneau : 4 raisins blancs et une bouteille donnent un vin blanc (72000 ticks);
+  - étagère d'affinage : vin jeune donne un vin rouge (144000 ticks). **Affinage** : la qualité du vin rouge gagne une
+    étoile par 6 jours MC d'affinage (plafond 3), ajoutée par l'écouteur de sortie du module.
+- **Qualité de départ** : les raisins sortent de la vigne à ★2 (`VineyardLogic.GRAPE_QUALITY`), comme le lait de vache.
+  Un vin rouge de cette base sort à ★3.
+- **Bouteilles** : le vin jeune consomme une bouteille à la fermentation (comme le vin blanc) et la rend en buvant.
+  Le vin rouge ne consomme ni ne rend de bouteille : l'étagère d'affinage n'a pas d'emplacement de contenant (machine
+  à `container=false`), une recette avec contenant ne s'y lancerait jamais.
+- **Millésime** : un vin rouge ou blanc reçoit l'année de sa vinification (composant `terresvivantes:vintage`).
+- **Prix de base** (`economy/base_prices.json`) : raisins rouges et blancs 3, jus 8, vin jeune 14, vin rouge 30,
+  vin blanc 22. Un vin ★3 se vend ×1,5 (qualité).
+
+### 22.2 Riz (`rice`)
+
+- **Rizière** : le plant de riz (`rice_crop`) remplace une source d'eau d'un bloc de profondeur, au-dessus d'une terre
+  admise (terre, herbe, terre labourée, boue). Il est waterlogged et reste dans l'eau.
+- **Survie** : terre admise, eau au bloc, et au moins un voisin horizontal en eau. Sinon il casse à la tick suivante et
+  rend un plant de riz.
+- **Croissance** : 7 stades, 20 jours MC à facteur 1 (`RiceLogic`), saison et température comme les cultures. Il mûrit
+  surtout en été. Plantation à la main (clic droit avec un plant sur la terre).
+- **Récolte** : 2 à 3 panicules (`rice_panicle`); le riz est replanté à l'âge 0 dans l'eau.
+- **Plants** : recette panicule → plant de riz; et, rarement (6 %), de l'herbe.
+- **Produits** : meule (panicule → 2 riz, 100 ticks), bol de riz et risotto (cuiseur à marmite), galette de riz
+  (cuisson et fumage).
+- **Branchements v0.9 sur les hooks de crop** : le riz n'a pas de définition (`def = null`). Il applique les modifiers
+  de `CropGrowthHooks` (maladie, arrosage) et notifie les listeners (stress, flétrissement, pucerons, sécheresse).
+  La sécheresse ignore une culture immergée (`WaterGrowth`). Le riz a une susceptibilité fongique (pyriculariose,
+  traitée comme le mildiou). La pollinisation ne s'applique pas : le riz est autopollinisé (pas de définition de
+  pollinisation). La plantation notifie les `PlantListener`.
+
+### 22.3 Races (`breeds`)
+
+- **Espèces** : vaches (Holstein, Highland, Charolais) et poules (Marans, Leghorn, Sussex). Données dans l'attachment
+  d'entité `breeds:breed` (sérialisé, sans copie à la mort).
+- **Attribution** à l'arrivée d'un animal, pondérée par le climat du biome (froid, tempéré, chaud) : la Highland est
+  propre au froid, la Leghorn aux régions chaudes, la Sussex craint la chaleur (`BreedLogic.weight`).
+- **Hérédité** : l'enfant reçoit la race d'un de ses parents, à 50/50. Un parent sans race cède la place à l'autre.
+  Les jumeaux (créés directement, sans événement d'arrivée) héritent aussi, par `LivestockApi.registerTwinListener`.
+- **Effets** :
+  - Holstein : production ×1,2 (lait);
+  - Charolais : production ×0,9, un morceau de viande de plus à l'abattage (adulte);
+  - Highland : en hiver, la satiété compensée annule le surcroît de consommation (12 − 4 = 8, comme une vache normale).
+    C'est un écouteur du cycle de besoins, pas une source de nourriture : `lastFedDay` n'est pas modifié;
+  - Leghorn : production ×1,25 (ponte);
+  - Marans : 10 % de chance d'un œuf supplémentaire à la ponte;
+  - Sussex : chance de maladie ×0,7 (`VetApi.registerDiseaseChanceModifier`).
+- **Synchronisation** : la race est envoyée aux clients qui suivent l'animal (paquet `BreedSyncPayload`). Le rendu
+  (superposition `BreedLayer`) n'est pas vérifié sur une vraie carte graphique.
+
+### 22.4 Écarts et choix
+
+- Écart : le vin rouge n'avait aucun gain d'affinage. Il gagne maintenant une étoile par 6 jours (écouteur de sortie).
+  C'est la seule règle de qualité ajoutée à la recette, pour atteindre la cible ★3 du simulateur.
+- Écart : la Highland compense la faim après le cycle de santé. À satiété nulle en hiver, elle perd encore un point de
+  santé ce cycle-là (comme avant).
+- Choix : « parmi les meilleurs » (cible du simulateur) = au-dessus de la médiane des blocs. Le vin rouge ★3 est 6e sur
+  14 blocs, à 2,14 pièces par jour et par cep; il n'est pas dans les trois premiers. Voir `docs/BALANCE.md`.
+
+### 22.5 Vitrine et validation
+
+- `/tv showcase` : section v0.9 en z 42 à 54 : deux vignes mûres sur treillis (rouge x1, blanche x3), une rizière mûre
+  (riz 3x3 au centre d'une terre 5x5), un enclos des races avec trois vaches (Holstein, Highland, Charolais) et trois
+  poules (Marans, Leghorn, Sussex), persistantes. Profondeur de la plateforme portée à 56.
+- Tests : `ShowcaseGameTests`, `RiceGameTests` (hooks et maladie), `VineyardGameTests` (API de récolte),
+  `AutomationGameTests` (récolteuse et vigne), `BreedGameTests` (Sussex, jumeau, Highland), `GuideContentTest`
+  (chapitre 12), `BalanceSimulationTest` (section f), `VineyardLogicTest` et `BreedLogicTest`.

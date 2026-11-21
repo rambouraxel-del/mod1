@@ -3,6 +3,8 @@ package fr.terresvivantes.breeds;
 import fr.terresvivantes.breeds.logic.Breed;
 import fr.terresvivantes.breeds.logic.BreedLogic;
 import fr.terresvivantes.breeds.logic.Species;
+import fr.terresvivantes.livestock.LivestockApi;
+import fr.terresvivantes.livestock.logic.LivestockState;
 import fr.terresvivantes.breeds.network.BreedSyncPayload;
 import fr.terresvivantes.season.SeasonApi;
 import fr.terresvivantes.season.logic.Season;
@@ -26,7 +28,7 @@ import java.util.List;
 
 /**
  * Branchements serveur du module breeds : attribution à l'arrivée, hérédité, synchronisation des suiveurs, viande
- * de Charolais, œuf supplémentaire de Marans, et aide d'hiver de Highland (source de nourriture du livestock).
+ * de Charolais, œuf supplémentaire de Marans, et compensation d'hiver de Highland (écouteur du livestock).
  */
 final class BreedEvents {
 
@@ -72,8 +74,18 @@ final class BreedEvents {
     /** Hérédité : la race de l'enfant est celle d'un des parents, à 50/50. */
     private static void onBabySpawn(BabyEntitySpawnEvent event) {
         AgeableMob child = event.getChild();
-        if (child == null || BreedsApi.speciesOf(child) == null
-                || !(event.getParentA() instanceof Animal parentA) || !(event.getParentB() instanceof Animal parentB)) {
+        if (child == null || !(event.getParentA() instanceof Animal parentA) || !(event.getParentB() instanceof Animal parentB)) {
+            return;
+        }
+        inherit(child, parentA, parentB);
+    }
+
+    /**
+     * Race d'un enfant (premier bébé ou jumeau) : celle d'un des parents, à 50/50, tirée sur l'enfant. Sans effet pour
+     * une espèce sans races.
+     */
+    static void inherit(Entity child, Animal parentA, Animal parentB) {
+        if (BreedsApi.speciesOf(child) == null) {
             return;
         }
         Breed inherited = BreedLogic.inherit(BreedsApi.getBreed(parentA), BreedsApi.getBreed(parentB),
@@ -81,6 +93,11 @@ final class BreedEvents {
         if (inherited != null) {
             child.setData(BreedsModule.BREED.get(), inherited);
         }
+    }
+
+    /** Jumeau livestock : il reçoit lui aussi la race d'un de ses parents (les jumeaux ne passent pas par l'événement d'arrivée). */
+    static void onTwin(Animal twin, Animal parentA, Animal parentB) {
+        inherit(twin, parentA, parentB); // la synchronisation client se fait au suivi (onStartTracking)
     }
 
     /** Un joueur qui commence à suivre un animal reçoit sa race. */
@@ -130,14 +147,14 @@ final class BreedEvents {
     }
 
     /**
-     * Highland : en hiver, la satiété gagnée compense le surcroît de consommation (pas de malus de faim).
-     * Source de nourriture du livestock : appelée à chaque cycle de besoins.
+     * Highland : en hiver, la satiété compensée annule le surcroît de consommation hivernale. Écouteur du cycle de
+     * besoins (et non source de nourriture) : {@code lastFedDay} n'est pas modifié, il ne reflète que les vrais repas.
      */
-    static int winterFeed(ServerLevel level, Animal animal) {
+    static void winterCompensation(ServerLevel level, Animal animal, LivestockState state) {
         if (!BreedLogic.cancelsWinterHunger(BreedsApi.getBreed(animal))
                 || SeasonApi.getSeason(level) != Season.WINTER) {
-            return 0;
+            return;
         }
-        return BreedLogic.winterFeedCompensation();
+        LivestockApi.setState(animal, state.withFed(LivestockState.clamp(state.fed() + BreedLogic.winterFeedCompensation())));
     }
 }

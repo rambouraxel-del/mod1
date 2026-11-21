@@ -1,11 +1,13 @@
 package fr.terresvivantes.rice;
 
+import fr.terresvivantes.crop.CropGrowthHooks;
 import fr.terresvivantes.rice.logic.RiceLogic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 
 /** Façade publique du module rice. */
@@ -33,7 +35,9 @@ public final class RiceApi {
         if (!RiceLogic.canPlant(soilOk, source, waterAbove, neighbours)) {
             return false;
         }
-        level.setBlock(target, RiceModule.RICE_CROP.get().defaultBlockState(), Block.UPDATE_ALL);
+        BlockState crop = RiceModule.RICE_CROP.get().defaultBlockState();
+        level.setBlock(target, crop, Block.UPDATE_ALL);
+        CropGrowthHooks.notifyPlanted(level, target, crop);
         return true;
     }
 }

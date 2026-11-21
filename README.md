@@ -39,6 +39,18 @@ transmettent. Ils ont besoin de manger chaque jour, d'herbe hors hiver ou d'une 
 trousse vétérinaire et pierre à sel. Le canard donne œufs et viande. La tonte et la traite sont approximées, faute
 d'événement dédié dans NeoForge.
 
+**Vignoble.** Un treillis, une bouture rouge ou blanche, et la vigne donne des grappes chaque année (2 à 4 par récolte).
+Le pressoir fait du jus, le tonneau du vin jeune et du vin blanc, l'étagère d'affinage du vin rouge : une étoile de plus
+tous les six jours. Le vin porte son millésime, l'année de sa vinification.
+
+**Riz.** Une rizière : un plant de riz sur une terre, dans une source d'eau d'un bloc de profondeur. Il pousse en été,
+donne 2 à 3 panicules, qu'on meule en riz. Bol de riz, risotto et galettes de riz.
+
+**Races.** Les vaches (Holstein, Highland, Charolais) et les poules (Marans, Leghorn, Sussex) ont une race tirée à leur
+arrivée selon le climat. Elle se transmet à moitié aux petits, jumeaux compris, et change la production, la viande, la
+ponte, la résistance aux maladies ou la faim d'hiver. La superposition de race à l'écran n'est pas encore vérifiée sur
+une vraie carte graphique.
+
 **Transformation.** Meule et pressoir (farines, jus, huile d'olive), baratte, cuve à fromage et étagère d'affinage
 (fromage de chèvre, fromage affiné), tonneau de fermentation (cidre, cornichons), séchoir, fumoir, marmite sur feu de camp
 (douze plats). Les produits ont une qualité de 1 à 3 étoiles.
@@ -51,8 +63,8 @@ qualité, de la saison et de la saturation du marché. Le tableau d'annonces pro
 un villageois de jour. La guilde a un marchand, des échanges débloqués par réputation, et des titres de spécialisation
 (maraîcher, arboriculteur, éleveur, fromager, apiculteur) pour qui vend beaucoup dans une filière.
 
-**Manuel du fermier.** Un livre en jeu avec onze chapitres, en français et en anglais : sol, cultures, santé, vergers,
-biodiversité, élevage, transformation, équipements, économie et commandes. Recette : un livre et des graines de blé.
+**Manuel du fermier.** Un livre en jeu avec douze chapitres, en français et en anglais : sol, cultures, santé, vergers,
+biodiversité, élevage, transformation, équipements, économie, commandes, vignes, riz et races. Recette : un livre et des graines de blé.
 
 ## Commandes
 
@@ -74,6 +86,8 @@ biodiversité, élevage, transformation, équipements, économie et commandes. R
 - [docs/DESIGN.md](docs/DESIGN.md) : règles de design
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) : modules, contrats, datagen, configuration
 - [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md) : conventions de contribution
+- [docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md) : checklist de QA avant la 1.0
+- [CHANGELOG.md](CHANGELOG.md) : historique des versions v0.1 à v0.9
 
 ## Pour les développeurs
 

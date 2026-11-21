@@ -3,6 +3,9 @@ package fr.terresvivantes.vineyard;
 import com.mojang.serialization.Codec;
 import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.core.TVModule;
+import fr.terresvivantes.core.quality.QualityModule;
+import fr.terresvivantes.core.quality.logic.QualityLogic;
+import fr.terresvivantes.vineyard.logic.VineyardLogic;
 import fr.terresvivantes.core.registry.TVCreativeTab;
 import fr.terresvivantes.datagen.LangSink;
 import fr.terresvivantes.processing.ProcessingApi;
@@ -62,7 +65,8 @@ import java.util.function.BiConsumer;
  * (pressoir, tonneau, étagère) et millésime. Les recettes sont des fichiers JSON {@code vineyard_*}.
  *
  * <p>Millésime : composant {@code terresvivantes:vintage} posé à la fin du craft d'un vin rouge ou blanc, par un
- * écouteur de sortie de {@link ProcessingApi} (hook minimal ajouté au framework pour ce besoin).
+ * écouteur de sortie de {@link ProcessingApi} (hook minimal ajouté au framework pour ce besoin). Le même écouteur
+ * applique l'affinage du vin rouge (une étoile par 6 jours MC).
  */
 public final class VineyardModule implements TVModule {
 
@@ -118,8 +122,13 @@ public final class VineyardModule implements TVModule {
             () -> new GrapevineCuttingItem(new Item.Properties(), GrapeVariety.WHITE));
     public static final DeferredItem<VineyardDrinkItem> GRAPE_JUICE = ITEMS.register("grape_juice",
             () -> new VineyardDrinkItem(new Item.Properties().food(JUICE_FOOD), Items.GLASS_BOTTLE));
+    /** Vin jeune : mis en bouteille à la fermentation (bouteille consommée, rendue en buvant), comme le vin blanc. */
     public static final DeferredItem<VineyardDrinkItem> YOUNG_WINE = ITEMS.register("young_wine",
-            () -> new VineyardDrinkItem(new Item.Properties().food(WINE_FOOD), null));
+            () -> new VineyardDrinkItem(new Item.Properties().food(WINE_FOOD), Items.GLASS_BOTTLE));
+    /**
+     * Vin rouge : sans bouteille. L'étagère d'affinage n'a pas d'emplacement de contenant (machine à {@code container=false}),
+     * une recette avec contenant ne s'y lancerait jamais. Le rouge ne rend donc pas de bouteille en buvant.
+     */
     public static final DeferredItem<VineyardDrinkItem> RED_WINE = ITEMS.register("red_wine",
             () -> new VineyardDrinkItem(new Item.Properties().food(WINE_FOOD), null));
     public static final DeferredItem<VineyardDrinkItem> WHITE_WINE = ITEMS.register("white_wine",
@@ -133,7 +142,7 @@ public final class VineyardModule implements TVModule {
 
         NeoForge.EVENT_BUS.addListener(VineyardModule::onTooltip);
         NeoForge.EVENT_BUS.addListener(VineyardModule::onWandererTrades);
-        ProcessingApi.registerOutputListener(VineyardModule::stampVintage);
+        ProcessingApi.registerOutputListener(VineyardModule::onCrafted);
 
         TVCreativeTab.add(TRELLIS_ITEM);
         TVCreativeTab.add(RED_CUTTING);
@@ -146,8 +155,17 @@ public final class VineyardModule implements TVModule {
         TVCreativeTab.add(WHITE_WINE);
     }
 
-    /** Millésime posé sur un vin rouge ou blanc à la fin de sa vinification : l'année courante. */
-    private static void stampVintage(ServerLevel level, BlockPos pos, ProcessingRecipe recipe, ItemStack made) {
+    /**
+     * Fin de craft d'un vin : le vin rouge gagne une étoile à l'affinage ({@link VineyardLogic#agedRedWine}); un vin
+     * rouge ou blanc reçoit le millésime, l'année courante.
+     */
+    private static void onCrafted(ServerLevel level, BlockPos pos, ProcessingRecipe recipe, ItemStack made) {
+        if (made.is(RED_WINE.get())) {
+            int base = QualityModule.qualityOf(made);
+            if (base != QualityLogic.ABSENT) {
+                QualityModule.setQuality(made, VineyardLogic.agedRedWine(base, recipe.time()));
+            }
+        }
         if (made.is(RED_WINE.get()) || made.is(WHITE_WINE.get())) {
             made.set(VINTAGE.get(), SeasonApi.getYear(level));
         }

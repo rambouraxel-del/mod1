@@ -9,6 +9,7 @@ import fr.terresvivantes.breeds.network.BreedNetwork;
 import fr.terresvivantes.core.TVModule;
 import fr.terresvivantes.datagen.LangSink;
 import fr.terresvivantes.livestock.LivestockApi;
+import fr.terresvivantes.vet.VetApi;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -53,7 +54,9 @@ public final class BreedsModule implements TVModule {
         BreedEvents.register(NeoForge.EVENT_BUS);
         BreedCommands.register(NeoForge.EVENT_BUS);
         LivestockApi.registerProductionModifier(BreedsApi::productionModifier);
-        LivestockApi.registerFeedSource(BreedEvents::winterFeed);
+        LivestockApi.registerNeedsListener(BreedEvents::winterCompensation);
+        LivestockApi.registerTwinListener(BreedEvents::onTwin);
+        VetApi.registerDiseaseChanceModifier(BreedsApi::diseaseChanceFactor);
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             BreedClient.register(modBus);

@@ -38,7 +38,7 @@ class GuideContentTest {
 
     /** Ordre et identifiants attendus, dans l'ordre des noms de fichiers. */
     private static final List<String> EXPECTED_IDS = List.of("welcome", "soil", "crops", "health", "orchards",
-            "biodiversity", "livestock", "processing", "equipment", "economy", "commands");
+            "biodiversity", "livestock", "processing", "equipment", "economy", "commands", "vines_rice_breeds");
 
     private static List<Path> chapterFiles(String lang) throws IOException {
         Path dir = CHAPTERS_ROOT.resolve(lang).resolve("chapters");

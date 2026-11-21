@@ -61,7 +61,7 @@ final class VetNeeds {
     /** Un tirage de maladie, puis (si pas malade) un tirage de parasites pour un broutard exposé. */
     private static LivestockState evaluateAilment(ServerLevel level, Animal animal, LivestockState state,
                                                   int crowd, int hardiness, boolean salt) {
-        double sick = VetLogic.sickChance(crowd, state.fed(), hardiness, salt);
+        double sick = VetLogic.sickChance(crowd, state.fed(), hardiness, salt) * VetApi.diseaseChanceFactor(animal);
         if (VetLogic.hits(sick, VetApi.roll())) {
             return state.withAilment(Ailment.SICK);
         }

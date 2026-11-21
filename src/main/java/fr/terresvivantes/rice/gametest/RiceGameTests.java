@@ -31,6 +31,9 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
 import java.util.Optional;
+import fr.terresvivantes.crop.CropGrowthHooks;
+import fr.terresvivantes.health.HealthApi;
+import fr.terresvivantes.health.logic.Disease;
 
 /** Tests de jeu de la rizière : plantation sur l'eau, croissance, récolte, casse, recette de meule. */
 @GameTestHolder(TerresVivantes.MODID)
@@ -192,4 +195,32 @@ public final class RiceGameTests {
     private static int count(List<ItemStack> stacks, Item item) {
         return stacks.stream().filter(stack -> stack.is(item)).mapToInt(ItemStack::getCount).sum();
     }
+
+    /**
+     * Branchements v0.9 : la plantation notifie les hooks de plantation, et une rizière malade (mildiou, via
+     * CropGrowthHooks.applyModifiers) ne croît qu'à ×0.3.
+     */
+    @GameTest(template = "crop_arena")
+    public static void plantNotifiesHooksAndDiseaseSlowsRice(GameTestHelper helper) {
+        buildPaddy(helper);
+        ServerLevel level = helper.getLevel();
+        BlockPos plant = helper.absolutePos(PLANT);
+        CropGrowthHooks.registerPlantListener((l, pos, state) -> {
+            if (pos.equals(plant)) {
+                RICE_PLANTED.set(true);
+            }
+        });
+        helper.assertTrue(RiceApi.plant(level, helper.absolutePos(SOIL)), "plantation refusée");
+        helper.assertTrue(RICE_PLANTED.get(), "le plant de riz doit notifier les PlantListener");
+
+        BlockState state = level.getBlockState(plant);
+        float healthy = CropGrowthHooks.applyModifiers(level, plant, state, null);
+        helper.assertTrue(Math.abs(healthy - 1.0f) < 1e-4f, "riz sain attendu à ×1, reçu " + healthy);
+        HealthApi.infect(level, plant, Disease.MILDEW);
+        float sick = CropGrowthHooks.applyModifiers(level, plant, state, null);
+        helper.assertTrue(Math.abs(sick - 0.3f) < 1e-4f, "riz malade attendu à ×0.3, reçu " + sick);
+        helper.succeed();
+    }
+
+    private static final java.util.concurrent.atomic.AtomicBoolean RICE_PLANTED = new java.util.concurrent.atomic.AtomicBoolean();
 }

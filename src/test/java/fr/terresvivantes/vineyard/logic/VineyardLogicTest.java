@@ -82,4 +82,12 @@ class VineyardLogicTest {
         assertTrue(VineyardLogic.yieldsCutting(2));
         assertTrue(VineyardLogic.yieldsCutting(3));
     }
+
+    @Test
+    void redWineGainsOneStarAfterSixDaysOfAgeing() {
+        // Recette d'affinage : 144000 ticks = 6 jours MC = une étoile; plafond à 3 étoiles.
+        assertEquals(3, VineyardLogic.agedRedWine(2, 144000));
+        assertEquals(2, VineyardLogic.agedRedWine(1, 144000));
+        assertEquals(3, VineyardLogic.agedRedWine(3, 144000));
+    }
 }

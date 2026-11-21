@@ -6,6 +6,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Animal;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -13,9 +16,34 @@ import java.util.function.DoubleSupplier;
  */
 public final class VetApi {
 
+    /**
+     * Multiplicateur de la chance de maladie par cycle d'un animal (v0.9). 1.0 neutre; ex. la race Sussex (poules)
+     * ×0.7. Appelé à chaque évaluation de maladie, côté serveur.
+     */
+    @FunctionalInterface
+    public interface DiseaseChanceModifier {
+        float modify(Animal animal);
+    }
+
+    private static final List<DiseaseChanceModifier> DISEASE_MODIFIERS = new CopyOnWriteArrayList<>();
+
     private static volatile DoubleSupplier random = Math::random;
 
     private VetApi() {
+    }
+
+    /** Enregistre un modificateur de chance de maladie (à l'initialisation du mod). */
+    public static void registerDiseaseChanceModifier(DiseaseChanceModifier modifier) {
+        DISEASE_MODIFIERS.add(Objects.requireNonNull(modifier));
+    }
+
+    /** Produit des modificateurs de maladie enregistrés pour cet animal (1.0 sans modificateur). */
+    public static float diseaseChanceFactor(Animal animal) {
+        float factor = 1.0f;
+        for (DiseaseChanceModifier modifier : DISEASE_MODIFIERS) {
+            factor *= Math.max(0f, modifier.modify(animal));
+        }
+        return factor;
     }
 
     /** Tirage aléatoire dans [0, 1[ utilisé par les maladies. */

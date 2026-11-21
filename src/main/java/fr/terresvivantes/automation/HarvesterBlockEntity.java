@@ -4,6 +4,7 @@ import fr.terresvivantes.automation.logic.CycleLogic;
 import fr.terresvivantes.automation.logic.WorkArea;
 import fr.terresvivantes.crop.CropApi;
 import fr.terresvivantes.orchard.OrchardApi;
+import fr.terresvivantes.vineyard.VineyardApi;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,7 +26,7 @@ import java.util.List;
  * Récolteuse. La zone est un volume de 5x5x3 devant la machine : la case de culture (niveau de la machine) et deux
  * couches au-dessus, pour les feuillages fruitiers. Chaque cycle parcourt au plus {@value #CELLS_PER_CYCLE} cases
  * (curseur incrémental), récolte les cultures mûres via {@link CropApi#harvestAndReplant} et les feuilles fruitières
- * mûres via {@link OrchardApi#harvestRipeLeaves}. Les récoltes vont dans l'inventaire interne, poussé vers le
+ * mûres via {@link OrchardApi#harvestRipeLeaves}, et les vignes mûres (stade 3) via {@link VineyardApi#harvest}. Les récoltes vont dans l'inventaire interne, poussé vers le
  * conteneur adjacent derrière ou dessous. Sans place libre, elle s'arrête.
  */
 public final class HarvesterBlockEntity extends AutomationBlockEntity {
@@ -88,10 +89,17 @@ public final class HarvesterBlockEntity extends AutomationBlockEntity {
         setChanged();
     }
 
-    /** Récolte une case : culture mûre (replantée) ou feuille fruitière mûre. Liste vide sinon. */
+    /**
+     * Récolte une case : culture mûre (replantée), vigne mûre (stade 3, via {@link VineyardApi#harvest}) ou feuille
+     * fruitière mûre. Liste vide sinon.
+     */
     private static List<ItemStack> harvestCell(ServerLevel level, BlockPos cell) {
-        if (CropApi.isMatureCrop(level.getBlockState(cell))) {
+        BlockState state = level.getBlockState(cell);
+        if (CropApi.isMatureCrop(state)) {
             return CropApi.harvestAndReplant(level, cell, null);
+        }
+        if (VineyardApi.isRipe(state)) {
+            return VineyardApi.harvest(level, cell);
         }
         return OrchardApi.harvestRipeLeaves(level, cell);
     }

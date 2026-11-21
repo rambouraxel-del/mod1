@@ -16,11 +16,12 @@ le 2026-11-21. Aucune erreur de parsing de recette ni de tag dans les logs.
 | v0.6 | Équipements et automatisation : implement, automation, storage, pests | 0.6.0 | `6e5905c` | 309 | 93 |
 | v0.7 | Économie : economy, market, guild, bonus de qualité | 0.7.0 | `01f68d4` (code), commit de docs ensuite | 345 | 104 |
 | v0.8 | Polish : sprites, équilibrage, manuel du fermier, serveur dédié et performances | 0.8.0 | commit d'intégration v0.8 (`git log`, message `feat(v0.8)`) | 355 | 106 |
+| v0.9 | Vignoble, riz et races : vigne sur treillis, vinification, rizière, races des vaches et poules | 0.9.0 | commit d'intégration v0.9 (`git log`, message `feat(v0.9)`) | 384 | 127 |
 
 v0.7 : `./gradlew build` OK (345 tests JUnit, dont `GeneratedResourcesTest` et les tests du mapping de filière),
 `./gradlew runData` OK, `./gradlew runGameTestServer` 104/104 à trois passages consécutifs.
 
-## Liste des modules (33, `TerresVivantes.MODULES`)
+## Liste des modules (36, `TerresVivantes.MODULES`)
 
 | Module | Version | Rôle |
 |---|---|---|
@@ -56,9 +57,51 @@ v0.7 : `./gradlew build` OK (345 tests JUnit, dont `GeneratedResourcesTest` et l
 | `economy` | v0.7 | Monnaie 9:1, modèle de prix, réputation, `/tv price`, `/tv reputation` |
 | `market` | v0.7 | Tableau d'annonces, contrats, étal, grand livre |
 | `guild` | v0.7 | Bureau de la guilde, marchand, échanges par niveau, titres, `/tv titles` |
-| `guide` | v0.8 | Manuel du fermier : item, écran du livre, chapitres fr et en, remise à la première connexion |
+| `guide` | v0.8 | Manuel du fermier : item, écran du livre, chapitres fr et en (12 chapitres en v0.9), remise à la première connexion |
+| `vineyard` | v0.9 | Treillis, vigne pérenne (4 stades), raisins, vinification (jus, vin jeune, vin rouge affiné, vin blanc), millésime |
+| `rice` | v0.9 | Rizière : plant waterlogged, récolte en panicules, meule, bol de riz, risotto, galette |
+| `breeds` | v0.9 | Races des vaches (Holstein, Highland, Charolais) et des poules (Marans, Leghorn, Sussex) : attribution, hérédité, effets, rendu |
 
 Racine de commandes unique : `core.command.TVCommands` (`season`, `showcase`, `price`, `reputation`, `titles`).
+
+## v0.9 « Vignoble, riz et races » : livrée et vérifiée (`mod_version=0.9.0`)
+
+Vérifications sur le commit d'intégration (`feat(v0.9)`, voir `git log`) :
+
+- `./gradlew cleanTest build` : OK, **384 tests JUnit**, 0 échec, dont `GeneratedResourcesTest`, `ServerClassIsolationTest`,
+  `BalanceSimulationTest` (section f : vignoble et riz), `GuideContentTest` (chapitre 12) et `VineyardLogicTest`.
+- `./gradlew runData` : OK, `src/generated` régénéré (tag `compostable` contient raisins, boutures, riz, panicules, plants).
+- `./gradlew runGameTestServer` : **127 GameTests** réussis, trois passages de suite (127/127 à chaque fois), aucune erreur
+  « Parsing error » / « Couldn't parse ».
+- `./gradlew runServer` : « Done (0.396s) », puis arrêt par SIGTERM : « Stopping server », sauvegarde des mondes; Gradle
+  rapporte le code 143, attendu.
+- Contenu : voir `docs/DESIGN.md` §22 et `docs/ARCHITECTURE.md` « Contrats v0.9 ». Équilibrage : `docs/BALANCE.md`, section (f).
+
+Contenu de la v0.9 :
+
+- **Vignoble** (`vineyard`) : treillis, boutures rouge et blanche (marchand ambulant), vigne à 4 stades, croissance par saison,
+  récolte à la main et par la récolteuse (`VineyardApi.harvest`), taille d'hiver, pressoir (jus), tonneau (vin jeune, vin blanc),
+  étagère d'affinage (vin rouge, +1 étoile par 6 jours), millésime. Raisins à ★2 de départ.
+- **Riz** (`rice`) : plant waterlogged dans une source d'eau de 1 bloc au-dessus d'une terre; survie par l'eau voisine;
+  7 stades; 2 à 3 panicules; meule, bol de riz, risotto, galette de riz.
+- **Races** (`breeds`) : attribution pondérée par le climat, hérédité 50/50 (jumeaux compris), production (Holstein ×1,2,
+  Charolais ×0,9 et viande, Leghorn ×1,25), Marans (œuf supplémentaire à 10 %), Highland (compensation de faim en hiver,
+  écouteur de besoins), Sussex (maladie ×0,7), synchronisation vers les clients, superposition de rendu.
+- **Intégrations** : `CropGrowthHooks` rendu public (`applyModifiers`, `notifyGrowthAttempt`, `notifyPlanted`, `scaleYield`);
+  `VetApi.registerDiseaseChanceModifier`; `LivestockApi.registerTwinListener`; compost (tag); vitrine section v0.9.
+- **Manuel du fermier** : chapitre 12 « Vignes, riz et races » (fr et en, 5 pages).
+
+Problèmes connus (v0.9) :
+
+- **Cible « parmi les meilleurs »** : définie comme « au-dessus de la médiane des blocs ». Le vin rouge ★3 est 6e sur 14
+  (2,14 pièces/jour et par cep, médiane 1,84); il n'est pas dans les trois premiers. La fraise (3,20) et le soja (2,78) sont devant.
+- **Hypothèses non vérifiées en jeu** : qualité ★2 des raisins (`GRAPE_QUALITY`) et gain d'affinage du vin rouge (nouveau
+  mécanisme, pas de GameTest de vieillissement sur 6 jours MC).
+- **Vignes et riz en jeu** : la vitrine est construite et vérifiée par GameTest; le cycle annuel de la vigne n'est pas testé de bout en bout.
+- **Sécheresse et culture immergée** : la règle (pas de sécheresse sous l'eau) est en code, sans GameTest dédié.
+- **Rendu client non vérifié** : vigne (stades et cépages), treillis, riz (stades 0 à 3), races (superposition `BreedLayer`).
+  Procédure : `docs/QA_CHECKLIST.md`.
+- **Machines invisibles en client** (signalé depuis v0.5) : toujours non confirmé, voir v0.6.
 
 ## v0.8 « Polish » : livrée et vérifiée (`mod_version=0.8.0`)
 

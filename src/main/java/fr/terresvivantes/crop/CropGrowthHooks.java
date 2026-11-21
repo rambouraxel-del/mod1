@@ -76,6 +76,15 @@ public final class CropGrowthHooks {
         PLANT_LISTENERS.add(Objects.requireNonNull(listener));
     }
 
+    /**
+     * Facteur multiplicatif de tous les {@link GrowthModifier} enregistrés pour une culture (1.0 sans modifier).
+     * Public pour les cultures hors de ce module (ex. le riz, rizière), qui gardent leur propre formule de base et
+     * appliquent ensuite ce produit. {@code def} est {@code null} pour une culture vanilla ou sans définition.
+     */
+    public static float applyModifiers(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def) {
+        return growthModifierProduct(level, pos, state, def);
+    }
+
     /** Produit de tous les modifiers de croissance (1.0 s'il n'y en a aucun). */
     static float growthModifierProduct(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def) {
         float[] values = new float[GROWTH_MODIFIERS.size()];
@@ -86,8 +95,8 @@ public final class CropGrowthHooks {
         return GrowthModel.combineModifiers(values);
     }
 
-    /** Produit de tous les modifiers de rendement (1.0 s'il n'y en a aucun). */
-    static float yieldModifierProduct(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def) {
+    /** Produit de tous les modifiers de rendement (1.0 s'il n'y en a aucun). Public : voir {@link #scaleYield}. */
+    public static float yieldModifierProduct(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def) {
         float[] values = new float[YIELD_MODIFIERS.size()];
         int i = 0;
         for (YieldModifier modifier : YIELD_MODIFIERS) {
@@ -96,20 +105,25 @@ public final class CropGrowthHooks {
         return GrowthModel.combineModifiers(values);
     }
 
-    /** Applique le rendement à un nombre de produits, avec arrondi probabiliste. */
-    static int scaleYield(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def, int count) {
+    /**
+     * Applique le rendement à un nombre de produits, avec arrondi probabiliste. Public pour les récoltes hors
+     * {@code TVCropBlock} (riz, vanilla via {@link CropApi#harvestAndReplant}).
+     */
+    public static int scaleYield(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def, int count) {
         float factor = yieldModifierProduct(level, pos, state, def);
         return YieldModel.scaledCount(count, factor, level.getRandom().nextDouble());
     }
 
-    static void notifyGrowthAttempt(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def,
+    /** Notifie les {@link GrowthListener} d'une tentative de croissance. Appelé par chaque type de culture. */
+    public static void notifyGrowthAttempt(ServerLevel level, BlockPos pos, BlockState state, CropDefinition def,
                                     GrowthDecision decision, float factor) {
         for (GrowthListener listener : GROWTH_LISTENERS) {
             listener.onGrowthAttempt(level, pos, state, def, decision, factor);
         }
     }
 
-    static void notifyPlanted(ServerLevel level, BlockPos pos, BlockState state) {
+    /** Notifie les {@link PlantListener} d'une plantation. Appelé à chaque plantation (culture du mod, vanilla, riz). */
+    public static void notifyPlanted(ServerLevel level, BlockPos pos, BlockState state) {
         for (PlantListener listener : PLANT_LISTENERS) {
             listener.onPlanted(level, pos, state);
         }

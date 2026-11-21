@@ -25,6 +25,11 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import fr.terresvivantes.vineyard.GrapevineBlock;
+import fr.terresvivantes.vineyard.GrapeVariety;
+import fr.terresvivantes.vineyard.VineyardModule;
+import fr.terresvivantes.vineyard.logic.VineyardLogic;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Tests de jeu des machines automatiques. Zone 5x5 devant la machine (x 3..7, z 3..7, Y = 2), terre en Y = 1,
@@ -173,6 +178,29 @@ public final class AutomationGameTests {
         }
         Container chest = (Container) helper.getBlockEntity(CHEST);
         helper.assertTrue(countItem(chest, Items.WHEAT) == 0, "aucune récolte attendue pendant la pause");
+        helper.succeed();
+    }
+
+    /** Vigne mûre (stade 3) dans le champ : la récolteuse la récolte, la vigne revient au stade 2 et les grappes vont au coffre. */
+    @GameTest(template = TEMPLATE, batch = BATCH)
+    public static void harvesterPicksRipeGrapevineInTheField(GameTestHelper helper) {
+        helper.setBlock(MACHINE, AutomationModule.HARVESTER.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+        helper.setBlock(CHEST, Blocks.CHEST.defaultBlockState());
+        field(helper);
+        BlockPos vine = new BlockPos(5, 2, 5);
+        helper.setBlock(vine, VineyardModule.GRAPEVINE.get().defaultBlockState()
+                .setValue(GrapevineBlock.VARIETY, GrapeVariety.RED)
+                .setValue(GrapevineBlock.STAGE, VineyardLogic.RIPE_STAGE));
+        HarvesterBlockEntity harvester = helper.getBlockEntity(MACHINE);
+        tickMachine(harvester, helper.getLevel(), HARVEST_CYCLES * AutomationConfig.intervalTicks());
+
+        BlockState after = helper.getBlockState(vine);
+        helper.assertTrue(after.getValue(GrapevineBlock.STAGE) == VineyardLogic.MATURE_STAGE,
+                "vigne attendue au stade 2 après récolte, obtenu " + after);
+        Container chest = (Container) helper.getBlockEntity(CHEST);
+        int grapes = countItem(chest, VineyardModule.RED_GRAPES.get());
+        helper.assertTrue(grapes >= 2, "au moins 2 raisins rouges dans le coffre, obtenu " + grapes);
         helper.succeed();
     }
 }

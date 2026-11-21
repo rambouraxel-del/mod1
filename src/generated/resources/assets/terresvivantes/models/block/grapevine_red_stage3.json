@@ -1,0 +1,178 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#t"
+        },
+        "east": {
+          "texture": "#t"
+        },
+        "north": {
+          "texture": "#t"
+        },
+        "south": {
+          "texture": "#t"
+        },
+        "up": {
+          "texture": "#t"
+        },
+        "west": {
+          "texture": "#t"
+        }
+      },
+      "from": [
+        0,
+        0,
+        7
+      ],
+      "to": [
+        2,
+        16,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#t"
+        },
+        "east": {
+          "texture": "#t"
+        },
+        "north": {
+          "texture": "#t"
+        },
+        "south": {
+          "texture": "#t"
+        },
+        "up": {
+          "texture": "#t"
+        },
+        "west": {
+          "texture": "#t"
+        }
+      },
+      "from": [
+        14,
+        0,
+        7
+      ],
+      "to": [
+        16,
+        16,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#t"
+        },
+        "east": {
+          "texture": "#t"
+        },
+        "north": {
+          "texture": "#t"
+        },
+        "south": {
+          "texture": "#t"
+        },
+        "up": {
+          "texture": "#t"
+        },
+        "west": {
+          "texture": "#t"
+        }
+      },
+      "from": [
+        0,
+        4,
+        7
+      ],
+      "to": [
+        16,
+        6,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#t"
+        },
+        "east": {
+          "texture": "#t"
+        },
+        "north": {
+          "texture": "#t"
+        },
+        "south": {
+          "texture": "#t"
+        },
+        "up": {
+          "texture": "#t"
+        },
+        "west": {
+          "texture": "#t"
+        }
+      },
+      "from": [
+        0,
+        10,
+        7
+      ],
+      "to": [
+        16,
+        12,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "north": {
+          "texture": "#v"
+        },
+        "south": {
+          "texture": "#v"
+        }
+      },
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        16,
+        16,
+        8
+      ]
+    },
+    {
+      "faces": {
+        "east": {
+          "texture": "#v"
+        },
+        "west": {
+          "texture": "#v"
+        }
+      },
+      "from": [
+        8,
+        0,
+        0
+      ],
+      "to": [
+        8,
+        16,
+        16
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "terresvivantes:block/trellis",
+    "t": "terresvivantes:block/trellis",
+    "v": "terresvivantes:block/red_grapevine_stage3"
+  }
+}

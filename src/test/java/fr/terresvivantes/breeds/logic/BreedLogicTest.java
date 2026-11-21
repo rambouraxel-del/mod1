@@ -104,4 +104,12 @@ class BreedLogicTest {
         }
         return count;
     }
+
+    @Test
+    void sussexResistsDiseaseOthersDoNot() {
+        assertEquals(0.7f, BreedLogic.diseaseChanceFactor(Breed.SUSSEX), 1e-6f);
+        assertEquals(1.0f, BreedLogic.diseaseChanceFactor(Breed.LEGHORN), 1e-6f);
+        assertEquals(1.0f, BreedLogic.diseaseChanceFactor(Breed.HOLSTEIN), 1e-6f);
+        assertEquals(1.0f, BreedLogic.diseaseChanceFactor(null), 1e-6f);
+    }
 }

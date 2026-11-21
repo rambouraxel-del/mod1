@@ -29,6 +29,20 @@ public final class VineyardLogic {
     private static final float CLIMATE_FLOOR = 0.2f;
 
     /** Grappes par récolte : de 2 à 4 inclus. */
+    /** Qualité de départ des raisins d'une vigne mûre sur treillis (étoiles, comme le lait de vache). */
+    public static final int GRAPE_QUALITY = 2;
+    /** Ticks par jour MC : sert à convertir la durée de la recette d'affinage en jours. */
+    public static final int TICKS_PER_DAY = 24000;
+
+    /**
+     * Qualité du vin rouge à la fin de l'affinage : la base (la plus basse des entrées) gagne une étoile tous les
+     * {@link fr.terresvivantes.core.quality.logic.QualityLogic#DAYS_PER_STAR} jours MC de la recette
+     * (144000 ticks = 6 jours : une étoile). Ex. base ★2 : ★3 à la sortie de l'étagère.
+     */
+    public static int agedRedWine(int baseQuality, int recipeTicks) {
+        return fr.terresvivantes.core.quality.logic.QualityLogic.ageQuality(baseQuality, recipeTicks / TICKS_PER_DAY);
+    }
+
     public static final int MIN_BUNCHES = 2;
     public static final int MAX_BUNCHES = 4;
 

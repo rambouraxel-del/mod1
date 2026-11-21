@@ -32,6 +32,15 @@ import fr.terresvivantes.husbandry.FeedingTroughBlockEntity;
 import fr.terresvivantes.husbandry.HusbandryModule;
 import fr.terresvivantes.husbandry.logic.FeedType;
 import fr.terresvivantes.vet.VetModule;
+import fr.terresvivantes.breeds.BreedsApi;
+import fr.terresvivantes.breeds.logic.Breed;
+import fr.terresvivantes.rice.RiceCropBlock;
+import fr.terresvivantes.rice.RiceModule;
+import fr.terresvivantes.rice.logic.RiceLogic;
+import fr.terresvivantes.vineyard.GrapeVariety;
+import fr.terresvivantes.vineyard.GrapevineBlock;
+import fr.terresvivantes.vineyard.VineyardModule;
+import fr.terresvivantes.vineyard.logic.VineyardLogic;
 import fr.terresvivantes.flora.FloraModule;
 import fr.terresvivantes.flora.HawthornHedgeBlock;
 import fr.terresvivantes.health.HealthModule;
@@ -59,6 +68,8 @@ import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Tests de la plateforme {@code /tv showcase} : la construction pose les blocs attendus. */
 @GameTestHolder(TerresVivantes.MODID)
@@ -86,6 +97,9 @@ public final class ShowcaseGameTests {
         ShowcaseBuilder.clear(level, origin);
         helper.succeed();
     }
+
+    private static final int BREED_PEN_MIN_X = ShowcaseBuilder.BREED_PEN_MIN_X;
+    private static final int BREED_PEN_MIN_Z = ShowcaseBuilder.BREED_PEN_MIN_Z;
 
     private static void verifyShowcase(GameTestHelper helper, ServerLevel level, BlockPos origin, List<Mob> fauna) {
         // Colonne de la première culture du mod : terre humide, âges 0 et 7 aux extrémités.
@@ -171,15 +185,48 @@ public final class ShowcaseGameTests {
                 "clôture d'enclos attendue sur le pourtour, intérieur libre");
 
         // Animaux de l'enclos : une vache, un mouton, une poule, deux canards (un mâle, une femelle), persistants.
-        helper.assertTrue(count(fauna, Cow.class) == 1 && count(fauna, Sheep.class) == 1
-                        && count(fauna, Chicken.class) == 1,
-                "une vache, un mouton et une poule attendus dans l'enclos");
+        // Une vache, un mouton et une poule de l'enclos v0.4, plus trois vaches et trois poules des races (v0.9).
+        helper.assertTrue(count(fauna, Cow.class) == 4 && count(fauna, Sheep.class) == 1
+                        && count(fauna, Chicken.class) == 4,
+                "quatre vaches, un mouton et quatre poules attendus (enclos v0.4 et enclos des races v0.9)");
         helper.assertTrue(count(fauna, Duck.class) == 2
                         && fauna.stream().filter(Duck.class::isInstance).map(Duck.class::cast)
                         .filter(Duck::isMale).count() == 1,
                 "deux canards attendus dans l'enclos, dont un mâle");
         helper.assertTrue(fauna.stream().allMatch(Mob::isPersistenceRequired),
                 "les animaux et insectes de la vitrine doivent être persistants");
+
+        // Section v0.9 : deux vignes mûres sur treillis, rizière 3x3 mûre au centre d'une terre 5x5.
+        helper.assertTrue(level.getBlockState(at(origin, ShowcaseBuilder.X_VINE_RED, 1, ShowcaseBuilder.ROW_V09))
+                        .is(VineyardModule.GRAPEVINE.get())
+                        && level.getBlockState(at(origin, ShowcaseBuilder.X_VINE_RED, 1, ShowcaseBuilder.ROW_V09))
+                        .getValue(GrapevineBlock.STAGE) == VineyardLogic.RIPE_STAGE
+                        && level.getBlockState(at(origin, ShowcaseBuilder.X_VINE_RED, 1, ShowcaseBuilder.ROW_V09))
+                        .getValue(GrapevineBlock.VARIETY) == GrapeVariety.RED,
+                "vigne rouge mûre attendue sur la rangée z 42, x 1");
+        helper.assertTrue(level.getBlockState(at(origin, ShowcaseBuilder.X_VINE_WHITE, 1, ShowcaseBuilder.ROW_V09))
+                        .is(VineyardModule.GRAPEVINE.get())
+                        && level.getBlockState(at(origin, ShowcaseBuilder.X_VINE_WHITE, 1, ShowcaseBuilder.ROW_V09))
+                        .getValue(GrapevineBlock.VARIETY) == GrapeVariety.WHITE,
+                "vigne blanche attendue sur la rangée z 42, x 3");
+        BlockState paddyCentre = level.getBlockState(at(origin, ShowcaseBuilder.X_PADDY + 2, 1, ShowcaseBuilder.ROW_V09 + 2));
+        helper.assertTrue(paddyCentre.is(RiceModule.RICE_CROP.get()) && paddyCentre.getValue(CropBlock.AGE) == RiceLogic.MAX_AGE
+                        && paddyCentre.getValue(RiceCropBlock.WATERLOGGED),
+                "riz mûr dans l'eau attendu au centre de la rizière, obtenu " + paddyCentre);
+        helper.assertTrue(level.getBlockState(at(origin, ShowcaseBuilder.X_PADDY, 1, ShowcaseBuilder.ROW_V09))
+                        .isAir(),
+                "le bord de la rizière doit rester libre (riz 3x3 seulement)");
+        helper.assertTrue(level.getBlockState(at(origin, BREED_PEN_MIN_X, 1, BREED_PEN_MIN_Z)).is(Blocks.OAK_FENCE)
+                        && level.getBlockState(at(origin, BREED_PEN_MIN_X + 2, 1, BREED_PEN_MIN_Z + 2)).isAir(),
+                "clôture de l'enclos des races attendue sur le pourtour, intérieur libre");
+        Set<Breed> cowBreeds = fauna.stream().filter(Cow.class::isInstance).map(BreedsApi::getBreed)
+                .collect(Collectors.toSet());
+        Set<Breed> henBreeds = fauna.stream().filter(Chicken.class::isInstance).map(BreedsApi::getBreed)
+                .collect(Collectors.toSet());
+        helper.assertTrue(cowBreeds.containsAll(List.of(Breed.HOLSTEIN, Breed.HIGHLAND, Breed.CHAROLAIS)),
+                "les trois races de vache attendues dans la vitrine, reçu " + cowBreeds);
+        helper.assertTrue(henBreeds.containsAll(List.of(Breed.MARANS, Breed.LEGHORN, Breed.SUSSEX)),
+                "les trois races de poule attendues dans la vitrine, reçu " + henBreeds);
 
         // Rangée de transformation : une machine de chaque sorte, marmite sur feu de camp allumé.
         helper.assertTrue(level.getBlockState(at(origin, 0, 1, 17)).is(MillingModule.MILLSTONE.get())

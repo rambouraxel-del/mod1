@@ -83,4 +83,9 @@ public final class BreedsApi {
     static float productionModifier(Animal animal) {
         return BreedLogic.productionMultiplier(getBreed(animal));
     }
+
+    /** Multiplicateur de la chance de maladie de la race de l'animal (Sussex ×0.7; 1.0 sans race). */
+    static float diseaseChanceFactor(Animal animal) {
+        return BreedLogic.diseaseChanceFactor(getBreed(animal));
+    }
 }

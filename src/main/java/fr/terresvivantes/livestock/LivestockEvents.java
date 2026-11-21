@@ -102,6 +102,9 @@ final class LivestockEvents {
                 twin.setBaby(true);
                 twin.setPos(parentA.getX(), parentA.getY(), parentA.getZ());
                 twin.setData(LivestockModule.GENOME.get(), GenomeLogic.inherit(genomeA, genomeB, random::nextDouble));
+                if (twin instanceof Animal twinAnimal) {
+                    LivestockApi.notifyTwin(twinAnimal, parentA, parentB);
+                }
                 level.addFreshEntity(twin);
             }
         }

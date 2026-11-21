@@ -1,6 +1,7 @@
 package fr.terresvivantes.rice;
 
 import fr.terresvivantes.climate.ClimateApi;
+import fr.terresvivantes.crop.CropGrowthHooks;
 import fr.terresvivantes.crop.logic.GrowthDecision;
 import fr.terresvivantes.crop.logic.GrowthModel;
 import fr.terresvivantes.rice.logic.RiceLogic;
@@ -145,11 +146,18 @@ public final class RiceCropBlock extends CropBlock implements SimpleWaterloggedB
         if (random.nextDouble() >= RiceLogic.attemptChance()) {
             return;
         }
-        float factor = RiceLogic.growthFactor(
+        float base = RiceLogic.growthFactor(
                 SeasonApi.seasonGrowthMultiplier(level, pos),
                 SeasonApi.getSeason(level),
                 ClimateApi.temperatureAt(level, pos));
+        // Branchements v0.9 : modifiers de CropGrowthHooks (maladie, arrosage) puis listeners (stress, pucerons,
+        // sécheresse, qui ignore une culture immergée). Le riz n'a pas de définition : def = null.
+        float factor = base * CropGrowthHooks.applyModifiers(level, pos, state, null);
         GrowthDecision decision = GrowthModel.decide(factor, random.nextDouble(), random.nextDouble());
+        CropGrowthHooks.notifyGrowthAttempt(level, pos, state, null, decision, factor);
+        if (!level.getBlockState(pos).is(this)) {
+            return; // un listener a remplacé la culture (flétrissement)
+        }
         if (decision == GrowthDecision.DENY) {
             return;
         }
