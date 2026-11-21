@@ -1,0 +1,30 @@
+{
+  "id": "biodiversity",
+  "title": "Biodiversity and Bees",
+  "pages": [
+    {
+      "title": "Pollination",
+      "text": "A score from 0 to 1 measures the pollinators around a crop: bees, hives, varied flowers, apiaries. Cucumber, strawberry, eggplant and bell pepper need them: without pollinators, their yield drops to 60 %.",
+      "icon": "terresvivantes:honey_extractor"
+    },
+    {
+      "title": "Biodiversity index",
+      "text": "Flowers, fruit foliage, bees and hedges raise the index, from 0 to 1. The higher it is, the less disease takes hold. A field surrounded by flowers defends itself better."
+    },
+    {
+      "title": "Flowers and hedge",
+      "text": "Clover, lavender, chamomile and borage grow in pots or wild. Dyes: clover gives white, lavender purple, chamomile yellow, borage light blue. Hawthorn forms a habitat hedge: 6 leaves and a stick.",
+      "icon": "terresvivantes:hawthorn_hedge"
+    },
+    {
+      "title": "Insects",
+      "text": "A butterfly net is made with string. Butterflies, ladybugs and fireflies (at night) inhabit hedges and flowers. Butterfly and ladybug jars keep them.",
+      "icon": "terresvivantes:butterfly_net"
+    },
+    {
+      "title": "Beekeeping",
+      "text": "The apiary holds 4 frames and a population of 0 to 100 bees. Empty frames are made from 8 sticks and string. A honey extractor (iron and bucket) and a bee smoker (iron, leather, flint) complete the kit. Honey takes the name of the dominant flower.",
+      "icon": "terresvivantes:apiary"
+    }
+  ]
+}

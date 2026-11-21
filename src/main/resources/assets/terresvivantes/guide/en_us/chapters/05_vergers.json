@@ -1,0 +1,21 @@
+{
+  "id": "orchards",
+  "title": "Orchards",
+  "pages": [
+    {
+      "title": "Six species",
+      "text": "Apple, cherry, orange, olive, walnut and peach. A sapling grows into a tree, then its foliage passes through four stages at random, depending on season and temperature. Wild trees grow in suitable biomes.",
+      "icon": "terresvivantes:cherry"
+    },
+    {
+      "title": "Blossom and fruit",
+      "text": "Reaching stage 2 sets the fruit. Pollination raises fruit set and yield, from x0.6 to x1.3. Some fruit falls to the ground. Fruit can be eaten or composted.",
+      "icon": "terresvivantes:peach"
+    },
+    {
+      "title": "Recipes and the trader",
+      "text": "Cherry pie, orange juice, fruit salad, walnut bread, peach jam. The wandering trader sells one sapling of each species.",
+      "icon": "terresvivantes:cherry_pie"
+    }
+  ]
+}

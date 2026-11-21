@@ -1,0 +1,36 @@
+{
+  "id": "economy",
+  "title": "Economy",
+  "pages": [
+    {
+      "title": "Coins",
+      "text": "Copper, silver and gold. One coin gives 9 of the coin below it, and 9 coins make the coin above. These conversions are shapeless crafting recipes in the crafting grid.",
+      "icon": "terresvivantes:silver_coin"
+    },
+    {
+      "title": "Price",
+      "text": "Price per unit: base x quality x season x saturation. Outside the optimal season x1.3, in peak season x0.85. Each sale adds a saturation point (-2 % of the price, never below 40 %). These points lose 10 % per day. Command: /tv price.",
+      "icon": "terresvivantes:copper_coin"
+    },
+    {
+      "title": "Reputation",
+      "text": "Five tiers: Unknown (0), Regular (50), Supplier (200), Reputed producer (500), Master farmer (1200). A trade with the guild merchant gives 1 point. A delivered contract gives 5 to 25; an accepted contract that expires costs 10.",
+      "icon": "terresvivantes:gold_coin"
+    },
+    {
+      "title": "Contract board",
+      "text": "The board offers 3 contracts, renewed at dawn. Each asks for a product (often in season), a quantity and a minimum quality, and is due within 2 to 5 days. Deliver the item in hand, or the whole stock of the requested type.",
+      "icon": "terresvivantes:market_board"
+    },
+    {
+      "title": "Stall and ledger",
+      "text": "The stall has 9 sale slots and a till. By day, a villager within 16 blocks buys one unit and pays 90 % of the price into the till. The ledger lists the ten highest prices.",
+      "icon": "terresvivantes:market_stall"
+    },
+    {
+      "title": "Guild and titles",
+      "text": "The guild desk's merchant offers trades from level 1 to 5, unlocked by reputation tier. Level 5 requires the guild seal. 256 units sold in one line grant a title: gardener, orchardist, herder, cheesemaker, beekeeper. Command: /tv titles.",
+      "icon": "terresvivantes:guild_desk"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "economy",
+  "title": "Économie",
+  "pages": [
+    {
+      "title": "Les pièces",
+      "text": "Cuivre, argent et or. Une pièce donne 9 de la pièce inférieure, et 9 pièces donnent la pièce supérieure. Ces conversions se font en recette sans forme, dans la grille de l'établi.",
+      "icon": "terresvivantes:silver_coin"
+    },
+    {
+      "title": "Le prix",
+      "text": "Prix par unité : base x qualité x saison x saturation. Hors saison optimale x1,3, en pleine saison x0,85. Chaque vente ajoute un point de saturation (-2 % du prix, sans descendre sous 40 %). Ces points perdent 10 % par jour. Commande : /tv price.",
+      "icon": "terresvivantes:copper_coin"
+    },
+    {
+      "title": "Réputation",
+      "text": "Cinq paliers : Inconnu (0), Habitué (50), Fournisseur (200), Producteur réputé (500), Maître fermier (1200). Un échange avec le marchand de la guilde rapporte 1 point. Un contrat livré en rapporte de 5 à 25; un contrat accepté puis expiré en fait perdre 10.",
+      "icon": "terresvivantes:gold_coin"
+    },
+    {
+      "title": "Tableau d'annonces",
+      "text": "Le tableau propose 3 contrats, renouvelés à l'aube. Chacun demande un produit (souvent de saison), une quantité, une qualité minimale, et se livre sous 2 à 5 jours. Livrez l'objet en main, ou tout le stock du type demandé.",
+      "icon": "terresvivantes:market_board"
+    },
+    {
+      "title": "Étal et grand livre",
+      "text": "L'étal garde 9 cases de vente et une caisse. De jour, un villageois proche (16 blocs au plus) achète une unité, et paie 90 % du prix dans la caisse. Le grand livre liste les dix prix les plus élevés.",
+      "icon": "terresvivantes:market_stall"
+    },
+    {
+      "title": "Guilde et titres",
+      "text": "Le marchand du bureau de la guilde propose des échanges de niveau 1 à 5, débloqués par palier de réputation. Le niveau 5 demande le sceau de la guilde. 256 unités vendues dans une filière donnent un titre : maraîcher, arboriculteur, éleveur, fromager, apiculteur. /tv titles.",
+      "icon": "terresvivantes:guild_desk"
+    }
+  ]
+}

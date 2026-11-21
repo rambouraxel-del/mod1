@@ -1,0 +1,30 @@
+{
+  "id": "processing",
+  "title": "Processing",
+  "pages": [
+    {
+      "title": "How machines work",
+      "text": "A machine has its inputs on top, its container on the sides (bowl, bottle, bucket) and its output at the bottom. A recipe starts when the inputs match. Right-click the machine to open it."
+    },
+    {
+      "title": "Quality in stars",
+      "text": "Products have a quality of 1 to 3 stars. A recipe passes it on: the lowest of its inputs, their average, or it ages (aged cheese). A quality product sells for more: x1.25 at two stars, x1.5 at three.",
+      "icon": "terresvivantes:cooking_pot"
+    },
+    {
+      "title": "Mill and dairy",
+      "text": "Millstone: wheat, barley and corn become flour. Fruit press: apples, peaches and oranges give juice; olives and a bottle give oil. Churn: milk gives butter and cream. Cheese vat: milk gives curd. Aging shelf: curd becomes young cheese, then aged cheese.",
+      "icon": "terresvivantes:millstone"
+    },
+    {
+      "title": "Preserving",
+      "text": "The fermentation barrel (several days) makes cider from juice, and pickles from cucumbers and vinegar. The drying rack dries fruit and meat. The smokehouse smokes fish and meat, fuelled by logs, coal or charcoal.",
+      "icon": "terresvivantes:fermentation_barrel"
+    },
+    {
+      "title": "The cooking pot",
+      "text": "The cooking pot has four inputs and a bowl. It cooks on a heat source, such as a lit campfire. It prepares twelve dishes, from cheese omelette to onion soup and pancakes.",
+      "icon": "terresvivantes:cooking_pot"
+    }
+  ]
+}

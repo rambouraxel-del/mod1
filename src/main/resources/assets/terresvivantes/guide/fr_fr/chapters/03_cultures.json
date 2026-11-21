@@ -1,0 +1,34 @@
+{
+  "id": "crops",
+  "title": "Cultures",
+  "pages": [
+    {
+      "title": "Planter et récolter",
+      "text": "Plantez une graine sur une terre labourée. À maturité, la récolte donne le produit et 1 à 2 graines. Clic droit à main vide sur une culture mûre : récolte et replantation en un geste.",
+      "icon": "terresvivantes:tomato_seeds"
+    },
+    {
+      "title": "Cultures d'été",
+      "text": "Tomate, maïs, soja, poivron, aubergine et concombre ont leur saison optimale en été. Au printemps elles sont possibles, en automne défavorables. Le soja est une légumineuse qui enrichit le sol en azote.",
+      "icon": "terresvivantes:tomato"
+    },
+    {
+      "title": "Printemps et automne",
+      "text": "Au printemps : laitue, oignon, fraise et orge. En automne : ail et chou. L'hiver, l'ail, le chou et l'oignon restent défavorables; les autres ne poussent pas dehors."
+    },
+    {
+      "title": "Serres et hiver",
+      "text": "Une serre donne un multiplicateur d'hiver de 0,6 au lieu de 0,15 dehors. Sous verre, l'hiver est jugé comme le printemps pour le choix des cultures : les cultures de printemps peuvent y pousser."
+    },
+    {
+      "title": "Irrigation",
+      "text": "L'arroseur de cuivre (rayon 2) et celui de fer (rayon 3) mouillent la terre et font pousser de 10 %. Ils prennent l'eau d'une source ou d'un tonneau de pluie. En été, la sécheresse retire parfois de l'humidité.",
+      "icon": "terresvivantes:copper_sprinkler"
+    },
+    {
+      "title": "Tonneau de pluie",
+      "text": "Le tonneau de pluie se remplit sous la pluie à ciel ouvert, au seau d'eau ou à la fiole d'eau. Un arroseur voisin y puise. L'arrosoir vide se remplit à son robinet, un niveau à la fois.",
+      "icon": "terresvivantes:rain_barrel"
+    }
+  ]
+}

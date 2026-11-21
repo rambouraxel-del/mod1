@@ -1,0 +1,21 @@
+{
+  "id": "orchards",
+  "title": "Vergers",
+  "pages": [
+    {
+      "title": "Six espèces",
+      "text": "Pommier, cerisier, oranger, olivier, noyer et pêcher. Un plant pousse en arbre, puis son feuillage passe par quatre stades au hasard, selon la saison et la température. Les arbres sauvages poussent dans les biomes adaptés.",
+      "icon": "terresvivantes:cherry"
+    },
+    {
+      "title": "Floraison et fruits",
+      "text": "Le passage du stade 2 noue les fruits. La pollinisation augmente la fructification et le rendement, de x0,6 à x1,3. Une partie des fruits tombe au sol. Les fruits se mangent et se compostent.",
+      "icon": "terresvivantes:peach"
+    },
+    {
+      "title": "Recettes et marchand",
+      "text": "Tarte aux cerises, jus d'orange, salade de fruits, pain aux noix, confiture de pêche. Le marchand ambulant vend un plant de chaque espèce.",
+      "icon": "terresvivantes:cherry_pie"
+    }
+  ]
+}

@@ -31,6 +31,7 @@ from sprites_v04 import SPRITES_V04, build_duck_entities  # noqa: E402
 from sprites_v05 import SPRITES_V05, build_processing_gui  # noqa: E402
 from sprites_v06 import SPRITES_V06, build_crow_entities  # noqa: E402
 from sprites_v07 import SPRITES_V07, build_guild_merchant  # noqa: E402
+from sprites_v08_guide import SPRITES_V08  # noqa: E402
 import insects_textures  # noqa: E402
 
 ROOT = HERE.parents[1]
@@ -114,7 +115,7 @@ def render(rows, overrides=None):
 def build_all():
     """Retourne une liste (dossier, nom, image) pour toutes les textures."""
     out = []
-    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03 + SPRITES_V04 + SPRITES_V05 + SPRITES_V06 + SPRITES_V07:
+    for folder, name, rows in SPRITES + SPRITES_EXT + SPRITES_V03 + SPRITES_V04 + SPRITES_V05 + SPRITES_V06 + SPRITES_V07 + SPRITES_V08:
         out.append((folder, name, render(rows)))
     # Sachets de graines: meme gabarit, couleurs propres a chaque culture.
     for crop, (seed_col, band_col) in SEED_COLORS.items():
