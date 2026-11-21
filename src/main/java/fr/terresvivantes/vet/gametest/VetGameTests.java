@@ -95,14 +95,14 @@ public final class VetGameTests {
         helper.succeed();
     }
 
-    /** Santé à 0 : l'animal meurt (mort à zéro activée par défaut). */
+    /** Santé à 0 : l'animal meurt (mort à zéro activée par défaut). Satiété 0 : une perte de 1 par cycle ramène 1 à 0. */
     @GameTest(template = TEMPLATE, batch = "vet")
     public static void zeroHealthKillsAnimal(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         helper.setBlock(new BlockPos(5, 1, 5), Blocks.STONE);
         Sheep sheep = helper.spawn(EntityType.SHEEP, new BlockPos(5, 2, 5));
         sheep.setData(LivestockModule.GENOME.get(), new Genome(5, 5, 5, 5));
-        LivestockApi.setState(sheep, new LivestockState(0, 5, Ailment.NONE, 0L));
+        LivestockApi.setState(sheep, new LivestockState(0, 1, Ailment.NONE, 0L));
 
         LivestockApi.runNeedsTick(level, sheep);
 

@@ -180,7 +180,7 @@ Récompense d'un contrat par unité / vente à l'étal (90 %) : **+44 %**.
 | Régime | Satiété moyenne (fin) | Santé moyenne (fin) | Vivantes à la fin | Lait ★1 / ★2 / ★3 | Valeur lait / jour (troupeau) | Repas de foin / vache |
 |---|---|---|---|---|---|---|
 | Bien nourries (pâturage, auge en hiver) | 85 / 100 | 100 / 100 | 10 / 10 | 0 / 0 / 280 | 90 | 111.0 |
-| Mal nourries (pâturage 1 cycle sur 3, rien en hiver) | 0 / 100 | 0 / 100 | 0 / 10 | 15 / 0 / 0 | 3 | 0.0 |
+| Mal nourries (pâturage 1 cycle sur 3, rien en hiver) | 0 / 100 | 0 / 100 | 0 / 10 | 76 / 0 / 0 | 16 | 0.0 |
 
 ## Bilan des cibles
 
@@ -199,7 +199,9 @@ Récompense d'un contrat par unité / vente à l'étal (90 %) : **+44 %**.
 | Olive → huile d'olive (par unité brute) | 1,5 à 3 × | 1.83 × | oui |
 | Pomme → cidre (par unité brute) | 1,5 à 3 × | 2.40 × | oui |
 | Fromage affiné : meilleur revenu par vache | au-dessus de la crème, du beurre et du lait | 21 contre 16, 13, 8 | oui |
+| Fromage de chèvre (base) < fromage affiné (base) | < 14 pièces | 11 pièces | oui |
 | Contrat contre vente directe | +30 à 60 % | +44 % | oui |
+| Famine : survie à satiété 0 (santé pleine) | >= 4 j MC | 5.0 j MC | oui |
 
 ## Changements et justifications
 
@@ -228,6 +230,12 @@ Données et constantes (valeurs v0.7 -> v0.8) :
 9. **Recette d'huile** (`press_olive_oil`) : 4 olives -> 2 olives pour une huile (prix ci-dessus).
 10. **Contrats** (`ContractGenerator.REWARD_PERCENT` 150 -> 130) : récompense = quantité x prix x 1,3, soit +44 % sur
     la vente à l'étal (90 %), dans la cible +30 à 60 % (était +67 %).
+11. **Fromage de chèvre** (`base_prices.json`) : 16 -> 11. Sans affinage, il reste sous le fromage affiné (14 de base,
+    inchangé), qui se multiplie en plus par la qualité ★.
+12. **Famine** (`LivestockLogic.STARVATION_DAMAGE`) : 5 -> 1 perte de santé par cycle de 1200 ticks. Un animal à 100 de
+    santé et satiété 0 survit 100 cycles, soit 5 jours MC (cible : au moins 4). Une perte de 1,25 par cycle donnerait
+    exactement 4 jours, mais la santé est un entier : le choix retenu est 5. Tests : `LivestockLogicTest`
+    (`starvingAnimalSurvivesAtLeastFourDays`), GameTest `unfedAnimalLosesHealth` (santé 99 après un cycle).
 
 Tests adaptés (valeurs figées par l'ancien équilibrage, à l'origine de chaque changement) :
 
@@ -243,8 +251,8 @@ Points relevés mais non modifiés (hors cibles de cette version) :
 
 - **Lait et alimentation** : le mod ne change que la qualité du lait selon l'alimentation, jamais la quantité
   (`ProductionLogic`, traite vanilla). Une vache bien nourrie et une vache mal nourrie donnent le même nombre de seaux.
-- **Famine** : une vache à 0 de satiété perd 5 de santé par cycle (`LivestockLogic.STARVATION_DAMAGE`), soit morte en
-  une journée MC. Une vache pâturée un cycle sur trois meurt dans le relevé (e). À revoir si l'on veut de la marge.
+- **Famine** : traitée (point 12). À satiété nulle, un animal meurt désormais en 5 jours MC au lieu d'un, ce qui laisse
+  le temps de réagir; le relevé (e) « mal nourries » meurt toujours, mais plus tard.
 - **Maturation et lumière** : le simulateur suppose la lumière suffisante toute la journée, comme la formule de
   `growthDays`; la nuit (lumière insuffisante) n'est pas simulée.
 - **Source des configs** : `SeasonConfig` et `SoilConfig` lisent des specs NeoForge absentes des tests unitaires;

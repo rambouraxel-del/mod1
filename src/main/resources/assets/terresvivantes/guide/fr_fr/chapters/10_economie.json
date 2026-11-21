@@ -9,7 +9,7 @@
     },
     {
       "title": "Le prix",
-      "text": "Prix par unité : base x qualité x saison x saturation. Hors saison optimale x1,3, en pleine saison x0,85. Chaque vente ajoute un point de saturation (-2 % du prix, sans descendre sous 40 %). Ces points perdent 10 % par jour. Commande : /tv price.",
+      "text": "Prix par unité : base x qualité x saison x saturation. Hors saison optimale x1,3, en pleine saison x0,85. Chaque vente ajoute un point de saturation (-2 % du prix, 40 % au plus), perdu à 10 % par jour. Repères en cuivre : tomate 6, beurre 10, fromage affiné 14, fromage de chèvre 11. /tv price.",
       "icon": "terresvivantes:copper_coin"
     },
     {

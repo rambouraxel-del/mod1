@@ -9,7 +9,7 @@
     },
     {
       "title": "Daily needs",
-      "text": "Satiety and health drop each cycle. A grazing animal feeds on grass outside winter. A trough filled with hay, wheat, feed mix or silage feeds the animals nearby.",
+      "text": "Satiety and health drop each cycle (20 per MC day). At zero satiety, health loses 1 per cycle: 5 MC days before death from full health. A grazing animal feeds on grass outside winter. A full trough feeds nearby animals.",
       "icon": "terresvivantes:feeding_trough"
     },
     {

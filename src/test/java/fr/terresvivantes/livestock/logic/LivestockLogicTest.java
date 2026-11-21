@@ -15,7 +15,21 @@ class LivestockLogicTest {
         LivestockState state = new LivestockState(0, 100, Ailment.NONE, 0L);
         LivestockState next = LivestockLogic.needsStep(state, false, false, 5L);
         assertEquals(0, next.fed());
-        assertEquals(95, next.health());
+        assertEquals(99, next.health());
+    }
+
+    /** Satiété 0 et santé 100 : l'animal survit au moins 4 jours MC (80 cycles) et meurt après 5 (100 cycles). */
+    @Test
+    void starvingAnimalSurvivesAtLeastFourDays() {
+        LivestockState state = new LivestockState(0, 100, Ailment.NONE, 0L);
+        for (int cycle = 0; cycle < 80; cycle++) {
+            state = LivestockLogic.needsStep(state, false, false, 0L);
+        }
+        assertTrue(state.health() > 0, "vivant après 4 jours, santé " + state.health());
+        for (int cycle = 80; cycle < 100; cycle++) {
+            state = LivestockLogic.needsStep(state, false, false, 0L);
+        }
+        assertEquals(0, state.health());
     }
 
     @Test

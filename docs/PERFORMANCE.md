@@ -17,11 +17,13 @@ surcoût dépasse 15 ms/tick.
 
 | Phase | ms/tick (moyenne sur 200 ticks) |
 |---|---|
-| Ligne de base (arène vide) | 0.322 |
-| Charge complète | 4.629 |
-| Surcoût ajouté | 4.307 (seuil 15) |
+| Ligne de base (arène vide) | 0.221 |
+| Charge complète | 3.783 |
+| Surcoût ajouté | 3.562 (seuil 15) |
 
-Mesure faite sur le commit de cette version avec `./gradlew runGameTestServer` (105 tests requis verts).
+Mesure faite sur le commit d'intégration de la v0.8 avec `./gradlew runGameTestServer` (106 tests requis verts, dernier
+passage). Le tableau donne le dernier passage. Les trois passages finaux ont donné 3,41, 3,66 et 3,78 ms/tick en charge; le
+test ne vérifie que le seuil.
 
 ## Garde-fous déjà en place
 

@@ -15,11 +15,12 @@ le 2026-11-21. Aucune erreur de parsing de recette ni de tag dans les logs.
 | v0.5 | Transformation : processing, meule, laiterie, conservation, cuisine | 0.5.0 | `fb9bc39` | 263 | 75 |
 | v0.6 | Équipements et automatisation : implement, automation, storage, pests | 0.6.0 | `6e5905c` | 309 | 93 |
 | v0.7 | Économie : economy, market, guild, bonus de qualité | 0.7.0 | `01f68d4` (code), commit de docs ensuite | 345 | 104 |
+| v0.8 | Polish : sprites, équilibrage, manuel du fermier, serveur dédié et performances | 0.8.0 | commit d'intégration v0.8 (`git log`, message `feat(v0.8)`) | 355 | 106 |
 
 v0.7 : `./gradlew build` OK (345 tests JUnit, dont `GeneratedResourcesTest` et les tests du mapping de filière),
 `./gradlew runData` OK, `./gradlew runGameTestServer` 104/104 à trois passages consécutifs.
 
-## Liste des modules (32, `TerresVivantes.MODULES`)
+## Liste des modules (33, `TerresVivantes.MODULES`)
 
 | Module | Version | Rôle |
 |---|---|---|
@@ -55,8 +56,47 @@ v0.7 : `./gradlew build` OK (345 tests JUnit, dont `GeneratedResourcesTest` et l
 | `economy` | v0.7 | Monnaie 9:1, modèle de prix, réputation, `/tv price`, `/tv reputation` |
 | `market` | v0.7 | Tableau d'annonces, contrats, étal, grand livre |
 | `guild` | v0.7 | Bureau de la guilde, marchand, échanges par niveau, titres, `/tv titles` |
+| `guide` | v0.8 | Manuel du fermier : item, écran du livre, chapitres fr et en, remise à la première connexion |
 
 Racine de commandes unique : `core.command.TVCommands` (`season`, `showcase`, `price`, `reputation`, `titles`).
+
+## v0.8 « Polish » : livrée et vérifiée (`mod_version=0.8.0`)
+
+Vérifications sur le commit d'intégration (`feat(v0.8)`, voir `git log`) :
+
+- `./gradlew build` : OK, **355 tests JUnit**, dont `GeneratedResourcesTest`, `ServerClassIsolationTest`,
+  `BalanceSimulationTest` et `GuideContentTest`.
+- `./gradlew runData` : OK, `src/generated` régénéré.
+- `./gradlew runGameTestServer` : **106 GameTests** réussis, trois passages de suite (106/106 à chaque fois), aucune erreur
+  « Parsing error » / « Couldn't parse ».
+- `./gradlew runServer` : « Done (0.546s) », puis arrêt par SIGTERM : « Stopping server », sauvegarde des mondes, aucun
+  crash. Gradle rapporte le code 143 (128 + SIGTERM), attendu pour un arrêt forcé.
+- Contrats et règles : `docs/BALANCE.md` (équilibrage), `docs/PERFORMANCE.md` (performances).
+
+Contenu de la v0.8 :
+
+- **Sprites** (branche `polish-sprites`) : passe de qualité pixel art sur les sprites faibles des versions précédentes
+  (enfumoir, pucerons, pollen, poisson fumé, chapeau du marchand, pièce d'or, aspersoirs, pulvérisateur, épouvantail,
+  étagères d'affinage, plants de poivron). Sortie de `tools/textures/generate_all.py`.
+- **Serveur dédié** : `ServerClassIsolationTest` garantit qu'aucune classe client n'est chargée côté serveur.
+  `PerformanceGameTests` mesure le coût d'un tick (voir ci-dessous).
+- **Manuel du fermier** (`guide`) : item `farmers_manual` (recette : livre et graines de blé), écran client avec sommaire
+  et pages, 11 chapitres en fr_fr et en_us (54 pages). Remise unique à la première connexion (`giveOnFirstJoin`).
+  Les chiffres des chapitres ont été vérifiés contre les valeurs équilibrées (maturation, récoltes, prix indicatifs, pièce 9:1).
+- **Équilibrage** (`docs/BALANCE.md`) : consommation du sol à la récolte, maturation de 1,1 à 1,7 j en saison, rendements
+  resserrés, taux d'infection de base 0,25 %, prix (crème 6, fromage affiné 14, fromage de chèvre 11, huile 22),
+  récompense de contrat ×1,3, famine à 1 point de santé par cycle (5 jours MC à satiété nulle, pour 100 de santé).
+  Toutes les cibles du simulateur sont atteintes.
+
+Mesures de performance (`PerformanceGameTests`, dernier passage : 500 cultures, 50 animaux, 4 récolteuses, 10 meules) :
+
+| Phase | ms/tick (moyenne sur 200 ticks) |
+|---|---|
+| Ligne de base (arène vide) | 0.221 |
+| Charge complète | 3.783 |
+| Surcoût ajouté | 3.562 (seuil 15) |
+
+Problèmes connus : voir `docs/REPRISE.md`, section 4.
 
 ## v0.7 « Économie » : livrée et vérifiée (`mod_version=0.7.0`)
 

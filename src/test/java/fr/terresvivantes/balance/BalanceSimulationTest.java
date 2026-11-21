@@ -184,6 +184,11 @@ final class BalanceSimulationTest {
                 String.format("%.0f contre %.0f, %.0f, %.0f", cheese, cream, butter, rawMilk),
                 cheese > cream && cheese > butter && cheese > rawMilk);
 
+        int goat = BasePrices.basePrice(prices, "goat_cheese");
+        int aged = BasePrices.basePrice(prices, "aged_cheese");
+        target("Fromage de chèvre (base) < fromage affiné (base)", "< " + aged + " pièces", goat + " pièces",
+                goat < aged);
+
         section("Contrats contre vente directe");
         double contractRatio = contractRatio();
         out.append(String.format("Récompense d'un contrat par unité / vente à l'étal (90 %%) : **+%.0f %%**.%n",
@@ -197,6 +202,9 @@ final class BalanceSimulationTest {
         out.append("|---|---|---|---|---|---|---|\n");
         herd("Bien nourries (pâturage, auge en hiver)", true, prices);
         herd("Mal nourries (pâturage 1 cycle sur 3, rien en hiver)", false, prices);
+        int starvation = starvationCycles();
+        target("Famine : survie à satiété 0 (santé pleine)", ">= 4 j MC", String.format("%.1f j MC", starvation / 20.0),
+                starvation >= 80);
 
         section("Bilan des cibles");
         out.append("| Cible | Attendu | Obtenu | Atteinte |\n|---|---|---|---|\n");
@@ -602,6 +610,17 @@ final class BalanceSimulationTest {
         out.append(String.format("| %s | %.0f / 100 | %.0f / 100 | %d / %d | %d / %d / %d | %.0f | %.1f |%n", name,
                 fedSum / HERD_COWS, healthSum / HERD_COWS, alive, HERD_COWS, qualityCount[1], qualityCount[2],
                 qualityCount[3], milkValue / HERD_DAYS, hayMeals / (double) HERD_COWS));
+    }
+
+    /** Cycles de besoins avant la mort d'un animal à satiété 0 et santé pleine (20 cycles par jour MC). */
+    private static int starvationCycles() {
+        LivestockState state = new LivestockState(0, LivestockState.clamp(100), Ailment.NONE, 0L);
+        int cycles = 0;
+        while (state.health() > 0 && cycles < 10_000) {
+            state = LivestockLogic.needsStep(state, false, false, 0L);
+            cycles++;
+        }
+        return cycles;
     }
 
     // ------------------------------------------------------------------ utilitaires

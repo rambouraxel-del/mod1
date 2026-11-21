@@ -4,7 +4,7 @@
   "pages": [
     {
       "title": "Planter et récolter",
-      "text": "Plantez une graine sur une terre labourée. À maturité, la récolte donne le produit et 1 à 2 graines. Clic droit à main vide sur une culture mûre : récolte et replantation en un geste.",
+      "text": "Plantez une graine sur une terre labourée. En saison, elle mûrit en 1 à 2 jours MC (3,5 à 5 hors saison). À maturité, la récolte donne le produit et 1 à 2 graines. Sur sol neuf : environ 11 récoltes en tomate ou maïs, 16 en soja. Clic droit à main vide sur une culture mûre : récolte et replantation.",
       "icon": "terresvivantes:tomato_seeds"
     },
     {

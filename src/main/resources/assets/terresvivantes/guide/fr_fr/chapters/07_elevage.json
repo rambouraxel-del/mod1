@@ -9,7 +9,7 @@
     },
     {
       "title": "Besoins quotidiens",
-      "text": "La satiété et la santé baissent à chaque cycle. Un animal broutard se nourrit sur l'herbe hors hiver. Une auge pleine de foin, de blé, d'aliment composé ou d'ensilage nourrit les animaux proches.",
+      "text": "La satiété et la santé baissent à chaque cycle (20 par jour MC). À satiété nulle, la santé perd 1 par cycle : 5 jours MC avant la mort à pleine santé. Un animal broutard se nourrit sur l'herbe hors hiver. Une auge pleine nourrit les animaux proches.",
       "icon": "terresvivantes:feeding_trough"
     },
     {

@@ -18,8 +18,8 @@ public final class LivestockLogic {
     public static final double WINTER_CONSUMPTION_FACTOR = 1.5;
     /** Gain de satiété par cycle au pâturage (herbe sous l'animal, hors hiver). */
     public static final int PASTURE_GAIN = 10;
-    /** Perte de santé par cycle à satiété nulle. */
-    public static final int STARVATION_DAMAGE = 5;
+    /** Perte de santé par cycle à satiété nulle : 1 (un animal à 100 de santé survit 100 cycles, soit 5 jours MC). */
+    public static final int STARVATION_DAMAGE = 1;
     /** Gain de santé par cycle au-dessus du seuil de satiété. */
     public static final int RECOVERY_HEAL = 2;
     /** Satiété au-delà de laquelle la santé remonte. */
@@ -36,7 +36,8 @@ public final class LivestockLogic {
 
     /**
      * Un cycle de besoins. Consommation (×1.5 en hiver), pâturage si {@code onGrass} (un pâturable sur herbe hors
-     * hiver; l'appelant le décide), puis santé : satiété nulle fait perdre 5, satiété au-dessus de 60 fait gagner 2.
+     * hiver; l'appelant le décide), puis santé : satiété nulle fait perdre {@link #STARVATION_DAMAGE}, satiété au-dessus
+     * de 60 fait gagner {@link #RECOVERY_HEAL}.
      * Le jour du dernier repas n'est mis à jour que par le pâturage.
      */
     public static LivestockState needsStep(LivestockState state, boolean winter, boolean onGrass, long day) {

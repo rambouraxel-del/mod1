@@ -64,7 +64,7 @@ public final class LivestockGameTests {
         helper.succeed();
     }
 
-    /** Un animal sans nourriture (satiété 0) perd 5 points de santé au cycle de besoins, satiété reste à 0. */
+    /** Un animal sans nourriture (satiété 0) perd 1 point de santé au cycle de besoins, satiété reste à 0. */
     @GameTest(template = TEMPLATE, batch = "livestock")
     public static void unfedAnimalLosesHealth(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
@@ -82,7 +82,7 @@ public final class LivestockGameTests {
 
         LivestockState state = LivestockApi.getState(sheep);
         helper.assertTrue(state.fed() == 0, "satiété attendue 0, obtenue " + state.fed());
-        helper.assertTrue(state.health() == 95, "santé attendue 95 (perte de 5), obtenue " + state.health());
+        helper.assertTrue(state.health() == 99, "santé attendue 99 (perte de 1), obtenue " + state.health());
         helper.succeed();
     }
 

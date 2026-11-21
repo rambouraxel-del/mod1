@@ -4,7 +4,7 @@
   "pages": [
     {
       "title": "Planting and harvesting",
-      "text": "Plant a seed on tilled soil. At maturity, the harvest gives the crop and 1 to 2 seeds. Right-click a ripe crop with an empty hand: harvest and replant in one action.",
+      "text": "Plant a seed on tilled soil. In season it ripens in 1 to 2 MC days (3.5 to 5 out of season). At maturity, the harvest gives the crop and 1 to 2 seeds. On new soil: about 11 harvests for tomato or corn, 16 for soybean. Right-click a ripe crop with an empty hand: harvest and replant.",
       "icon": "terresvivantes:tomato_seeds"
     },
     {

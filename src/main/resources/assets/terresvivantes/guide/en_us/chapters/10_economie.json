@@ -9,7 +9,7 @@
     },
     {
       "title": "Price",
-      "text": "Price per unit: base x quality x season x saturation. Outside the optimal season x1.3, in peak season x0.85. Each sale adds a saturation point (-2 % of the price, never below 40 %). These points lose 10 % per day. Command: /tv price.",
+      "text": "Price per unit: base x quality x season x saturation. Outside the optimal season x1.3, in peak season x0.85. Each sale adds a saturation point (-2 % of the price, 40 % at most), which loses 10 % per day. Copper benchmarks: tomato 6, butter 10, aged cheese 14, goat cheese 11. Command: /tv price.",
       "icon": "terresvivantes:copper_coin"
     },
     {
