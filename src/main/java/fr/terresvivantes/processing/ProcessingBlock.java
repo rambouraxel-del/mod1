@@ -70,6 +70,7 @@ public abstract class ProcessingBlock extends HorizontalDirectionalBlock impleme
             return InteractionResult.SUCCESS;
         }
         if (level.getBlockEntity(pos) instanceof ProcessingBlockEntity machine) {
+            machine.rememberUser(player);
             ((IPlayerExtension) player).openMenu(new SimpleMenuProvider(
                     (id, inventory, p) -> new ProcessingMenu(id, inventory, pos, machine),
                     getName()), pos);

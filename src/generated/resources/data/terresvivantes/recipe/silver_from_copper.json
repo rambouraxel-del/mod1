@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    },
+    {
+      "item": "terresvivantes:copper_coin"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "terresvivantes:silver_coin"
+  }
+}

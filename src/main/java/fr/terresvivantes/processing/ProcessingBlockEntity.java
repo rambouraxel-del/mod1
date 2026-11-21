@@ -1,5 +1,8 @@
 package fr.terresvivantes.processing;
 
+import fr.terresvivantes.core.quality.QualityModule;
+import fr.terresvivantes.core.quality.logic.QualityLogic;
+import fr.terresvivantes.guild.GuildApi;
 import fr.terresvivantes.processing.logic.ProcessingLogic;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -8,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -22,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * BlockEntity commune des machines de transformation : entrées, conteneur optionnel, sortie, progression et recette
@@ -34,6 +39,7 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
     private static final String TAG_INVENTORY = "Inventory";
     private static final String TAG_PROGRESS = "Progress";
     private static final String TAG_TOTAL = "TotalTime";
+    private static final String TAG_LAST_USER = "LastUser";
     /** Sauvegarde de la progression toutes les N ticks de progression (la fin de craft sauvegarde aussi). */
     private static final int SAVE_EVERY = 20;
 
@@ -73,6 +79,9 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
     @Nullable
     private RecipeHolder<ProcessingRecipe> recipe;
     private boolean recipeDirty = true;
+    /** Dernier joueur ayant ouvert la machine : son titre de guilde donne le bonus de qualité. */
+    @Nullable
+    private UUID lastUser;
 
     protected ProcessingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, MachineType machine) {
         super(type, pos, state);
@@ -156,7 +165,7 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
         craftingTick(level, pos);
         if (ProcessingLogic.isComplete(progress, totalTime)) {
             List<ItemStack> leftovers = new ArrayList<>();
-            ItemStack made = current.craft(input, level.registryAccess(), leftovers);
+            ItemStack made = applyGuildBonus(level, current.craft(input, level.registryAccess(), leftovers));
             cleanInputs();
             addOutput(made);
             placeLeftovers(level, pos, leftovers);
@@ -166,6 +175,35 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
         } else if (progress % SAVE_EVERY == 0) {
             setChanged();
         }
+    }
+
+    /** Mémorise le joueur qui vient d'interagir avec la machine (ouverture du menu). */
+    public void rememberUser(Player player) {
+        if (!player.getUUID().equals(lastUser)) {
+            lastUser = player.getUUID();
+            setChanged();
+        }
+    }
+
+    /**
+     * Bonus de guilde : si le dernier utilisateur a le titre de la filière de cette machine, la sortie passe à la
+     * qualité supérieure (plafonnée à 3) avec la probabilité donnée par {@link GuildApi}. Sans qualité, rien.
+     */
+    private ItemStack applyGuildBonus(ServerLevel level, ItemStack made) {
+        if (lastUser == null || made.isEmpty()) {
+            return made;
+        }
+        Player player = level.getPlayerByUUID(lastUser);
+        if (player == null) {
+            return made;
+        }
+        float chance = GuildApi.machineQualityBonusChance(player, machine.id());
+        int quality = QualityModule.qualityOf(made);
+        if (chance > 0f && quality >= QualityLogic.MIN && quality < QualityLogic.MAX
+                && level.getRandom().nextFloat() < chance) {
+            QualityModule.setQuality(made, quality + 1);
+        }
+        return made;
     }
 
     private void findRecipe(ServerLevel level, ProcessingRecipeInput input) {
@@ -278,6 +316,9 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
         tag.put(TAG_INVENTORY, items);
         tag.putInt(TAG_PROGRESS, progress);
         tag.putInt(TAG_TOTAL, totalTime);
+        if (lastUser != null) {
+            tag.putUUID(TAG_LAST_USER, lastUser);
+        }
     }
 
     @Override
@@ -286,6 +327,7 @@ public abstract class ProcessingBlockEntity extends BlockEntity {
         inventory.deserializeNBT(registries, tag.getCompound(TAG_INVENTORY));
         progress = tag.getInt(TAG_PROGRESS);
         totalTime = tag.getInt(TAG_TOTAL);
+        lastUser = tag.hasUUID(TAG_LAST_USER) ? tag.getUUID(TAG_LAST_USER) : null;
         recipeDirty = true;
     }
 }

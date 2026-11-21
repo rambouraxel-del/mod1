@@ -103,7 +103,6 @@ public final class GuildModule implements TVModule {
         NeoForge.EVENT_BUS.addListener(GuildEvents::onVillagerTrades);
         NeoForge.EVENT_BUS.addListener(GuildEvents::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(GuildEvents::onTradeWithVillager);
-        NeoForge.EVENT_BUS.addListener(GuildCommands::onRegisterCommands);
     }
 
     @Override

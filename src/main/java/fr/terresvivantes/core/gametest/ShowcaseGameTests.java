@@ -17,6 +17,10 @@ import fr.terresvivantes.crop.CropModule;
 import fr.terresvivantes.dairy.DairyModule;
 import fr.terresvivantes.kitchen.KitchenModule;
 import fr.terresvivantes.milling.MillingModule;
+import fr.terresvivantes.guild.GuildModule;
+import fr.terresvivantes.market.MarketModule;
+import fr.terresvivantes.market.MarketStallBlockEntity;
+import net.minecraft.world.entity.npc.Villager;
 import fr.terresvivantes.preserving.PreservingModule;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import fr.terresvivantes.apiculture.ApiaryBlockEntity;
@@ -217,6 +221,21 @@ public final class ShowcaseGameTests {
         helper.assertTrue(level.getBlockState(at(origin, 10, 1, 27)).is(PestsModule.SCARECROW.get()),
                 "épouvantail attendu en (10,1,27)");
         helper.assertTrue(count(fauna, Crow.class) == 2, "deux corbeaux attendus dans la vitrine");
+
+        // Section économie (z 34) : tableau d'annonces, étal avec des produits, bureau de la guilde.
+        helper.assertTrue(level.getBlockState(at(origin, 2, 1, 34)).is(MarketModule.MARKET_BOARD.get()),
+                "tableau d'annonces attendu en (2,1,34)");
+        helper.assertTrue(level.getBlockState(at(origin, 6, 1, 34)).is(MarketModule.MARKET_STALL.get())
+                        && level.getBlockEntity(at(origin, 6, 1, 34)) instanceof MarketStallBlockEntity stall
+                        && stall.getItem(0).is(CropModule.productItem("tomato")) && !stall.getItem(0).isEmpty()
+                        && stall.getItem(1).is(CropModule.productItem("lettuce")) && !stall.getItem(1).isEmpty(),
+                "étal avec tomates et laitues attendu en (6,1,34)");
+        helper.assertTrue(level.getBlockState(at(origin, 12, 1, 34)).is(GuildModule.GUILD_DESK.get()),
+                "bureau de la guilde attendu en (12,1,34)");
+        helper.assertTrue(count(fauna, Villager.class) == 1
+                        && fauna.stream().filter(Villager.class::isInstance).map(Villager.class::cast)
+                        .allMatch(v -> v.getVillagerData().getProfession() == GuildModule.GUILD_MERCHANT.get()),
+                "un villageois marchand de la guilde attendu dans la vitrine");
 
         // Air au-dessus de la plateforme.
         helper.assertTrue(level.getBlockState(at(origin, 0, ShowcaseBuilder.HEIGHT, 0)).isAir(),

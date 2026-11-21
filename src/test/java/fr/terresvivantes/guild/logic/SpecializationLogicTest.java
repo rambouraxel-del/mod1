@@ -22,6 +22,21 @@ class SpecializationLogicTest {
         assertEquals(Optional.empty(), SpecializationLogic.filiereOf("terresvivantes:tomato_seeds"));
     }
 
+    /** Mapping machine de transformation vers filière : seules les cinq machines de filière ont un bonus. */
+    @Test
+    void machinesMapToTheirFiliere() {
+        assertEquals(Optional.of(Filiere.FROMAGER), SpecializationLogic.filiereOfMachine("cheese_vat"));
+        assertEquals(Optional.of(Filiere.FROMAGER), SpecializationLogic.filiereOfMachine("aging_shelf"));
+        assertEquals(Optional.of(Filiere.ARBORICULTEUR), SpecializationLogic.filiereOfMachine("fruit_press"));
+        assertEquals(Optional.of(Filiere.MARAICHER), SpecializationLogic.filiereOfMachine("millstone"));
+        assertEquals(Optional.of(Filiere.ELEVEUR), SpecializationLogic.filiereOfMachine("churn"));
+        assertEquals(Optional.empty(), SpecializationLogic.filiereOfMachine("honey_extractor"));
+        assertEquals(Optional.empty(), SpecializationLogic.filiereOfMachine("fermentation_barrel"));
+        assertEquals(Optional.empty(), SpecializationLogic.filiereOfMachine("smokehouse"));
+        assertEquals(Optional.empty(), SpecializationLogic.filiereOfMachine("cooking_pot"));
+        assertEquals(Optional.empty(), SpecializationLogic.filiereOfMachine("inconnue"));
+    }
+
     /** 256 tomates vendues au marchand : titre Maraîcher, et pas avant. */
     @Test
     void twoHundredFiftySixUnitsGrantTheTitle() {

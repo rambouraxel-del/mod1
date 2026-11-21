@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_gold_coin": {
+    "has_paper": {
       "conditions": {
         "items": [
           {
-            "items": "terresvivantes:gold_coin"
+            "items": "minecraft:paper"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "terresvivantes:silver_coin"
+        "recipe": "terresvivantes:market_board"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_gold_coin"
+      "has_paper"
     ]
   ],
   "rewards": {
     "recipes": [
-      "terresvivantes:silver_coin"
+      "terresvivantes:market_board"
     ]
   }
 }

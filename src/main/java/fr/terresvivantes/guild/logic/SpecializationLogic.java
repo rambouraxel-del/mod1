@@ -46,6 +46,21 @@ public final class SpecializationLogic {
         return Optional.ofNullable(BY_ITEM.get(itemId));
     }
 
+    /**
+     * Filière d'une machine de transformation (module processing), s'il y en a une : fromagerie (cuve à fromage,
+     * étagère d'affinage), arboriculture (presse à fruits), maraîchage (meule), élevage (baratte). Les autres machines
+     * (fermentation, séchoir, fumoir, marmite) n'ont pas de filière.
+     */
+    public static Optional<Filiere> filiereOfMachine(String machineId) {
+        return switch (machineId) {
+            case "cheese_vat", "aging_shelf" -> Optional.of(Filiere.FROMAGER);
+            case "fruit_press" -> Optional.of(Filiere.ARBORICULTEUR);
+            case "millstone" -> Optional.of(Filiere.MARAICHER);
+            case "churn" -> Optional.of(Filiere.ELEVEUR);
+            default -> Optional.empty();
+        };
+    }
+
     /** Filière d'après son identifiant ({@code "maraicher"}, etc.). */
     public static Optional<Filiere> byId(String id) {
         for (Filiere filiere : Filiere.values()) {

@@ -3,11 +3,11 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "terresvivantes:gold_coin"
+      "item": "terresvivantes:silver_coin"
     }
   ],
   "result": {
-    "count": 20,
-    "id": "terresvivantes:silver_coin"
+    "count": 9,
+    "id": "terresvivantes:copper_coin"
   }
 }

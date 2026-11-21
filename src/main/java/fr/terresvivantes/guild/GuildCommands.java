@@ -7,22 +7,17 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /**
- * Sous-commande {@code /tv titles} (permission 0). Elle s'ajoute à la racine {@code /tv} de {@code core.command}
- * par fusion de nœuds Brigadier (même littéral : les enfants sont ajoutés, sans toucher au reste).
+ * Sous-commande {@code /tv titles} (permission 0). Branchée sur la racine unique {@code /tv} par
+ * {@code core.command.TVCommands}.
  */
 public final class GuildCommands {
 
     private GuildCommands() {
     }
 
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("tv").then(titles()));
-    }
-
-    private static LiteralArgumentBuilder<CommandSourceStack> titles() {
+    public static LiteralArgumentBuilder<CommandSourceStack> titles() {
         return Commands.literal("titles").executes(ctx -> titles(ctx.getSource()));
     }
 

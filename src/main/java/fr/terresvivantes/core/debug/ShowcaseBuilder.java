@@ -26,7 +26,10 @@ import fr.terresvivantes.husbandry.HusbandryModule;
 import fr.terresvivantes.husbandry.logic.FeedType;
 import fr.terresvivantes.husbandry.logic.TroughLogic;
 import fr.terresvivantes.insects.InsectsModule;
+import fr.terresvivantes.guild.GuildModule;
 import fr.terresvivantes.kitchen.KitchenModule;
+import fr.terresvivantes.market.MarketModule;
+import fr.terresvivantes.market.MarketStallBlockEntity;
 import fr.terresvivantes.milling.MillingModule;
 import fr.terresvivantes.preserving.PreservingModule;
 import fr.terresvivantes.insects.entity.Butterfly;
@@ -50,6 +53,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -74,7 +78,8 @@ import java.util.List;
  * enclos d'élevage (clôture de chêne) avec auge pleine de foin, nichoir, pierre à sel, une vache, un mouton, une poule
  * et deux canards (mâle et femelle), persistants, et une rangée de transformation : une machine de chaque sorte
  * (meule, pressoir, baratte, cuve à fromage, étagère d'affinage, tonneau, séchoir, fumoir) et une marmite sur un feu
- * de camp allumé.
+ * de camp allumé. Section économie : tableau d'annonces, étal avec quelques produits, bureau de la guilde et un
+ * villageois marchand de la guilde, persistant.
  *
  * <p>Repère relatif à l'origine (surface de la plateforme, herbe) : x de 0 à {@link #width()}-1, z de -{@link #LEDGE}
  * à {@link #DEPTH}-1, y = -1 (pierre), 0 (surface), 1 à {@link #HEIGHT} (air dégagé).
@@ -95,6 +100,8 @@ import java.util.List;
  *            (x11..15, z25..29) avec des graines de blé; caisse de tomates (x1, z24); silo de 3 blocs (x3, z27,
  *            y1..3); épouvantail (x10, z27) entre les deux champs
  *   air      deux corbeaux persistants (x10, z29 et x4, z28)
+ *   z 34     économie: tableau d'annonces (x2), étal (x6; tomates, laitues, pommes), bureau de la guilde (x12);
+ *            villageois marchand de la guilde persistant (x12, z33), devant le bureau
  *   air      deux papillons et une coccinelle, persistants (ils ne disparaissent pas)
  * </pre>
  */
@@ -107,7 +114,7 @@ public final class ShowcaseBuilder {
             List.of(Blocks.WHEAT, Blocks.CARROTS, Blocks.POTATOES, Blocks.BEETROOTS);
     /** Rangée de visite devant la plateforme. */
     public static final int LEDGE = 4;
-    public static final int DEPTH = 32;
+    public static final int DEPTH = 40;
     public static final int HEIGHT = 6;
     static final int ROW_CROPS = 0;
     static final int ROW_BLOCKS = 5;
@@ -118,6 +125,11 @@ public final class ShowcaseBuilder {
     static final int ROW_POT = 20;
     /** Section équipements (z 23 à 31) : récolteuse et planteuse face à leur champ de 5x5, caisse, silo, épouvantail. */
     static final int ROW_EQUIP = 24;
+    /** Section économie (z 34 à 39) : tableau d'annonces, étal, bureau de la guilde et son villageois marchand. */
+    static final int ROW_ECONOMY = 34;
+    static final int X_BOARD = 2;
+    static final int X_STALL = 6;
+    static final int X_DESK = 12;
     static final int ROW_FIELD_FIRST = 25;
     static final int X_HARVESTER = 7;
     static final int X_PLANTER = 13;
@@ -174,10 +186,12 @@ public final class ShowcaseBuilder {
         placeLivestock(placer, level, origin);
         placeProcessing(placer);
         placeEquipment(placer, level, origin);
+        placeEconomy(placer, level, origin);
         removeFauna(level, origin);
         spawnInsects(level, origin, fauna);
         spawnLivestock(level, origin, fauna);
         spawnCrows(level, origin, fauna);
+        spawnGuildMerchant(level, origin, fauna);
         return new Result(placer.count, List.copyOf(fauna));
     }
 
@@ -244,6 +258,32 @@ public final class ShowcaseBuilder {
             placer.set(3, y, 27, StorageModule.SILO.get().defaultBlockState());
         }
         placer.set(10, 1, 27, PestsModule.SCARECROW.get().defaultBlockState());
+    }
+
+    /**
+     * Section économie : tableau d'annonces et étal face au visiteur (côté nord), bureau de la guilde. L'étal reçoit
+     * quelques produits à vendre; le tableau se remplit au premier tick du niveau (contrats du jour).
+     */
+    private static void placeEconomy(Placer placer, ServerLevel level, BlockPos origin) {
+        placer.set(X_BOARD, 1, ROW_ECONOMY, MarketModule.MARKET_BOARD.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH));
+        placer.set(X_STALL, 1, ROW_ECONOMY, MarketModule.MARKET_STALL.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH));
+        if (level.getBlockEntity(origin.offset(X_STALL, 1, ROW_ECONOMY)) instanceof MarketStallBlockEntity stall) {
+            stall.setItem(0, new ItemStack(CropModule.productItem("tomato"), 8));
+            stall.setItem(1, new ItemStack(CropModule.productItem("lettuce"), 8));
+            stall.setItem(2, new ItemStack(Items.APPLE, 4));
+        }
+        placer.set(X_DESK, 1, ROW_ECONOMY, GuildModule.GUILD_DESK.get().defaultBlockState()
+                .setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH));
+    }
+
+    /** Villageois marchand de la guilde, persistant, devant le bureau (il l'utilise comme lieu de travail). */
+    private static void spawnGuildMerchant(ServerLevel level, BlockPos origin, List<Mob> fauna) {
+        Villager merchant = spawnPersistent(level, EntityType.VILLAGER, origin.offset(X_DESK, 1, ROW_ECONOMY - 1), fauna);
+        if (merchant != null) {
+            merchant.setVillagerData(merchant.getVillagerData().setProfession(GuildModule.GUILD_MERCHANT.get()));
+        }
     }
 
     private static void placeFlora(Placer placer) {
@@ -314,7 +354,7 @@ public final class ShowcaseBuilder {
     private static void removeFauna(ServerLevel level, BlockPos origin) {
         for (Entity entity : level.getEntitiesOfClass(Entity.class, area(origin),
                 e -> e instanceof Butterfly || e instanceof Ladybug || e instanceof Cow || e instanceof Sheep
-                        || e instanceof Chicken || e instanceof Duck || e instanceof Crow)) {
+                        || e instanceof Chicken || e instanceof Duck || e instanceof Crow || e instanceof Villager)) {
             entity.discard();
         }
     }

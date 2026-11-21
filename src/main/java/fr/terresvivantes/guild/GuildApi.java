@@ -77,6 +77,16 @@ public final class GuildApi {
         return SpecializationLogic.QUALITY_BONUS_CHANCE;
     }
 
+    /**
+     * Bonus de qualité d'une machine de transformation pour le joueur qui l'a utilisée en dernier : appelé par le
+     * module processing à la fin d'une recette. 0 si la machine n'a pas de filière ou si le joueur n'a pas le titre.
+     */
+    public static float machineQualityBonusChance(Player player, String machineId) {
+        return SpecializationLogic.filiereOfMachine(machineId)
+                .map(filiere -> qualityBonusChance(player, filiere.id()))
+                .orElse(0f);
+    }
+
     /** Unités vendues au marchand dans une filière. */
     public static int units(Player player, Filiere filiere) {
         return player.getData(GuildModule.SPECIALIZATION.get()).getOrDefault(filiere.id(), 0);
