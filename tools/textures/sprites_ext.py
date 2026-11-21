@@ -468,15 +468,61 @@ ITEM_PEACH = [
     _r(4, "g" + "p" * 6 + "gg"), _r(5, "ggggggg"), _r(0, ""), _r(0, ""),
 ]
 
-ITEM_SPRAYER = [
-    _r(0, ""), _r(11, "DD"), _r(9, "DDD"), _r(7, "DD"), _r(4, "DDDDDD"),
-    _r(4, "DIJJJJD"), _r(4, "DIJJJJJD"), _r(4, "DIJJJJJD"),
-    _r(4, "DIJJJJJD"), _r(4, "DIJJJJJD"), _r(4, "DIJJJJJD"),
-    _r(4, "DIIIIIID"), _r(4, "DDDDDDDD"), _r(5, "DDDDDD"), _r(0, ""), _r(0, ""),
-]
+ITEM_SPRAYER = G("""
+................
+..##########....
+DD#CEECCCCC#....
+DD##########....
+.....#BBB#.##...
+.....#BBB#.#B...
+V..###########..
+.V.#JJJIIIIHH#..
+..V#JFJIIIIHH#..
+V..#JJAAAAAHH#..
+...#JJzjjzzHH#..
+...#JJzkzzzHH#..
+...#JJzzzzzHH#..
+...#JJJIIIIHH#..
+...#JJJIIIIHH#..
+...###########..
+""")
 
-BLOCK_COPPER_SPRINKLER = _plate("n", "q", "p", "o", "n", "o", "7")
-BLOCK_IRON_SPRINKLER = _plate("B", "F", "D", "C", "C", "E", "7")
+BLOCK_COPPER_SPRINKLER = G("""
+nnnnnnn77nnnnnnn
+nooooonppnoooonn
+nooooonppnoooonn
+nooooonppnoooonn
+noonqqqqqqqnnonn
+nonnqqooooqnnnnn
+nnnnqooooonnnnnn
+nqnnqooooonnnnnp
+npnnqooooonnnnnp
+nnnnqooooonnnnnn
+nonnqqooooqnnnnn
+noonnnnnnnnnnonn
+nooooooooooooonn
+nooooooooooooonn
+nnnnnnnnnnnnnnnn
+nnnnnnnnnnnnnnnn
+""")
+BLOCK_IRON_SPRINKLER = G("""
+BBBBBBB77BBBBBBB
+BDDDDDBEEBDDDDCB
+BDDDDDBEEBDDDDCB
+BDDDDDBEEBDDDDCB
+BDDBFFFFFFFCBDCB
+BDBBFFDDDDFCBBCB
+BBBBFDDDDDCCBBCB
+CFBBFDDDDDCCBBCE
+CEBBFDDDDDCCBBCE
+BBBBFDDDDDCCBBCB
+BDBBFFDDDDFCBBCB
+BDDBBBBBBBBCBDCB
+BDDDDDDDDDDDDDCB
+BDDDDDDDDDDDDDCB
+BCCCCCCCCCCCCCCB
+BBBBBBBBBBBBBBBB
+""")
 
 ITEM_FRUIT_SALAD = _bowl([
     _r(3, "ec4c3e2qc"),

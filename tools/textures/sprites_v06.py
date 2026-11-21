@@ -50,21 +50,21 @@ ITEM_BROADFORK = G("""
 # Semoir manuel: tremie de bois remplie de graines, roue a rayons en bas a droite.
 ITEM_SEEDER = G("""
 ................
-..aaaaaaaaaa....
-..#xxxxxxxx#....
-..#8xxxxxx8#....
-..#88888888#....
-...#888888#.....
-....#8888#......
-.....#88#.......
-......#8#..DDD..
-..........D.C.D.
-.........D..C..D
-.........DCCBCCD
-.........D..C..D
-..........D.C.D.
-...........DDD..
-................
+.#######........
+.#xxxxx#........
+..#xxx#.........
+..#888#.........
+...#8#.E..##....
+....##E.######..
+.....E.#CCDDCC#.
+.....E#CDCDDCDC#
+......#CCDFFDCC#
+.....##DDFFFFDD#
+.....##DDFFFFDD#
+......#CCDFFDCC#
+......#CDCDDCDC#
+.......#CCDDCC#.
+........######..
 """)
 
 # Faux diamant: meme gabarit que la faucille, lame en bleu-blanc.
@@ -389,22 +389,22 @@ TSTS RTTS SRTT TSRS
 
 # Sac de jute: toile beige, couture, visage cousu (yeux et bouche en points noirs).
 SCARECROW_SACK = H("""
-7777 7777 7777 7777
-7aab baaa 0aab aaa7
-7a0a aaba aaaa 0aa7
-7aaa yyyy yyaa aaa7
-7aay yyyy yyyy yaa7
-7ayy KKyy yyKK yya7
-7ayy KKyy yyKK yya7
-7ayy yyyy yyyy yya7
-7ayy yyyy yyyy yya7
-7ayy yKyK yKyy yya7
-7aay yyyy yyyy yaa7
-7aaa yyyy yyyy aaa7
-7a0a aaba aaaa 0aa7
-7aaa aaaa aaaa aaa7
-7777 7777 7777 7777
-7777 7777 7777 7777
+7777777777777777
+7aabbaaa0aabaaa7
+7a0aaabaaaaa0aa7
+7aaayyyyyyaaaaa7
+7aayyyyyyyyyyya7
+7ayyKyKyyKyKyyy7
+7ayyyKyyyyKyyyy7
+7ayyKyKyyKyKyyy7
+7ayyyyyyyyyyyyy7
+7ayyKyKyKyKyyyy7
+7aayyKyKyKyKyya7
+7aaayyyyyyyyyya7
+7a0a0a0a0a0a0aa7
+7aaaaaaaaaaaaaa7
+7777777777777777
+7777777777777777
 """)
 
 # Chemise a carreaux usee: rouge et creme, quelques trous et reprises.

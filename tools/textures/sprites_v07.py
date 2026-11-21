@@ -105,7 +105,24 @@ ITEM_COPPER_COIN = _disc("q", "p", "o", _epi)
 ITEM_SILVER_COIN = _disc("F", "E", "D", _leaf)
 
 # Piece d'or: or brillant, soleil grave (rayons i, disque j).
-ITEM_GOLD_COIN = _disc("m", "k", "j", _sun)
+ITEM_GOLD_COIN = H("""
+.......##.......
+....#jjjjjj#....
+...#jlliikjj#...
+..#jllliikkkj#..
+.#jlillkkkkikj#.
+.jlllikkkkikkjj.
+.jlllkiiiikkkkj.
+#jiikkiiiikkiij#
+#jiikkiiiikkiij#
+.jkkkkiiiikkkkj.
+.jjkkikkkkikkjj.
+.#jkikkiikkikj#.
+..#jkkkiikkkj#..
+...#jjkkkkjj#...
+....#jjjjjj#....
+.......##.......
+""")
 
 # ---------------------------------------------------------------------------
 # CONTRAT ET SCEAU (16x16)
@@ -374,11 +391,14 @@ def build_guild_merchant(palette):
 
     # Chapeau de feutre: calotte bombee claire au centre, bande de cuir, bord large.
     _rect(px, 32, 0, 64, 16, "7", palette)       # feutre (flancs)
-    _rect(px, 40, 0, 48, 8, "8", palette)        # calotte
+    _rect(px, 32, 2, 64, 10, "8", palette)       # calotte bombee: flancs clairs
+    _rect(px, 36, 0, 60, 2, "8", palette)        # bombe: 1re rangee (plus etroite)
+    _rect(px, 38, 0, 58, 1, "9", palette)        # reflet du dome
+    _rect(px, 40, 0, 48, 8, "8", palette)        # calotte (dessus)
     _rect(px, 42, 0, 46, 2, "9", palette)        # reflet de la calotte
     _rect(px, 32, 10, 64, 12, "9", palette)      # bande de cuir
-    _rect(px, 32, 14, 64, 15, "8", palette)      # bord large
-    _rect(px, 32, 15, 64, 16, "7", palette)      # dessous du bord
+    _rect(px, 32, 12, 64, 14, "8", palette)      # bord large: dessus
+    _rect(px, 32, 14, 64, 16, "7", palette)      # bord large: dessous
 
     # Corps: tunique vert sombre, tablier brun, ceinture de cuir.
     _rect(px, 22, 20, 30, 26, "2", palette)      # dessus
