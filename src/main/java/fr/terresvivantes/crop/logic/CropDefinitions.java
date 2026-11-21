@@ -17,31 +17,67 @@ import static fr.terresvivantes.season.logic.Season.WINTER;
  */
 public final class CropDefinitions {
 
+    /** Valeurs v0.8 (équilibrage) : maturation, consommation à la récolte et rendements. Voir docs/BALANCE.md. */
     private static final List<CropDefinition> ALL = List.of(
             row("tomato", Set.of(SUMMER), Set.of(SPRING), Set.of(AUTUMN), 12, 32,
-                    2, 1, 2, 3, 2, 3, 6, 2, 4, false, false),
+                    0, 0, 0,
+                    3, 2, 3,
+                    1.55f, 2, 3, false, false),
+
             row("corn", Set.of(SUMMER), Set.of(SPRING), Set.of(AUTUMN), 15, 35,
-                    3, 1, 1, 4, 2, 2, 8, 1, 3, false, false),
+                    0, 0, 0,
+                    4, 2, 2,
+                    1.55f, 1, 3, false, false),
+
             row("soybean", Set.of(SUMMER), Set.of(SPRING), Set.of(AUTUMN), 15, 30,
-                    0, 1, 1, 1, 2, 2, 6, 2, 4, true, false),
+                    0, 0, 0,
+                    1, 2, 1,
+                    1.55f, 2, 4, true, false),
+
             row("lettuce", Set.of(SPRING), Set.of(AUTUMN), Set.of(SUMMER), 5, 24,
-                    2, 1, 1, 2, 1, 1, 3, 1, 2, false, false),
+                    0, 0, 0,
+                    2, 1, 1,
+                    1.8f, 2, 3, false, false),
+
             row("onion", Set.of(SPRING), Set.of(AUTUMN), Set.of(SUMMER, WINTER), 8, 28,
-                    1, 2, 1, 2, 3, 2, 9, 1, 3, false, false),
+                    0, 0, 0,
+                    2, 3, 2,
+                    1.8f, 1, 3, false, false),
+
             row("garlic", Set.of(AUTUMN), Set.of(SPRING), Set.of(SUMMER, WINTER), 2, 24,
-                    1, 2, 1, 2, 3, 2, 14, 1, 2, false, false),
+                    0, 0, 0,
+                    2, 3, 2,
+                    1.7f, 2, 3, false, false),
+
             row("bell_pepper", Set.of(SUMMER), Set.of(SPRING), Set.of(AUTUMN), 16, 30,
-                    2, 1, 2, 3, 2, 3, 7, 1, 3, false, true),
+                    0, 0, 0,
+                    3, 2, 3,
+                    1.55f, 1, 3, false, true),
+
             row("eggplant", Set.of(SUMMER), Set.of(SPRING), Set.of(AUTUMN), 18, 32,
-                    2, 1, 2, 3, 2, 3, 8, 1, 2, false, true),
+                    0, 0, 0,
+                    3, 2, 3,
+                    1.55f, 1, 2, false, true),
+
             row("strawberry", Set.of(SPRING), Set.of(SUMMER), Set.of(AUTUMN), 8, 26,
-                    1, 2, 2, 2, 3, 3, 5, 2, 4, false, true),
+                    0, 0, 0,
+                    2, 3, 3,
+                    1.55f, 1, 3, false, true),
+
             row("barley", Set.of(SPRING), Set.of(SUMMER), Set.of(AUTUMN), 5, 25,
-                    2, 1, 1, 2, 2, 2, 7, 2, 4, false, false),
+                    0, 0, 0,
+                    2, 2, 2,
+                    1.55f, 2, 4, false, false),
+
             row("cabbage", Set.of(AUTUMN), Set.of(SPRING), Set.of(SUMMER, WINTER), 4, 22,
-                    2, 1, 1, 3, 2, 2, 8, 1, 2, false, false),
+                    0, 0, 0,
+                    3, 2, 2,
+                    1.7f, 2, 3, false, false),
+
             row("cucumber", Set.of(SUMMER), Set.of(SPRING), Set.of(AUTUMN), 16, 30,
-                    2, 1, 2, 3, 2, 3, 5, 2, 4, false, true));
+                    0, 0, 0,
+                    3, 2, 3,
+                    1.55f, 2, 3, false, true));
 
     private CropDefinitions() {
     }

@@ -4,6 +4,7 @@ import fr.terresvivantes.TerresVivantes;
 import fr.terresvivantes.health.HealthConfig;
 import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.crop.CropModule;
+import fr.terresvivantes.crop.CropApi;
 import fr.terresvivantes.soil.SoilApi;
 import fr.terresvivantes.soil.logic.SoilData;
 import net.minecraft.core.BlockPos;
@@ -70,25 +71,30 @@ public final class TVIntegrationGameTests {
         helper.succeed();
     }
 
-    /** (c) Après une croissance en été, le sol a perdu des nutriments (N+P+K diminue). */
+    /**
+     * (c) v0.8 : la consommation de sol se fait à la récolte, pas à chaque stade. Une tomate mûrie en été puis
+     * récoltée fait baisser N+P+K; avant la récolte, le sol reste intact.
+     */
     @GameTest(template = "crop_arena")
-    public static void growthDepletesSoil(GameTestHelper helper) {
+    public static void harvestDepletesSoil(GameTestHelper helper) {
         setSeason(helper, "summer");
         placeFertileTomato(helper);
         ServerLevel level = helper.getLevel();
         BlockPos soil = helper.absolutePos(SOIL);
-        int before = nutrientSum(SoilApi.get(level, soil));
+        BlockPos crop = helper.absolutePos(CROP);
 
         int ticks = 0;
-        while (helper.getBlockState(CROP).getValue(CropBlock.AGE) == 0 && ticks < MAX_FORCED_TICKS) {
+        while (helper.getBlockState(CROP).getValue(CropBlock.AGE) < CropBlock.MAX_AGE && ticks < MAX_FORCED_TICKS) {
             forceRandomTicks(helper, 1);
             ticks++;
         }
         int age = helper.getBlockState(CROP).getValue(CropBlock.AGE);
-        helper.assertTrue(age > 0, "la tomate doit avoir poussé en " + ticks + " ticks forcés");
+        helper.assertTrue(age == CropBlock.MAX_AGE, "la tomate doit être mûre en " + ticks + " ticks forcés, âge " + age);
+        int before = nutrientSum(SoilApi.get(level, soil));
+        CropApi.harvestAndReplant(level, crop, helper.makeMockPlayer(GameType.SURVIVAL));
         int after = nutrientSum(SoilApi.get(level, soil));
         helper.assertTrue(after < before,
-                "N+P+K doit diminuer après croissance : avant " + before + ", après " + after);
+                "N+P+K doit diminuer à la récolte : avant " + before + ", après " + after);
         helper.succeed();
     }
 

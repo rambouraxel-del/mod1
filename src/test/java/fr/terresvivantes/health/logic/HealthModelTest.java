@@ -46,9 +46,10 @@ class HealthModelTest {
     }
 
     @Test
-    void baseChanceIsZeroPointFourPercent() {
-        assertEquals(0.004, HealthModel.infectionChance(Disease.MILDEW, calm()), CHANCE_DELTA);
-        assertEquals(0.004, HealthModel.infectionChance(Disease.RUST, calm()), CHANCE_DELTA);
+    void baseChanceIsZeroPointTwentyFivePerMille() {
+        // v0.8 : 0,4 % -> 0,25 % (équilibrage des maladies, docs/BALANCE.md).
+        assertEquals(0.0025, HealthModel.infectionChance(Disease.MILDEW, calm()), CHANCE_DELTA);
+        assertEquals(0.0025, HealthModel.infectionChance(Disease.RUST, calm()), CHANCE_DELTA);
     }
 
     @Test
@@ -63,9 +64,9 @@ class HealthModelTest {
         HealthModel.Conditions rainy = new HealthModel.Conditions(true, true, 15.0f, 1, false, false);
         HealthModel.Conditions hot = new HealthModel.Conditions(true, false, 23.0f, 1, false, false);
         HealthModel.Conditions dry = new HealthModel.Conditions(false, true, 23.0f, 1, false, false);
-        assertEquals(0.016, HealthModel.infectionChance(Disease.MILDEW, rainy), CHANCE_DELTA);
-        assertEquals(0.016, HealthModel.infectionChance(Disease.MILDEW, hot), CHANCE_DELTA);
-        assertEquals(0.004, HealthModel.infectionChance(Disease.MILDEW, dry), CHANCE_DELTA,
+        assertEquals(0.01, HealthModel.infectionChance(Disease.MILDEW, rainy), CHANCE_DELTA);
+        assertEquals(0.01, HealthModel.infectionChance(Disease.MILDEW, hot), CHANCE_DELTA);
+        assertEquals(0.0025, HealthModel.infectionChance(Disease.MILDEW, dry), CHANCE_DELTA,
                 "sol non saturé : pas de bonus d'oïdium");
     }
 
@@ -74,9 +75,9 @@ class HealthModelTest {
         HealthModel.Conditions inRange = new HealthModel.Conditions(false, true, 12.0f, 1, false, false);
         HealthModel.Conditions tooHot = new HealthModel.Conditions(false, true, 25.0f, 1, false, false);
         HealthModel.Conditions noRain = new HealthModel.Conditions(false, false, 18.0f, 1, false, false);
-        assertEquals(0.016, HealthModel.infectionChance(Disease.RUST, inRange), CHANCE_DELTA);
-        assertEquals(0.004, HealthModel.infectionChance(Disease.RUST, tooHot), CHANCE_DELTA);
-        assertEquals(0.004, HealthModel.infectionChance(Disease.RUST, noRain), CHANCE_DELTA);
+        assertEquals(0.01, HealthModel.infectionChance(Disease.RUST, inRange), CHANCE_DELTA);
+        assertEquals(0.0025, HealthModel.infectionChance(Disease.RUST, tooHot), CHANCE_DELTA);
+        assertEquals(0.0025, HealthModel.infectionChance(Disease.RUST, noRain), CHANCE_DELTA);
     }
 
     @Test
@@ -87,7 +88,8 @@ class HealthModelTest {
         assertFalse(HealthModel.monoculture(1, true));
         assertFalse(HealthModel.monoculture(3, false), "même répétition, autre culture : pas de monoculture");
         HealthModel.Conditions mono = new HealthModel.Conditions(false, false, 15.0f, 6, true, false);
-        assertEquals(0.004 * 2.0 * 1.5, HealthModel.infectionChance(Disease.MILDEW, mono), CHANCE_DELTA);
+        // v0.8 : monoculture x2.5 (était x2).
+        assertEquals(0.0025 * 2.5 * 1.5, HealthModel.infectionChance(Disease.MILDEW, mono), CHANCE_DELTA);
     }
 
     @Test

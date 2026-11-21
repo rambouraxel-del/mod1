@@ -19,7 +19,7 @@ public final class HealthModel {
     public static final int WITHER_DISEASE_TICKS = 6;
 
     /** Chance de base d'infection par tentative, avant facteurs. */
-    public static final double BASE_INFECTION_CHANCE = 0.004;
+    public static final double BASE_INFECTION_CHANCE = 0.0025;
 
     /** Chance de contagion vers un voisin identique, par tentative de la culture malade. */
     public static final double SPREAD_CHANCE = 0.10;
@@ -28,7 +28,7 @@ public final class HealthModel {
     public static final double ENVIRONMENT_FACTOR = 4.0;
 
     /** Multiplicateur de chance en monoculture (même culture récoltée au moins deux fois de suite). */
-    public static final double MONOCULTURE_FACTOR = 2.0;
+    public static final double MONOCULTURE_FACTOR = 2.5;
 
     /** Multiplicateur de chance quand la culture est en peuplement dense. */
     public static final double DENSITY_FACTOR = 1.5;
