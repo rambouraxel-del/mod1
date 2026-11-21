@@ -1,0 +1,30 @@
+{
+  "id": "processing",
+  "title": "Transformation",
+  "pages": [
+    {
+      "title": "Le principe des machines",
+      "text": "Une machine a ses entrées en haut, son conteneur sur les côtés (bol, flacon, seau) et sa sortie en bas. Une recette se lance quand les entrées correspondent. Clic droit sur la machine pour l'ouvrir."
+    },
+    {
+      "title": "Qualité en étoiles",
+      "text": "Les produits ont une qualité de 1 à 3 étoiles. Une recette la transmet : la plus basse des entrées, leur moyenne, ou elle vieillit (fromage affiné). Un produit de qualité se vend plus cher : x1,25 pour deux étoiles, x1,5 pour trois.",
+      "icon": "terresvivantes:cooking_pot"
+    },
+    {
+      "title": "Moulin et laiterie",
+      "text": "Meule : blé, orge et maïs deviennent des farines. Pressoir : pommes, pêches et oranges donnent du jus; olives et flacon donnent de l'huile. Baratte : lait donne beurre et crème. Cuve à fromage : lait donne du caillé. Étagère : le caillé devient fromage jeune, puis affiné.",
+      "icon": "terresvivantes:millstone"
+    },
+    {
+      "title": "Conservation",
+      "text": "Le tonneau de fermentation (plusieurs jours) fait du cidre avec du jus, et des cornichons avec des concombres et du vinaigre. Le séchoir fait sécher fruits et viandes. Le fumoir fume poissons et viandes, avec des bûches, du charbon ou du charbon de bois.",
+      "icon": "terresvivantes:fermentation_barrel"
+    },
+    {
+      "title": "La marmite",
+      "text": "La marmite a quatre entrées et un bol. Elle cuit sur une source de chaleur, comme un feu de camp allumé. Elle prépare douze plats, de l'omelette au fromage à la soupe à l'oignon, en passant par les pancakes.",
+      "icon": "terresvivantes:cooking_pot"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "equipment",
+  "title": "Equipment",
+  "pages": [
+    {
+      "title": "Broadfork and seeder",
+      "text": "The broadfork (3 iron ingots, 2 sticks) tills a 3x3 area and aerates the soil. The seeder (chest, planks, iron) plants seeds from the offhand over 3x3, or a line of 5 while you crouch.",
+      "icon": "terresvivantes:broadfork"
+    },
+    {
+      "title": "Diamond sickle",
+      "text": "The diamond sickle (3 diamonds, 1 stick) harvests ripe crops over a 5x5 area.",
+      "icon": "terresvivantes:diamond_sickle"
+    },
+    {
+      "title": "Harvester and planter",
+      "text": "The harvester (iron, piston, redstone, sickle) harvests ripe crops and fruit over a 5x5x3 volume in front of it. Redstone pauses it. The planter (chest, dispenser, iron) plants seeds from its inventory over 5x5.",
+      "icon": "terresvivantes:harvester"
+    },
+    {
+      "title": "Crate and silo",
+      "text": "The crate (8 planks around an iron ingot) holds 8 stacks of a single type; hoppers can fill it. The silo (6 iron ingots, 3 planks) is a column of 1 to 8 blocks: 16 slots per block, insertion from the top, extraction from the bottom.",
+      "icon": "terresvivantes:silo"
+    },
+    {
+      "title": "Crows and scarecrow",
+      "text": "Crows peck at ripe crops outside winter, mostly in plains and forests. The scarecrow (carved pumpkin, hay bale, wool, stick) drives them off within 12 blocks and reduces pests. Its effectiveness wears out after several days.",
+      "icon": "terresvivantes:scarecrow"
+    }
+  ]
+}

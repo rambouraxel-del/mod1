@@ -1,0 +1,31 @@
+{
+  "id": "equipment",
+  "title": "Équipements",
+  "pages": [
+    {
+      "title": "Grelinette et semoir",
+      "text": "La grelinette (3 lingots de fer, 2 bâtons) laboure 3x3 et aère le sol. Le semoir (coffre, planches, fer) plante les graines de la main secondaire sur 3x3, ou une ligne de 5 si vous êtes accroupi.",
+      "icon": "terresvivantes:broadfork"
+    },
+    {
+      "title": "Faucille en diamant",
+      "text": "La faucille en diamant (3 diamants, 1 bâton) récolte les cultures mûres sur une zone 5x5.",
+      "icon": "terresvivantes:diamond_sickle"
+    },
+    {
+      "title": "Récolteuse et planteuse",
+      "text": "La récolteuse (fer, piston, redstone, faucille) récolte cultures et fruits mûrs sur un volume 5x5x3 devant elle. La redstone la met en pause. La planteuse (coffre, distributeur, fer) plante les graines de son inventaire sur 5x5.",
+      "icon": "terresvivantes:harvester"
+    },
+    {
+      "title": "Caisse et silo",
+      "text": "La caisse (8 planches autour d'un lingot de fer) garde 8 piles d'un seul type; les trémies peuvent la remplir. Le silo (6 lingots, 3 planches) est une colonne de 1 à 8 blocs : 16 cases par bloc, insertion par le haut, extraction par le bas.",
+      "icon": "terresvivantes:silo"
+    },
+    {
+      "title": "Corbeaux et épouvantail",
+      "text": "Les corbeaux picorent les cultures mûres hors hiver, surtout en plaine et en forêt. L'épouvantail (citrouille sculptée, botte de foin, laine, bâton) les éloigne dans un rayon de 12 blocs et réduit les ravageurs. Son efficacité s'use après plusieurs jours.",
+      "icon": "terresvivantes:scarecrow"
+    }
+  ]
+}

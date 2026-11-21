@@ -1,0 +1,18 @@
+{
+  "id": "commands",
+  "title": "/tv Commands",
+  "pages": [
+    {
+      "title": "For every player",
+      "text": "/tv price: price of the item in hand. /tv reputation: your reputation and tier. /tv titles: your progress toward the specialization titles."
+    },
+    {
+      "title": "Seasons (operator)",
+      "text": "/tv season info shows the season and day. /tv season set followed by spring, summer, autumn or winter, then an optional day, changes the season. Requires permission level 2."
+    },
+    {
+      "title": "Showcase (operator)",
+      "text": "/tv showcase [position] builds a demonstration platform with one section per system, 20 blocks above you, and teleports you there. From the console, the position is required."
+    }
+  ]
+}

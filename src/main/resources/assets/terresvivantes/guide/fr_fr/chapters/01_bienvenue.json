@@ -1,0 +1,24 @@
+{
+  "id": "welcome",
+  "title": "Bienvenue et saisons",
+  "pages": [
+    {
+      "title": "Bienvenue, fermier",
+      "text": "Terres Vivantes fait vivre une ferme avec les saisons. Le sol s'appauvrit, le climat change, les animaux ont des besoins. Ce manuel explique chaque système dans l'ordre où vous le rencontrerez.",
+      "icon": "terresvivantes:almanac"
+    },
+    {
+      "title": "Les quatre saisons",
+      "text": "Une année compte quatre saisons : printemps, été, automne, hiver. Chaque saison dure 7 jours par défaut (réglable). Le HUD, en haut à gauche, affiche la saison et le jour en cours."
+    },
+    {
+      "title": "Climat et température",
+      "text": "La température locale dépend du biome, de la saison, de l'altitude et de la nuit. En hiver, les cultures en plein air ralentissent fortement. Une serre protège du froid (+8 °C) et limite ce ralentissement."
+    },
+    {
+      "title": "L'almanach",
+      "text": "L'almanach (un livre et du blé) indique la saison, le jour, la température locale et les cultures à planter maintenant : celles dont la saison est optimale et dont la température convient. Clic droit pour l'ouvrir.",
+      "icon": "terresvivantes:almanac"
+    }
+  ]
+}

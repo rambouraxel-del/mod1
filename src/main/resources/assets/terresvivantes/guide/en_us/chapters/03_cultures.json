@@ -1,0 +1,34 @@
+{
+  "id": "crops",
+  "title": "Crops",
+  "pages": [
+    {
+      "title": "Planting and harvesting",
+      "text": "Plant a seed on tilled soil. At maturity, the harvest gives the crop and 1 to 2 seeds. Right-click a ripe crop with an empty hand: harvest and replant in one action.",
+      "icon": "terresvivantes:tomato_seeds"
+    },
+    {
+      "title": "Summer crops",
+      "text": "Tomato, corn, soybean, bell pepper, eggplant and cucumber have their optimal season in summer. In spring they are possible, in autumn unfavorable. Soybean is a legume that enriches the soil with nitrogen.",
+      "icon": "terresvivantes:tomato"
+    },
+    {
+      "title": "Spring and autumn",
+      "text": "In spring: lettuce, onion, strawberry and barley. In autumn: garlic and cabbage. In winter, garlic, cabbage and onion stay unfavorable; the others do not grow outdoors."
+    },
+    {
+      "title": "Greenhouses and winter",
+      "text": "A greenhouse gives a winter multiplier of 0.6 instead of 0.15 outdoors. Under glass, winter counts as spring when choosing crops, so spring crops can grow there."
+    },
+    {
+      "title": "Irrigation",
+      "text": "The copper sprinkler (radius 2) and the iron sprinkler (radius 3) wet the soil and speed growth by 10 %. They draw water from a source or a rain barrel. In summer, drought sometimes removes moisture.",
+      "icon": "terresvivantes:copper_sprinkler"
+    },
+    {
+      "title": "Rain barrel",
+      "text": "The rain barrel fills under open sky in rain, from a water bucket, or from a water bottle. A nearby sprinkler draws from it. An empty watering can refills at its tap, one level at a time.",
+      "icon": "terresvivantes:rain_barrel"
+    }
+  ]
+}

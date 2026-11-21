@@ -44,6 +44,7 @@ import fr.terresvivantes.economy.EconomyModule;
 import fr.terresvivantes.guild.GuildModule;
 import fr.terresvivantes.market.MarketModule;
 import fr.terresvivantes.food.FoodModule;
+import fr.terresvivantes.guide.GuideModule;
 import fr.terresvivantes.implement.ImplementsModule;
 import fr.terresvivantes.health.HealthConfig;
 import fr.terresvivantes.health.HealthModule;
@@ -104,6 +105,7 @@ public final class TerresVivantes {
             new EconomyModule(),
             new MarketModule(),
             new GuildModule(),
+            new GuideModule(),
             new DebugModule()
     );
 

@@ -1,0 +1,29 @@
+{
+  "id": "health",
+  "title": "Santé des cultures",
+  "pages": [
+    {
+      "title": "Stress et flétrissement",
+      "text": "Une culture dans des conditions impossibles accumule du stress. Une croissance réussie le réduit. À 4 de stress, elle se flétrit : elle ne pousse plus et doit être remplacée.",
+      "icon": "terresvivantes:soil_probe"
+    },
+    {
+      "title": "Oïdium et rouille",
+      "text": "L'oïdium (blanc-gris) touche la tomate, le concombre, la fraise, la laitue, le poivron, l'aubergine et la pomme de terre. La rouille (orangée) touche l'orge, le maïs, le soja et le blé. Sol saturé, chaleur, pluie, monoculture et cultures serrées favorisent les maladies."
+    },
+    {
+      "title": "Effets d'une maladie",
+      "text": "Une culture malade pousse à 30 % de la vitesse normale et rapporte la moitié. Elle contamine ses voisines identiques avec 10 % de chance par essai. Après six essais malade, elle se flétrit."
+    },
+    {
+      "title": "Fongicide et pulvérisateur",
+      "text": "Fongicide (2 unités) : cuivre, fiole d'eau et poudre d'os. Clic droit sur la culture : elle guérit et reste immunisée jusqu'à la fin de la saison. Le pulvérisateur traite la zone 3x3 sur 16 charges.",
+      "icon": "terresvivantes:fungicide"
+    },
+    {
+      "title": "Pucerons",
+      "text": "Les pucerons ralentissent une culture de moitié et réduisent son rendement à 80 %. Ils ne naissent jamais seuls. Les coccinelles les nettoient dans un rayon de 2 blocs, et l'épouvantail réduit leur apparition.",
+      "icon": "terresvivantes:sprayer"
+    }
+  ]
+}

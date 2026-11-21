@@ -1,0 +1,18 @@
+{
+  "id": "commands",
+  "title": "Commandes /tv",
+  "pages": [
+    {
+      "title": "Pour tous les joueurs",
+      "text": "/tv price : prix de l'objet en main. /tv reputation : votre réputation et votre palier. /tv titles : votre avancement vers les titres de spécialisation."
+    },
+    {
+      "title": "Saisons (opérateur)",
+      "text": "/tv season info affiche la saison et le jour. /tv season set suivi de spring, summer, autumn ou winter, puis d'un jour facultatif, change la saison. Les arguments restent en anglais. Réservé au niveau 2."
+    },
+    {
+      "title": "Vitrine (opérateur)",
+      "text": "/tv showcase [position] construit une plateforme de démonstration, avec une section par système, 20 blocs au-dessus de vous, et vous y téléporte. Depuis la console, la position est obligatoire."
+    }
+  ]
+}
