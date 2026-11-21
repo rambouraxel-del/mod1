@@ -16,6 +16,7 @@ import fr.terresvivantes.automation.AutomationConfig;
 import fr.terresvivantes.automation.AutomationModule;
 import fr.terresvivantes.pests.PestsConfig;
 import fr.terresvivantes.pests.PestsModule;
+import fr.terresvivantes.rice.RiceModule;
 import fr.terresvivantes.compost.CompostConfig;
 import fr.terresvivantes.core.config.TVConfig;
 import fr.terresvivantes.core.network.TVNetwork;
@@ -107,6 +108,7 @@ public final class TerresVivantes {
             new EconomyModule(),
             new MarketModule(),
             new GuildModule(),
+            new RiceModule(),
             new GuideModule(),
             new VineyardModule(),
             new DebugModule()

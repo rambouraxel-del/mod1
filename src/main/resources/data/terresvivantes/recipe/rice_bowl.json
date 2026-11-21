@@ -1,0 +1,11 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "cooking_pot",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:rice" }, "count": 2 }
+  ],
+  "container": "minecraft:bowl",
+  "result": { "id": "terresvivantes:rice_bowl", "count": 1 },
+  "time": 120,
+  "quality": "inherit_avg"
+}

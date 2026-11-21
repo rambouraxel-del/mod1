@@ -1,0 +1,10 @@
+{
+  "type": "terresvivantes:processing",
+  "machine": "millstone",
+  "ingredients": [
+    { "ingredient": { "item": "terresvivantes:rice_panicle" }, "count": 1 }
+  ],
+  "result": { "id": "terresvivantes:rice", "count": 2 },
+  "time": 100,
+  "quality": "inherit_min"
+}

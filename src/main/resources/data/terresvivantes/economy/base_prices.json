@@ -96,5 +96,10 @@
   "grape_juice": 8,
   "young_wine": 14,
   "red_wine": 30,
-  "white_wine": 22
+  "white_wine": 22,
+  "rice_panicle": 3,
+  "rice": 2,
+  "rice_bowl": 9,
+  "risotto": 24,
+  "rice_cake": 5
 }
