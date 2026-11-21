@@ -1,5 +1,6 @@
 package fr.terresvivantes;
 
+import fr.terresvivantes.breeds.BreedsModule;
 import fr.terresvivantes.climate.ClimateModule;
 import fr.terresvivantes.compost.CompostModule;
 import fr.terresvivantes.core.TVModule;
@@ -106,6 +107,7 @@ public final class TerresVivantes {
             new MarketModule(),
             new GuildModule(),
             new GuideModule(),
+            new BreedsModule(),
             new DebugModule()
     );
 

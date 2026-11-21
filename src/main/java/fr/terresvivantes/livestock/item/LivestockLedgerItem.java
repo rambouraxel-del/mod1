@@ -1,5 +1,6 @@
 package fr.terresvivantes.livestock.item;
 
+import fr.terresvivantes.breeds.BreedsApi;
 import fr.terresvivantes.livestock.LivestockApi;
 import fr.terresvivantes.livestock.logic.Ailment;
 import fr.terresvivantes.livestock.logic.Genome;
@@ -43,6 +44,10 @@ public final class LivestockLedgerItem extends Item {
                 animal.getType().getDescription()));
         player.sendSystemMessage(Component.translatable("message.terresvivantes.livestock.ledger.genome",
                 genome.productivity(), genome.size(), genome.hardiness(), genome.fertility()));
+        Component breed = BreedsApi.ledgerLine(animal);
+        if (breed != null) {
+            player.sendSystemMessage(breed);
+        }
         player.sendSystemMessage(Component.translatable("message.terresvivantes.livestock.ledger.food",
                 state.fed(), state.lastFedDay()));
         player.sendSystemMessage(Component.translatable("message.terresvivantes.livestock.ledger.health",
